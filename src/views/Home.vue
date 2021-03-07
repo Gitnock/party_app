@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <Nav></Nav>
+    <topNav></topNav>
     <div class="main-content">
       <div class="party-types">
         <div class="host-content party-type-host">
@@ -18,11 +18,11 @@
             <div class="content-text">
               <h1 class="content-title roboto-medium">Needed Players</h1>
               <h3 class="content-subtitle roboto-medium">
-                select the amount of extra players need for your party
+                select the amount of extra players needed for your party
               </h3>
             </div>
             <input
-              type="number"
+              type="range"
               class="content-input"
               v-model="players"
               min="1"
@@ -30,7 +30,7 @@
             />
           </div>
           <div class="content-container">
-            <button class="content-save roboto-medium" @click="updateInfo">
+            <button class="content-save roboto-medium" >
               save
             </button>
           </div>
@@ -44,11 +44,11 @@
 </template>
 
 <script>
-import Nav from '../components/home/nav.vue';
+import topNav from '../components/nav.vue';
 
 export default {
   components: {
-    Nav,
+    topNav,
   },
   data: () => ({
     voiceLink: '',
@@ -72,14 +72,14 @@ export default {
 .party-types {
   display: flex;
   flex-direction: column;
-  width: 798px;
+  // width: 798px;
+  padding:12px;
 }
 .party-type-button {
   width: 100%;
   height: 50px;
   border: none;
   border-radius: 8px;
-  margin: 8px;
   font-size: 16px;
 }
 .party-type-host {
@@ -94,7 +94,7 @@ export default {
 //host content
 .host-content {
   width: 100%;
-  margin: 8px;
+  margin-bottom: 12px;
   border-radius: 8px;
   max-height: 50px;
   transition: max-height 0.15s ease-out;
@@ -129,10 +129,9 @@ export default {
   height: 45px;
   border: none;
   border-radius: 8px;
-  padding: 12px;
   background: #224168;
   font-size: 16px;
-  color: #0291F4;
+  color: #0291f4;
   margin-bottom: 12px;
 }
 .host-content:hover .content-host-button {

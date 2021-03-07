@@ -1,23 +1,28 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
-<style lang="scss" scoped>
-@import "./assets/styles/init.css";
-$color_one: #2b2e43;
-$color_two: #2f3247;
-$color_three: #737684;
-$color_four: #25514d;
-$color_five: #00cd69;
+<script>
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+export default {
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.commit('setUser', user);
+      }
+    });
+  },
+};
+</script>
+
+<style lang="scss" >
+@import './assets/styles/init.scss';
 
 #app {
   background: $color_one;
 }
-html {
-  height: 100%;
-  overflow-y: auto;
-}
-
 </style>
