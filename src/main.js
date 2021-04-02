@@ -4,8 +4,9 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Vue from 'vue';
 // vuesax
 import Vuesax from 'vuesax';
-import Buefy from 'buefy';
+import { Select, Field, Slider } from 'buefy';
 
+import VueCropper from 'vue-cropper';
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
@@ -17,9 +18,11 @@ Vue.config.productionTip = false; // Vuesax styles
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
 
+Vue.use(VueCropper);
 Vue.use(Vuesax);
-Vue.use(Buefy);
-
+Vue.use(Select);
+Vue.use(Field);
+Vue.use(Slider);
 let app;
 
 fb.auth.onAuthStateChanged(() => {

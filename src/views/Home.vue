@@ -7,35 +7,20 @@
           <div class="content-host-button roboto-medium">Host</div>
           <div class="content-container">
             <div class="content-text">
-              <h1 class="content-title roboto-medium">Discord Voice Link</h1>
-              <h3 class="content-subtitle roboto-medium">
-                Copy the discord voice channel link
-              </h3>
-            </div>
-            <input type="text" class="content-input" v-model="voiceLink" />
-          </div>
-          <div class="content-container">
-            <div class="content-text">
               <h1 class="content-title roboto-medium">Needed Players</h1>
               <h3 class="content-subtitle roboto-medium">
                 select the amount of extra players needed for your party
               </h3>
             </div>
-            <input
-              type="range"
-              class="content-input"
-              v-model="players"
-              min="1"
-              max="5"
-            />
+            <b-slider :min="1" :max="5" ticks v-model="players" rounded></b-slider>
           </div>
           <div class="content-container">
-            <button class="content-save roboto-medium" >
-              save
+            <button class="content-create roboto-medium" >
+              create
             </button>
           </div>
         </div>
-        <button class="party-type-button party-type-join roboto-medium">
+        <button class="party-type-button party-type-join roboto-medium" @click="join">
           Join
         </button>
       </div>
@@ -44,6 +29,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import topNav from '../components/nav.vue';
 
 export default {
@@ -52,8 +38,19 @@ export default {
   },
   data: () => ({
     voiceLink: '',
-    players: 0,
+    players: 1,
   }),
+  methods: {
+    join() {
+      this.$router.push('crew/123456789');
+    },
+    host() {
+
+    },
+  },
+  computed: {
+    ...mapActions(['joinGame', 'hostGame']),
+  },
 };
 </script>
 
@@ -120,11 +117,11 @@ export default {
   height: 38px;
   border: none;
   border-radius: 12px;
-  padding: 0px 8px;
+  padding: 0px 12px;
   background: #2b2e43;
   color: white;
 }
-.content-save {
+.content-create {
   width: 100%;
   height: 45px;
   border: none;

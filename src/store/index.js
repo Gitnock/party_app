@@ -6,9 +6,8 @@ import getters from './getters';
 
 Vue.use(Vuex);
 
-const initialState = () => ({ user: null, error: null, userProfile: {} });
 export default new Vuex.Store({
-  state: initialState(),
+  state: { user: null, error: null, userProfile: {} },
   mutations,
   actions,
   getters,

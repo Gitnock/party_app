@@ -13,6 +13,7 @@ export default {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.commit('setUser', user);
+        this.$store.dispatch('bindUserProfileRef');
       }
     });
   },

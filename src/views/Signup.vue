@@ -120,7 +120,7 @@
                       v-on:click="googleauth"
                     >
                       <span class="icon">
-                        <i class="fab fa-google" />
+                        <i class="bx bxl-google" style="color: #ffffff"></i>
                       </span>
                     </button>
                   </div>
@@ -352,16 +352,24 @@ export default {
       email: '',
       password: '',
       error: '',
-      name: '',
+      username: '',
     };
   },
   methods: {
     ...mapActions(['signUpaction', 'googleAuthAction']),
     emailauth() {
-      this.signUpAction({ email: this.email, password: this.password, name: this.name });
+      this.signUpAction({
+        email: this.email,
+        password: this.password,
+        username: this.username,
+      }).then(() => {
+        this.$router.push('/');
+      });
     },
     googleauth() {
-      this.googleAuthAction();
+      this.googleAuthAction().then(() => {
+        this.$router.push('/');
+      });
     },
   },
   mounted() {
