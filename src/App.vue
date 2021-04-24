@@ -14,6 +14,7 @@ export default {
       if (user) {
         this.$store.commit('setUser', user);
         this.$store.dispatch('bindUserProfileRef');
+        this.$store.dispatch('bindGameRef');
       }
     });
   },

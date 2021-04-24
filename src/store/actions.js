@@ -2,8 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { firestoreAction } from 'vuexfire';
 import {
-  playersCollection,
-  roomsCollection,
+  gamesCollection,
   usersCollection,
 } from '../firebaseConfig';
 
@@ -108,53 +107,8 @@ const actions = {
   },
   // Profile
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
-  // host or join
-  joinGame(payload) {
-    const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-    const playerRef = playersCollection.doc();
-    const playerId = playerRef.id;
-    return new Promise((res, rej) => {
-      playersCollection
-        .doc(playerId)
-        .set({
-          userId: this.currentUser.uid,
-          game: payload.gameId,
-          createdAt: myTimestamp,
-        })
-        .then(() => {
-          playersCollection.doc(playerId).onSnapshot((snap) => {
-            const { roomId } = snap.data();
-            if (roomId !== '') {
-              roomsCollection.doc(roomId).onSnapshot((snapShot) => {
-                res(snapShot.data().voiceLink);
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          rej(error);
-        });
-    });
-  },
-  hostGame(payload) {
-    const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-    const roomRef = roomsCollection.doc();
-    return new Promise((res, rej) => {
-      roomsCollection
-        .set(roomRef, {
-          createdAt: myTimestamp,
-          game: payload.game,
-          full: false,
-          size: payload.players,
-        })
-        .then(() => {
-          res();
-        })
-        .catch((error) => {
-          rej(error);
-        });
-    });
-  },
+  // games list
+  bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
 };
 
 export default actions;

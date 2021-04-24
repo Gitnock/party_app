@@ -9,18 +9,25 @@
             <div class="content-text">
               <h1 class="content-title roboto-medium">Needed Players</h1>
               <h3 class="content-subtitle roboto-medium">
-                select the amount of extra players needed for your party
+                How big is your party going to be?
               </h3>
             </div>
-            <b-slider :min="1" :max="5" ticks v-model="players" rounded></b-slider>
+            <b-slider
+              :min="2"
+              :max="getGame.maxPlayers"
+              ticks
+              v-model="players"
+              rounded
+            ></b-slider>
           </div>
           <div class="content-container">
-            <button class="content-create roboto-medium" >
-              create
-            </button>
+            <button class="content-create roboto-medium" @click="host">create</button>
           </div>
         </div>
-        <button class="party-type-button party-type-join roboto-medium" @click="join">
+        <button
+          class="party-type-button party-type-join roboto-medium"
+          @click="join"
+        >
           Join
         </button>
       </div>
@@ -29,8 +36,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import firebase from 'firebase/app';
+import { mapActions, mapGetters } from 'vuex';
 import topNav from '../components/nav.vue';
+import { playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
   components: {
@@ -38,18 +47,51 @@ export default {
   },
   data: () => ({
     voiceLink: '',
-    players: 1,
+    players: 2,
   }),
   methods: {
+    ...mapActions(['hostGameAction']),
     join() {
-      this.$router.push('crew/123456789');
+      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      const playerRef = playersCollection.doc();
+      const playerId = playerRef.id;
+      playersCollection
+        .doc(playerId)
+        .set({
+          userId: this.getUser.uid,
+          game: this.getGame.gameId,
+          createdAt: myTimestamp,
+          size: this.players,
+        })
+        .then(() => {
+          playersCollection.doc(playerId).onSnapshot((snap) => {
+            const { roomId } = snap.data();
+            if (roomId !== '') {
+              roomsCollection.doc(roomId).onSnapshot((snapShot) => {
+                const isfull = snapShot.data().full;
+                if (isfull) {
+                  this.$router.push(`/crew/${roomId}`);
+                }
+              });
+            }
+          });
+        });
     },
     host() {
+      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      roomsCollection.add({
+        createdAt: myTimestamp,
+        game: this.getGame.gameId,
+        players: [this.getUser.uid],
+        size: this.players,
+      })
+        .then(() => {
 
+        });
     },
   },
   computed: {
-    ...mapActions(['joinGame', 'hostGame']),
+    ...mapGetters(['getUser', 'getGame']),
   },
 };
 </script>
@@ -70,7 +112,7 @@ export default {
   display: flex;
   flex-direction: column;
   // width: 798px;
-  padding:12px;
+  padding: 12px;
 }
 .party-type-button {
   width: 100%;

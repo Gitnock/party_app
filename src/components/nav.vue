@@ -1,23 +1,34 @@
 <template>
   <vs-navbar color="#2F3247" text-white square center-collapsed>
-          <template #left>
-            <div class="partyapp-logo-container">
-              <img
-                src="@/assets/partyapp_logo.svg"
-                alt=""
-                class="partyapp-logo"
-                @click="goHome"
-              />
-            </div>
-          </template>
-          <template #right>
-            <div class="userTab">
-              <userTab v-if="isUserAuth"/>
-              <button v-else @click="openLogin">Log in </button>
-            </div>
-          </template>
-        </vs-navbar>
-
+    <template #left>
+      <div class="partyapp-logo-container">
+        <img
+          src="@/assets/partyapp_logo.svg"
+          alt=""
+          class="partyapp-logo"
+          @click="goHome"
+        />
+      </div>
+    </template>
+    <div>
+      <select v-model="curGame" @change="setGame">
+         <option :value={} disabled>Select Game</option>
+        <option
+          v-for="game in getGames"
+          v-bind:key="game.gameId"
+          v-bind:value="game"
+        >
+          {{ game.gameName }}
+        </option>
+      </select>
+    </div>
+    <template #right>
+      <div class="userTab">
+        <userTab v-if="isUserAuth" />
+        <button v-else @click="openLogin">Log in</button>
+      </div>
+    </template>
+  </vs-navbar>
 </template>
 
 <script>
@@ -27,7 +38,7 @@ import userTab from './user-tab.vue';
 export default {
   name: 'top_nav',
   data: () => ({
-    game: 'Valorant',
+    curGame: {},
     activeProfile: false,
     settingScreen: false,
   }),
@@ -41,12 +52,15 @@ export default {
     goHome() {
       this.$router.push('/');
     },
+    setGame() {
+      this.$store.commit('setGame', this.curGame);
+    },
   },
   components: {
     userTab,
   },
   computed: {
-    ...mapGetters(['isUserAuth']),
+    ...mapGetters(['isUserAuth', 'getGames']),
   },
 };
 </script>

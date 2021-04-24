@@ -26,13 +26,7 @@
 
         <div class="content-avatar-bg">
           <vs-avatar for="upload" size="132" circle color="#224168">
-            <box-icon
-              name="plus"
-              type="solid"
-              color="#0291F4"
-              style="width: 24px"
-              v-if="!getProfile.avatar"
-            ></box-icon>
+            <i class='bx bx-plus' style='color:#0291f4'  v-if="!getProfile.avatar"></i>
             <img
               v-bind:src="`${getProfile.avatar}`"
               v-if="getProfile.avatar"
@@ -132,6 +126,7 @@ export default {
     },
     // eslint-disable-next-line consistent-return
     setImage(e) {
+      console.log('HELOOOOOO');
       this.isEdit = true;
       const file = e.target.files[0];
 
@@ -226,4 +221,5 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/settings.scss';
+
 </style>

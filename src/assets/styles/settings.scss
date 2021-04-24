@@ -36,6 +36,26 @@
   ::placeholder {
     color: white;
   }
+
+  //IMAGE UPLOAD
+  .content-avatar-bg {
+    width: 241px;
+    height: 182px;
+    background-color: #2f3247;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  //image input full background
+  .upload-input {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
   
   //google signin
   .content-google{

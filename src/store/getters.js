@@ -11,6 +11,12 @@ const getters = {
   getProfile(state) {
     return state.userProfile;
   },
+  getGames(state) {
+    return state.gamesList;
+  },
+  getGame(state) {
+    return state.currentGame;
+  },
 };
 
 export default getters;

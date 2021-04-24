@@ -7,6 +7,9 @@ const mutations = {
   setError(state, payload) {
     state.error = payload;
   },
+  setGame(state, payload) {
+    state.currentGame = payload;
+  },
   ...vuexfireMutations,
 };
 
