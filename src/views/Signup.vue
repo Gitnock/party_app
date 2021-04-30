@@ -59,7 +59,7 @@
                     >
                       <vs-input
                         type="text"
-                        v-model="name"
+                        v-model="username"
                         placeholder="Username"
                         maxlength="15"
                       />
@@ -356,7 +356,6 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['signUpaction', 'googleAuthAction']),
     emailauth() {
       this.signUpAction({
         email: this.email,
@@ -371,6 +370,7 @@ export default {
         this.$router.push('/');
       });
     },
+    ...mapActions(['signUpAction', 'googleAuthAction']),
   },
   mounted() {
     // lazy loading image

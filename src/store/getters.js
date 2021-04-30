@@ -17,6 +17,9 @@ const getters = {
   getGame(state) {
     return state.currentGame;
   },
+  getRoom(state) {
+    return state.room;
+  },
 };
 
 export default getters;

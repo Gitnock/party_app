@@ -70,6 +70,7 @@ export default {
               roomsCollection.doc(roomId).onSnapshot((snapShot) => {
                 const isfull = snapShot.data().full;
                 if (isfull) {
+                  this.$store.commit('setRoom', { roomId });
                   this.$router.push(`/crew/${roomId}`);
                 }
               });
@@ -78,20 +79,22 @@ export default {
         });
     },
     host() {
-      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-      roomsCollection.add({
-        createdAt: myTimestamp,
+      this.hostGameAction({
         game: this.getGame.gameId,
         players: [this.getUser.uid],
         size: this.players,
-      })
-        .then(() => {
-
+      }).then(() => {
+        roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
+          const isfull = snapShot.data().full;
+          if (isfull) {
+            this.$router.push(`/crew/${this.getRoom}`);
+          }
         });
+      });
     },
   },
   computed: {
-    ...mapGetters(['getUser', 'getGame']),
+    ...mapGetters(['getUser', 'getGame', 'getRoom']),
   },
 };
 </script>

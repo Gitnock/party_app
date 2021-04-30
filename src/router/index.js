@@ -33,7 +33,7 @@ const routes = [
     component: Crew,
     children: [
       {
-        path: '/crew/:id',
+        path: '/crew/:roomId',
         name: 'party',
         component: Party,
       },

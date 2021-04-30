@@ -110,9 +110,8 @@ export default {
   methods: {
     ...mapActions(['signInAction', 'googleAuthAction']),
     emailauth() {
-      this.s({ email: this.email, password: this.password }).then(() => {
-        // this.$router.push('/');
-        console.log('IT WORKED>');
+      this.signInAction({ email: this.email, password: this.password }).then(() => {
+        this.$router.push('/');
       });
     },
     googleauth() {

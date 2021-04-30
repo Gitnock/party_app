@@ -23,8 +23,4 @@ export default {
 
 <style lang="scss" >
 @import './assets/styles/init.scss';
-
-#app {
-  background: $color_one;
-}
 </style>

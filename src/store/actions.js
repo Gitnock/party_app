@@ -3,6 +3,8 @@ import 'firebase/auth';
 import { firestoreAction } from 'vuexfire';
 import {
   gamesCollection,
+  // playersCollection,
+  roomsCollection,
   usersCollection,
 } from '../firebaseConfig';
 
@@ -109,6 +111,56 @@ const actions = {
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
   // games list
   bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
+  hostGameAction({ commit }, payload) {
+    const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+    return new Promise((res, rej) => {
+      roomsCollection.add({
+        createdAt: myTimestamp,
+        game: payload.game,
+        players: payload.players,
+        size: payload.size,
+        full: false,
+      })
+        .then((docRef) => {
+          commit('setRoom', docRef.id);
+          res();
+        })
+        .catch((error) => {
+          rej(error);
+        });
+    });
+  },
+  // joinGameAction({ commit }, payload) {
+  //   const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+  //   const playerRef = playersCollection.doc();
+  //   const playerId = playerRef.id;
+  //   return new Promise((res, rej) => {
+  //     playersCollection
+  //       .doc(playerId)
+  //       .set({
+  //         userId: payload.userId,
+  //         game: payload.game,
+  //         createdAt: myTimestamp,
+  //         size: payload.size,
+  //       })
+  //       .then(() => {
+  //         playersCollection.doc(playerId).onSnapshot((snap) => {
+  //           const { roomId } = snap.data();
+  //           if (roomId !== '') {
+  //             roomsCollection.doc(roomId).onSnapshot((snapShot) => {
+  //               const isfull = snapShot.data().full;
+  //               if (isfull) {
+  //                 commit('setRoom', { roomId });
+  //                 res();
+  //               }
+  //             });
+  //           }
+  //         });
+  //       }).catch((error) => {
+  //         rej(error);
+  //       });
+  //   });
+  // },
 };
 
 export default actions;

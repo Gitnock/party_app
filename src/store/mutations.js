@@ -10,6 +10,9 @@ const mutations = {
   setGame(state, payload) {
     state.currentGame = payload;
   },
+  setRoom(state, payload) {
+    state.room = payload;
+  },
   ...vuexfireMutations,
 };
 
