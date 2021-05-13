@@ -13,6 +13,9 @@ const mutations = {
   setRoom(state, payload) {
     state.room = payload;
   },
+  setEmail(state, payload) {
+    state.email = payload;
+  },
   ...vuexfireMutations,
 };
 

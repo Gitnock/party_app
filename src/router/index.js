@@ -7,6 +7,7 @@ import Signin from '@/views/Signin.vue';
 import Signup from '@/views/Signup.vue';
 import Party from '@/views/Party.vue';
 import Crew from '@/views/Crew.vue';
+import Index from '@/views/Index.vue';
 import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
@@ -14,7 +15,13 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'index',
+    component: Index,
+  },
+  {
+    path: '/app',
+    name: 'home',
+    meta: { requiresAuth: true },
     component: Home,
   },
   {

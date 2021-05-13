@@ -58,15 +58,19 @@ const actions = {
     });
   },
   signOutAction({ commit }) {
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        commit('setUser', null);
-      })
-      .catch((error) => {
-        commit('setError', error.message);
-      });
+    return new Promise((res, rej) => {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          commit('setUser', null);
+          res();
+        })
+        .catch((error) => {
+          commit('setError', error.message);
+          rej(error);
+        });
+    });
   },
   googleAuthAction({ commit }) {
     return new Promise((res, rej) => {

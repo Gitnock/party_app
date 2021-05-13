@@ -46,6 +46,7 @@
 import settingsName from '@/components/settings/settings-name.vue';
 import settingsAccount from '@/components/settings/settings-account.vue';
 import settingsPassword from '@/components/settings/settings-password.vue';
+import { mapActions } from 'vuex';
 
 export default {
   components: {
@@ -63,12 +64,16 @@ export default {
   methods: {
     signOut() {
       this.$store.dispatch('signOutAction');
+      this.signOutAction().then(() => {
+        this.$router.push('/signin');
+      });
     },
     classObject(num) {
       return {
         selected: this.settingPosition === num,
       };
     },
+    ...mapActions(['signOutAction']),
   },
 };
 </script>

@@ -321,7 +321,7 @@ header {
 import { ValidationProvider, extend } from 'vee-validate';
 import { required, email, min } from 'vee-validate/dist/rules';
 
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 // No message specified.
 extend('email', email);
@@ -362,15 +362,18 @@ export default {
         password: this.password,
         username: this.username,
       }).then(() => {
-        this.$router.push('/');
+        this.$router.push('/app');
       });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
-        this.$router.push('/');
+        this.$router.push('/app');
       });
     },
     ...mapActions(['signUpAction', 'googleAuthAction']),
+  },
+  computed: {
+    ...mapGetters(['getEmail']),
   },
   mounted() {
     // lazy loading image
@@ -382,6 +385,9 @@ export default {
     img.onload = () => {
       this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
     };
+    if (this.getEmail) {
+      this.email = this.getEmail;
+    }
   },
 };
 </script>

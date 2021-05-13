@@ -20,6 +20,9 @@ const getters = {
   getRoom(state) {
     return state.room;
   },
+  getEmail(state) {
+    return state.email;
+  },
 };
 
 export default getters;

@@ -111,12 +111,12 @@ export default {
     ...mapActions(['signInAction', 'googleAuthAction']),
     emailauth() {
       this.signInAction({ email: this.email, password: this.password }).then(() => {
-        this.$router.push('/');
+        this.$router.push('/app');
       });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
-        this.$router.push('/');
+        this.$router.push('/app');
         // console.log('IT WORKED>');
       });
       // this.$store.dispatch('googleAuthAction').then(() => {

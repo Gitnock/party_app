@@ -40,7 +40,7 @@
                             alt="profile image"
                         />
                         <template v-if="!getProfile.avatar" #text>
-                            {{ getProfile.username }}
+                            {{  getProfile.username}}
                         </template>
                         </vs-avatar>
                     </div>

@@ -50,7 +50,7 @@ export default {
       this.signOutAction();
     },
     goHome() {
-      this.$router.push('/');
+      this.$router.push('/app');
     },
     setGame() {
       this.$store.commit('setGame', this.curGame);

@@ -3,10 +3,7 @@
     <div class="party-content">
       <div class="columns is-multiline">
         <div class="column">
-          <button>call</button>
-        </div>
-        <div class="column">
-          <button>answer</button>
+          <button @click="hangUp">hangup</button>
         </div>
         <div class="column">
           <audio controls ref="localAudio" muted />
@@ -14,8 +11,9 @@
       </div>
       <div>
         <div v-for="peer in peers" :key="peer.userId">
-          dfdf
-          <audio ref="localAudio" :src="peer.peerStream" />
+          <div>{{ peer.userId }}</div>
+          <!-- srcObject is a modifier not a html attribute, so you need to write -->
+          <audio autoplay controls :srcObject.prop="peer.peerStream" />
         </div>
       </div>
     </div>
@@ -34,7 +32,7 @@ const configuration = {
   ],
   iceCandidatePoolSize: 10,
 };
-// const pc = new RTCPeerConnection(configuration);
+
 let localStream = null;
 export default {
   data: () => ({
@@ -50,6 +48,7 @@ export default {
         .then((snap) => {
           if (snap.exists) {
             this.registerNewConnections();
+            this.listenNewConnections();
           } else {
             this.$router.push('/');
             this.openNotification(
@@ -84,103 +83,12 @@ export default {
         );
       }
 
-      // Push tracks from local stream to peer connection
-      // localStream.getTracks().forEach((track) => {
-      //   pc.addTrack(track, localStream);
-      // });
-
       // Show stream in HTML mic
       this.$refs.localAudio.srcObject = stream;
       // mute local audio
       this.$refs.localAudio.volume = 0;
       localStream = stream;
     },
-    // CREAT AN OFFER OR CALL
-    // async callOther() {
-    //   // reference Firestore collection for signaling
-    //   const callDoc = db
-    //     .collection('calls')
-    //     .doc(this.callId ? this.callId : '123456789');
-    //   const offerCandidates = callDoc.collection('offerCandidates');
-    //   const answerCandidates = callDoc.collection('answerCandidates');
-
-    //   // Get candidates for caller, save to db
-    //   pc.addEventListener('icecandidate', (event) => {
-    //     if (event.candidate) {
-    //       const json = event.candidate.toJSON();
-    //       offerCandidates.add(json);
-    //     }
-    //   });
-
-    //   // create offer
-    //   const offerDescription = await pc.createOffer();
-    //   await pc.setLocalDescription(offerDescription);
-
-    //   const offer = {
-    //     sdp: offerDescription.sdp,
-    //     type: offerDescription.type,
-    //   };
-
-    //   await callDoc.set({ offer });
-
-    //   // Listen for remote answer
-    //   callDoc.onSnapshot((snapshot) => {
-    //     const data = snapshot.data();
-    //     if (!pc.currentRemoteDescription && data?.answer) {
-    //       const answerDescription = new RTCSessionDescription(data.answer);
-    //       pc.setRemoteDescription(answerDescription);
-    //     }
-    //   });
-
-    //   // When answered, add candidate to peer connection
-    //   answerCandidates.onSnapshot((snapshot) => {
-    //     snapshot.docChanges().forEach((change) => {
-    //       if (change.type === 'added') {
-    //         const candidate = new RTCIceCandidate(change.doc.data());
-    //         pc.addIceCandidate(candidate);
-    //       }
-    //     });
-    //   });
-    // },
-    // ANSWER CALL WITH UNIQUE ID
-    // async answerCall() {
-    //   const callDoc = db.collection('calls').doc(this.callId);
-    //   const answerCandidates = callDoc.collection('answerCandidates');
-    //   const offerCandidates = callDoc.collection('offerCandidates');
-
-    //   pc.addEventListener('icecandidate', (event) => {
-    //     if (event.candidate) {
-    //       const json = event.candidate.toJSON();
-    //       answerCandidates.add(json);
-    //     }
-    //   });
-    //   const callData = (await callDoc.get()).data();
-
-    //   const offerDescription = callData.offer;
-    //   await pc.setRemoteDescription(
-    //     new RTCSessionDescription(offerDescription),
-    //   );
-
-    //   const answerDescription = await pc.createAnswer();
-    //   await pc.setLocalDescription(answerDescription);
-
-    //   const answer = {
-    //     type: answerDescription.type,
-    //     sdp: answerDescription.sdp,
-    //   };
-
-    //   await callDoc.update({ answer });
-
-    //   offerCandidates.onSnapshot((snapshot) => {
-    //     snapshot.docChanges().forEach((change) => {
-    //       console.log(change);
-    //       if (change.type === 'added') {
-    //         const data = change.doc.data();
-    //         pc.addIceCandidate(new RTCIceCandidate(data));
-    //       }
-    //     });
-    //   });
-    // },
     registerNewConnections() {
       roomsCollection
         .doc(this.roomId)
@@ -191,13 +99,9 @@ export default {
           inRoom.forEach((userId) => {
             if (userId !== this.getUser.uid) {
               this.initWebRTC(userId);
-              const remoteStream = new MediaStream();
+              const remoteStream = new MediaStream(); // edit1
               this.peers[userId].peerStream = remoteStream;
-              this.createOffer(
-                this.peers[userId],
-                this.getUser.uid,
-                userId,
-              );
+              this.createOffer(this.peers[userId], this.getUser.uid, userId);
             }
           });
         });
@@ -237,9 +141,7 @@ export default {
         from,
         to,
       };
-      await connectionRef.set(connectionWithOffer).then(() => {
-        console.log('Created offer:', offer);
-      });
+      await connectionRef.set(connectionWithOffer);
 
       // ====================
       //      RECEIVING
@@ -278,17 +180,6 @@ export default {
 
       // connectedUsers[activeUser.userId].peerConnection = peerConnection;
     },
-    // async createAnswer(peer, from, to) {
-    //   const connectionsCollection = roomsCollection
-    //     .doc(this.roomId)
-    //     .collection('connections');
-
-    //   const connectionRef = connectionsCollection.doc(
-    //     `user${from}user${to}`,
-    //   );
-
-    // },
-    // onAddStream(peer) {},
     async listenNewConnections() {
       const myId = this.getUser.uid;
       const roomRef = roomsCollection.doc(this.roomId);
@@ -298,14 +189,13 @@ export default {
             const data = change.doc.data();
             if (data.to === myId) {
               this.initWebRTC(data.from);
-              const remoteStream = new MediaStream();
+              const remoteStream = new MediaStream(); // edit1
               this.peers[data.from].peerStream = remoteStream;
 
               console.log(
                 'Create PeerConnection with configuration: ',
                 configuration,
               );
-              const peerConnection = new RTCPeerConnection(configuration);
 
               const connectionsCollection = roomRef.collection('connections');
               const connectionRef = connectionsCollection.doc(
@@ -315,11 +205,11 @@ export default {
               // registerPeerConnectionListeners(peerConnection, data.from);
 
               localStream.getTracks().forEach((track) => {
-                peerConnection.addTrack(track, localStream);
+                this.peers[data.from].pc.addTrack(track, localStream);
               });
 
               // listening for remote tracks
-              peerConnection.addEventListener('track', (event) => {
+              this.peers[data.from].pc.addEventListener('track', (event) => {
                 console.log('Got remote track:', event.streams[0]);
                 event.streams[0].getTracks().forEach((track) => {
                   console.log('Add a track to the remoteStream:', track);
@@ -331,25 +221,28 @@ export default {
               const calleeCandidatesCollection = connectionRef.collection(
                 'calleeCandidates',
               );
-              peerConnection.addEventListener('icecandidate', (event) => {
-                if (!event.candidate) {
-                  console.log('Got final candidate!');
-                  return;
-                }
-                console.log('Got candidate: ', event.candidate);
-                calleeCandidatesCollection.add(event.candidate.toJSON());
-              });
+              this.peers[data.from].pc.addEventListener(
+                'icecandidate',
+                (event) => {
+                  if (!event.candidate) {
+                    console.log('Got final candidate!');
+                    return;
+                  }
+                  console.log('Got candidate: ', event.candidate);
+                  calleeCandidatesCollection.add(event.candidate.toJSON());
+                },
+              );
 
               // Code for receiving offer and then creating and sending SDP answer below
               const connectionSnapshot = await connectionRef.get();
               const { offer } = connectionSnapshot.data();
               console.log('Got offer:', offer);
-              await peerConnection.setRemoteDescription(
+              await this.peers[data.from].pc.setRemoteDescription(
                 new RTCSessionDescription(offer),
               );
-              const answer = await peerConnection.createAnswer();
+              const answer = await this.peers[data.from].pc.createAnswer();
               console.log('Created answer:', answer);
-              await peerConnection.setLocalDescription(answer);
+              await this.peers[data.from].pc.setLocalDescription(answer);
               const roomWithAnswer = {
                 answer: {
                   type: answer.type,
@@ -359,23 +252,22 @@ export default {
               await connectionRef.update(roomWithAnswer);
 
               // Listening for remote ICE candidates below
+
               connectionRef
                 .collection('callerCandidates')
                 .onSnapshot((snap) => {
-                  snap.docChanges().forEach(async (change2) => {
-                    if (change2.type === 'added') {
-                      const data2 = change.doc.data();
-                      console.log(
-                        `Got new remote ICE candidate: ${JSON.stringify(data2)}`,
-                      );
-                      await this.peers[data.from].addIceCandidate(
+                  snap.docChanges().forEach((change2) => {
+                    // console.log(change2);
+                    if (change.type === 'added') {
+                      const data2 = change2.doc.data();
+                      this.peers[data.from].pc.addIceCandidate(
                         new RTCIceCandidate(data2),
                       );
                     }
                   });
                 });
 
-              // connectedUsers[data.from].peerConnection = peerConnection;
+              // this.peers[data.from].pc = peerConnection;
             }
           }
         });
@@ -399,6 +291,20 @@ export default {
         color,
       });
     },
+    hangUp() {
+      const tracks = this.$refs.localAudio.srcObject.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+      });
+      Object.keys(this.peers).forEach((user) => {
+        if (this.peers[user].peerStream) {
+          this.peers[user].peerStream
+            .getTracks()
+            .forEach((track) => track.stop());
+        }
+        if (this.peers[user].pc) this.peers[user].pc.close();
+      });
+    },
   },
   computed: {
     ...mapGetters(['getUser']),
@@ -409,7 +315,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .party-content {
   overflow: hidden;
   height: 100vh;
