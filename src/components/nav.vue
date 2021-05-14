@@ -73,7 +73,7 @@ export default {
   justify-content: center;
 }
 .partyapp-logo {
-  height: 38px;
+  // height: 38px;
 }
 .userTab {
   padding-right: 43px;

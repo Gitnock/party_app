@@ -14,7 +14,7 @@
           <div class="roboto-medium signin-btn clickable" @click="openSignin">
             Sign in
           </div>
-          <button class="request-btn roboto-medium" @click="focusRequest">
+          <button class="request-btn roboto-medium nav-request-btn" @click="focusRequest">
             Request access
           </button>
         </nav>
@@ -159,7 +159,7 @@ export default {
         element.classList.add('border-Anime');
         setTimeout(() => {
           element.classList.remove('border-Anime');
-        }, 4000);
+        }, 2000);
       }
     },
   },

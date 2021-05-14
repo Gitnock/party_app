@@ -305,6 +305,10 @@ export default {
         if (this.peers[user].pc) this.peers[user].pc.close();
       });
     },
+    userJoined() {
+      // const roomRef = roomsCollection.doc(this.roomId);
+
+    },
   },
   computed: {
     ...mapGetters(['getUser']),
