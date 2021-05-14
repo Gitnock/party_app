@@ -28,7 +28,7 @@
           playing the games you love.
         </h2>
         <div class="request-container">
-          <div class="request-input-container">
+          <div class="request-input-container" id="emailContainer">
             <input
               type="text"
               class="request-input roboto-regular"
@@ -122,6 +122,7 @@
 export default {
   data: () => ({
     email: '',
+    inputConChanged: true,
   }),
   methods: {
     openSignup() {
@@ -154,7 +155,11 @@ export default {
         this.$router.push('/signup');
       } else {
         this.$refs.email.focus();
-        this.openNotification('Error', 'Enter your email', 'danger');
+        const element = document.getElementById('emailContainer');
+        element.classList.add('border-Anime');
+        setTimeout(() => {
+          element.classList.remove('border-Anime');
+        }, 4000);
       }
     },
   },
@@ -274,6 +279,9 @@ export default {
   border: none;
   color: white;
   font-size: 16px;
+}
+.border-Anime {
+  animation: colorToDanger 2s 1;
 }
 
 // MID
@@ -398,6 +406,15 @@ export default {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes colorToDanger {
+  0% {
+    border-color: red;
+  }
+  100% {
+    border-color: rgba(183, 187, 213, 0.4);
   }
 }
 </style>
