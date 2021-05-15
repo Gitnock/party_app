@@ -71,7 +71,9 @@ export default {
                 const isfull = snapShot.data().full;
                 if (isfull) {
                   this.$store.commit('setRoom', { roomId });
-                  this.$router.push(`/crew/${roomId}`);
+                  if (this.$route.path !== `/crew/${roomId}`) {
+                    this.$router.push(`/crew/${roomId}`);
+                  }
                 }
               });
             }
@@ -87,7 +89,10 @@ export default {
         roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
           const isfull = snapShot.data().full;
           if (isfull) {
-            this.$router.push(`/crew/${this.getRoom}`);
+            // this.$router.push(`/crew/${this.getRoom}`);
+            if (this.$route.path !== `/crew/${this.getRoom}`) {
+              this.$router.push(`/crew/${this.getRoom}`);
+            }
           }
         });
       });

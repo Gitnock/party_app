@@ -22,6 +22,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import firebase from 'firebase/app';
 import { roomsCollection } from '../firebaseConfig';
 
 const configuration = {
@@ -47,10 +48,11 @@ export default {
         .get()
         .then((snap) => {
           if (snap.exists) {
+            this.userJoined();
             this.registerNewConnections();
             this.listenNewConnections();
           } else {
-            this.$router.push('/');
+            this.$router.push('/app');
             this.openNotification(
               'Error',
               `Party doesn't Exist${this.roomId}`,
@@ -95,7 +97,7 @@ export default {
         .get()
         .then((snap) => {
           const roomData = snap.data();
-          const inRoom = roomData.players;
+          const inRoom = roomData.activeUsers;
           inRoom.forEach((userId) => {
             if (userId !== this.getUser.uid) {
               this.initWebRTC(userId);
@@ -306,8 +308,10 @@ export default {
       });
     },
     userJoined() {
-      // const roomRef = roomsCollection.doc(this.roomId);
-
+      const roomRef = roomsCollection.doc(this.roomId);
+      roomRef.update({
+        activeUsers: firebase.firestore.FieldValue.arrayUnion(this.getUser.uid),
+      });
     },
   },
   computed: {
