@@ -21,7 +21,9 @@
             ></b-slider>
           </div>
           <div class="content-container">
-            <button class="content-create roboto-medium" @click="host">create</button>
+            <button class="content-create roboto-medium" @click="host">
+              create
+            </button>
           </div>
         </div>
         <button
@@ -86,15 +88,18 @@ export default {
         players: [this.getUser.uid],
         size: this.players,
       }).then(() => {
-        roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
-          const isfull = snapShot.data().full;
-          if (isfull) {
-            // this.$router.push(`/crew/${this.getRoom}`);
-            if (this.$route.path !== `/crew/${this.getRoom}`) {
-              this.$router.push(`/crew/${this.getRoom}`);
-            }
-          }
-        });
+        if (this.$route.path !== `/crew/${this.getRoom}`) {
+          this.$router.push(`/crew/${this.getRoom}`);
+        }
+        // roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
+        //   const isfull = snapShot.data().full;
+        //   if (isfull) {
+        //     // this.$router.push(`/crew/${this.getRoom}`);
+        //     if (this.$route.path !== `/crew/${this.getRoom}`) {
+        //       this.$router.push(`/crew/${this.getRoom}`);
+        //     }
+        //   }
+        // });
       });
     },
   },

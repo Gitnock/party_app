@@ -22,8 +22,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import firebase from 'firebase/app';
-import { roomsCollection } from '../firebaseConfig';
+// import firebase from 'firebase/app';
+import { db, roomsCollection } from '../firebaseConfig';
 
 const configuration = {
   iceServers: [
@@ -34,14 +34,15 @@ const configuration = {
   iceCandidatePoolSize: 10,
 };
 
-let localStream = null;
 export default {
   data: () => ({
     roomId: '',
     peers: {},
+    localStream: undefined,
   }),
   methods: {
-    init() {
+    async init() {
+      await this.getUserMedia();
       this.roomId = this.$route.params.roomId;
       roomsCollection
         .doc(this.roomId)
@@ -49,7 +50,7 @@ export default {
         .then((snap) => {
           if (snap.exists) {
             this.userJoined();
-            this.registerNewConnections();
+            this.listenNewUsers();
             this.listenNewConnections();
           } else {
             this.$router.push('/app');
@@ -60,13 +61,11 @@ export default {
             );
           }
         });
-      this.getUserMedia();
     },
     async getUserMedia() {
-      let stream;
       try {
         // get user mic permissions and mic stream
-        stream = await navigator.mediaDevices.getUserMedia({
+        this.localStream = await navigator.mediaDevices.getUserMedia({
           video: false,
           audio: {
             sampleSize: 16,
@@ -86,16 +85,14 @@ export default {
       }
 
       // Show stream in HTML mic
-      this.$refs.localAudio.srcObject = stream;
+      this.$refs.localAudio.srcObject = this.localStream;
       // mute local audio
       this.$refs.localAudio.volume = 0;
-      localStream = stream;
     },
     registerNewConnections() {
       roomsCollection
         .doc(this.roomId)
-        .get()
-        .then((snap) => {
+        .onSnapshot((snap) => {
           const roomData = snap.data();
           const inRoom = roomData.activeUsers;
           inRoom.forEach((userId) => {
@@ -114,9 +111,11 @@ export default {
         .collection('connections');
 
       const connectionRef = connectionsCollection.doc(`user${from}user${to}`);
+
+      this.registerPeerConnectionListeners(peer.pc, to);
       // setting local track in connection
-      localStream.getTracks().forEach((track) => {
-        peer.pc.addTrack(track, localStream);
+      this.localStream.getTracks().forEach((track) => {
+        peer.pc.addTrack(track, this.localStream);
       });
 
       // Get candidates for caller, save to db
@@ -160,27 +159,25 @@ export default {
       // Listening for remote session description (answer) below
       connectionRef.onSnapshot(async (snapshot) => {
         const data = snapshot.data();
-        if (!peer.pc.currentRemoteDescription && data && data.answer) {
-          console.log('Got remote description: ', data.answer);
-          const rtcSessionDescription = new RTCSessionDescription(data.answer);
-          await peer.pc.setRemoteDescription(rtcSessionDescription);
+        if (!peer.pc.currentRemoteDescription && data.answer) {
+          console.log('Set remote description: ', data.answer);
+          const answer = new RTCSessionDescription(data.answer);
+          await peer.pc.setRemoteDescription(answer);
         }
       });
 
       // Listen for remote ICE candidates below
       connectionRef.collection('calleeCandidates').onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach(async (change) => {
+        snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            const data = change.doc.data();
+            const candidate = new RTCIceCandidate(change.doc.data());
+            peer.pc.addIceCandidate(candidate);
             console.log(
-              `Got new remote ICE candidate: ${JSON.stringify(data)}`,
+              `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
             );
-            await peer.pc.addIceCandidate(new RTCIceCandidate(data));
           }
         });
       });
-
-      // connectedUsers[activeUser.userId].peerConnection = peerConnection;
     },
     async listenNewConnections() {
       const myId = this.getUser.uid;
@@ -191,8 +188,7 @@ export default {
             const data = change.doc.data();
             if (data.to === myId) {
               this.initWebRTC(data.from);
-              const remoteStream = new MediaStream(); // edit1
-              this.peers[data.from].peerStream = remoteStream;
+              this.peers[data.from].peerStream = new MediaStream();
 
               console.log(
                 'Create PeerConnection with configuration: ',
@@ -204,10 +200,10 @@ export default {
                 `user${data.from}user${myId}`,
               );
 
-              // registerPeerConnectionListeners(peerConnection, data.from);
+              this.registerPeerConnectionListeners(this.peers[data.from].pc, data.from);
 
-              localStream.getTracks().forEach((track) => {
-                this.peers[data.from].pc.addTrack(track, localStream);
+              this.localStream.getTracks().forEach((track) => {
+                this.peers[data.from].pc.addTrack(track, this.localStream);
               });
 
               // listening for remote tracks
@@ -262,14 +258,14 @@ export default {
                     // console.log(change2);
                     if (change.type === 'added') {
                       const data2 = change2.doc.data();
-                      this.peers[data.from].pc.addIceCandidate(
-                        new RTCIceCandidate(data2),
-                      );
+                      if (this.peers[data.from].pc) {
+                        this.peers[data.from].pc.addIceCandidate(
+                          new RTCIceCandidate(data2),
+                        );
+                      }
                     }
                   });
                 });
-
-              // this.peers[data.from].pc = peerConnection;
             }
           }
         });
@@ -284,6 +280,30 @@ export default {
       });
       // this.onAddStream(this.peers[id]);
     },
+    registerPeerConnectionListeners(peerConnection, id) {
+      peerConnection.addEventListener('icegatheringstatechange', () => {
+        console.log(
+          `ICE gathering state changed: ${peerConnection.iceGatheringState}`,
+        );
+      });
+
+      peerConnection.addEventListener('connectionstatechange', () => {
+        console.log(`Connection state change: ${peerConnection.connectionState}`);
+        if (peerConnection.connectionState === 'disconnected') {
+          delete this.peers[id];
+        }
+      });
+
+      peerConnection.addEventListener('signalingstatechange', () => {
+        console.log(`Signaling state change: ${peerConnection.signalingState}`);
+      });
+
+      peerConnection.addEventListener('iceconnectionstatechange ', () => {
+        console.log(
+          `ICE connection state change: ${peerConnection.iceConnectionState}`,
+        );
+      });
+    },
     openNotification(title, text, color) {
       this.$vs.notification({
         // flat: true,
@@ -294,7 +314,7 @@ export default {
       });
     },
     hangUp() {
-      const tracks = this.$refs.localAudio.srcObject.getTracks();
+      const tracks = this.localStream.getTracks();
       tracks.forEach((track) => {
         track.stop();
       });
@@ -306,19 +326,53 @@ export default {
         }
         if (this.peers[user].pc) this.peers[user].pc.close();
       });
+      this.peers = {};
+      this.userLeft();
     },
     userJoined() {
       const roomRef = roomsCollection.doc(this.roomId);
-      roomRef.update({
-        activeUsers: firebase.firestore.FieldValue.arrayUnion(this.getUser.uid),
+      roomRef.collection('activeUsers').doc(this.getUser.uid).set({
+        userId: this.getUser.uid,
       });
     },
+    async userLeft() {
+      const roomRef = roomsCollection.doc(this.roomId);
+      roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
+      const myConnections = await roomRef.collection('connections').where('to', '==', this.getUser.uid).get();
+      const batch = db.batch();
+
+      myConnections.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+    },
+    listenNewUsers() {
+      const myId = this.getUser.uid;
+      const roomRef = roomsCollection.doc(this.roomId);
+      roomRef.collection('activeUsers').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === 'added') {
+            const newUser = change.doc.data();
+            if (newUser.userId !== myId) {
+              this.initWebRTC(newUser.userId);
+              this.peers[newUser.userId].peerStream = new MediaStream();
+              this.createOffer(this.peers[newUser.userId], myId, newUser.userId);
+            }
+          }
+        });
+      });
+    },
+
   },
   computed: {
     ...mapGetters(['getUser']),
   },
   mounted() {
     this.init();
+  },
+  beforeDestroy() {
+    this.hangUp();
   },
 };
 </script>
