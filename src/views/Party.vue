@@ -89,22 +89,6 @@ export default {
       // mute local audio
       this.$refs.localAudio.volume = 0;
     },
-    registerNewConnections() {
-      roomsCollection
-        .doc(this.roomId)
-        .onSnapshot((snap) => {
-          const roomData = snap.data();
-          const inRoom = roomData.activeUsers;
-          inRoom.forEach((userId) => {
-            if (userId !== this.getUser.uid) {
-              this.initWebRTC(userId);
-              const remoteStream = new MediaStream(); // edit1
-              this.peers[userId].peerStream = remoteStream;
-              this.createOffer(this.peers[userId], this.getUser.uid, userId);
-            }
-          });
-        });
-    },
     async createOffer(peer, from, to) {
       const connectionsCollection = roomsCollection
         .doc(this.roomId)
@@ -172,9 +156,9 @@ export default {
           if (change.type === 'added') {
             const candidate = new RTCIceCandidate(change.doc.data());
             peer.pc.addIceCandidate(candidate);
-            console.log(
-              `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
-            );
+            // console.log(
+            //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
+            // );
           }
         });
       });
@@ -200,7 +184,10 @@ export default {
                 `user${data.from}user${myId}`,
               );
 
-              this.registerPeerConnectionListeners(this.peers[data.from].pc, data.from);
+              this.registerPeerConnectionListeners(
+                this.peers[data.from].pc,
+                data.from,
+              );
 
               this.localStream.getTracks().forEach((track) => {
                 this.peers[data.from].pc.addTrack(track, this.localStream);
@@ -226,7 +213,7 @@ export default {
                     console.log('Got final candidate!');
                     return;
                   }
-                  console.log('Got candidate: ', event.candidate);
+                  // console.log('Got candidate: ', event.candidate);
                   calleeCandidatesCollection.add(event.candidate.toJSON());
                 },
               );
@@ -258,7 +245,7 @@ export default {
                     // console.log(change2);
                     if (change.type === 'added') {
                       const data2 = change2.doc.data();
-                      if (this.peers[data.from].pc) {
+                      if (this.peers[data.from].pc !== undefined) {
                         this.peers[data.from].pc.addIceCandidate(
                           new RTCIceCandidate(data2),
                         );
@@ -288,7 +275,9 @@ export default {
       });
 
       peerConnection.addEventListener('connectionstatechange', () => {
-        console.log(`Connection state change: ${peerConnection.connectionState}`);
+        console.log(
+          `Connection state change: ${peerConnection.connectionState}`,
+        );
         if (peerConnection.connectionState === 'disconnected') {
           delete this.peers[id];
         }
@@ -338,7 +327,8 @@ export default {
     async userLeft() {
       const roomRef = roomsCollection.doc(this.roomId);
       roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
-      const myConnections = await roomRef.collection('connections').where('to', '==', this.getUser.uid).get();
+      const myConnections = await roomRef
+        .collection('connections').where('to', '==', this.getUser.uid).get();
       const batch = db.batch();
 
       myConnections.forEach((doc) => {
@@ -346,6 +336,7 @@ export default {
       });
 
       await batch.commit();
+      // roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
     },
     listenNewUsers() {
       const myId = this.getUser.uid;
@@ -357,13 +348,16 @@ export default {
             if (newUser.userId !== myId) {
               this.initWebRTC(newUser.userId);
               this.peers[newUser.userId].peerStream = new MediaStream();
-              this.createOffer(this.peers[newUser.userId], myId, newUser.userId);
+              this.createOffer(
+                this.peers[newUser.userId],
+                myId,
+                newUser.userId,
+              );
             }
           }
         });
       });
     },
-
   },
   computed: {
     ...mapGetters(['getUser']),
@@ -373,6 +367,9 @@ export default {
   },
   beforeDestroy() {
     this.hangUp();
+  },
+  beforeMount() {
+    window.addEventListener('beforeunload', this.hangUp);
   },
 };
 </script>

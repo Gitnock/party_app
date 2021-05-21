@@ -352,7 +352,6 @@ export default {
       email: '',
       password: '',
       error: '',
-      username: '',
     };
   },
   methods: {
@@ -362,18 +361,36 @@ export default {
         password: this.password,
         username: this.username,
       }).then(() => {
-        this.$router.push('/app');
+        this.init();
       });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
-        this.$router.push('/app');
+        this.init();
       });
+    },
+    init() {
+      const loading = this.$vs.loading({
+        type: 'corners',
+        background: '#195bff',
+        color: '#fff',
+        opacity: '1',
+        text: 'Checking you out, just a moment',
+      });
+
+      setTimeout(() => {
+        if (this.getProfile.flags) {
+          this.$router.push('/app');
+        } else {
+          this.$router.push('/alpha');
+        }
+        loading.close();
+      }, 1000);
     },
     ...mapActions(['signUpAction', 'googleAuthAction']),
   },
   computed: {
-    ...mapGetters(['getEmail']),
+    ...mapGetters(['getEmail', 'getProfile']),
   },
   mounted() {
     // lazy loading image

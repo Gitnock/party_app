@@ -50,6 +50,7 @@ export default {
   data: () => ({
     voiceLink: '',
     players: 2,
+    flag: 0,
   }),
   methods: {
     ...mapActions(['hostGameAction']),
@@ -82,6 +83,14 @@ export default {
           });
         });
     },
+    init() {
+      this.flag = this.getProfile.flags;
+      console.log('hello');
+
+      if (this.flag === 0) {
+        this.$router.push('/alpha');
+      }
+    },
     host() {
       this.hostGameAction({
         game: this.getGame.gameId,
@@ -104,7 +113,10 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['getUser', 'getGame', 'getRoom']),
+    ...mapGetters(['getUser', 'getGame', 'getRoom', 'getProfile']),
+  },
+  mounted() {
+    this.init();
   },
 };
 </script>

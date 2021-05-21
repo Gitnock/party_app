@@ -8,6 +8,7 @@ import Signup from '@/views/Signup.vue';
 import Party from '@/views/Party.vue';
 import Crew from '@/views/Crew.vue';
 import Index from '@/views/Index.vue';
+import Alpha from '@/views/Alpha.vue';
 import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
@@ -33,6 +34,12 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: Signup,
+  },
+  {
+    path: '/alpha',
+    name: 'alpha',
+    component: Alpha,
+    meta: { requiresAuth: true },
   },
   {
     path: '/crew',

@@ -89,7 +89,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+// import firebase from 'firebase/app';
+// import { usersCollection } from '../firebaseConfig';
 
 export default {
   metaInfo: {
@@ -111,18 +113,35 @@ export default {
     ...mapActions(['signInAction', 'googleAuthAction']),
     emailauth() {
       this.signInAction({ email: this.email, password: this.password }).then(() => {
-        this.$router.push('/app');
+        // this.$router.push('/app');
+        // this.init(myId);
       });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
-        this.$router.push('/app');
-        // console.log('IT WORKED>');
+        // this.$router.push('/app');
+        this.init();
       });
-      // this.$store.dispatch('googleAuthAction').then(() => {
-      //   console.log('IT WORKED');
-      // });
     },
+    init() {
+      const loading = this.$vs.loading({
+        type: 'corners',
+        background: '#195bff',
+        color: '#fff',
+        opacity: '1',
+        text: 'Checking you out, just a moment',
+      });
+
+      setTimeout(() => {
+        if (this.getProfile.flags) {
+          this.$router.push('/app');
+        } else {
+          this.$router.push('/alpha');
+        }
+        loading.close();
+      }, 1000);
+    },
+
   },
   mounted() {
     // lazy loading image
@@ -134,6 +153,9 @@ export default {
     img.onload = () => {
       this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
     };
+  },
+  computed: {
+    ...mapGetters(['getProfile']),
   },
 };
 </script>
