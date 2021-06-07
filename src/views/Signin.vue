@@ -113,8 +113,7 @@ export default {
     ...mapActions(['signInAction', 'googleAuthAction']),
     emailauth() {
       this.signInAction({ email: this.email, password: this.password }).then(() => {
-        // this.$router.push('/app');
-        // this.init(myId);
+        this.init();
       });
     },
     googleauth() {

@@ -81,7 +81,7 @@
                       :message="errors[0]"
                     >
                       <vs-input
-                        type="text"
+                        type="email"
                         v-model="email"
                         placeholder="Email"
                         maxlength="125"
@@ -349,6 +349,7 @@ export default {
   },
   data() {
     return {
+      username: '',
       email: '',
       password: '',
       error: '',

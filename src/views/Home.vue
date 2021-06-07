@@ -84,12 +84,6 @@ export default {
         });
     },
     init() {
-      this.flag = this.getProfile.flags;
-      console.log('hello');
-
-      if (this.flag === 0) {
-        this.$router.push('/alpha');
-      }
     },
     host() {
       this.hostGameAction({

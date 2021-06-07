@@ -23,7 +23,7 @@
 <script>
 import { mapGetters } from 'vuex';
 // import firebase from 'firebase/app';
-import { db, roomsCollection } from '../firebaseConfig';
+import { roomsCollection } from '../firebaseConfig';
 
 const configuration = {
   iceServers: [
@@ -31,7 +31,7 @@ const configuration = {
       urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
     },
   ],
-  iceCandidatePoolSize: 10,
+  iceCandidatePoolSize: 2,
 };
 
 export default {
@@ -326,17 +326,27 @@ export default {
     },
     async userLeft() {
       const roomRef = roomsCollection.doc(this.roomId);
-      roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
-      const myConnections = await roomRef
-        .collection('connections').where('to', '==', this.getUser.uid).get();
-      const batch = db.batch();
+      // roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
+      // const myConnectionsTo = await roomRef
+      //   .collection('connections')
+      //   .where('to', '==', this.getUser.uid)
+      //   .get();
+      // const myConnectionsFrom = await roomRef
+      //   .collection('connections')
+      //   .where('from', '==', this.getUser.uid)
+      //   .get();
+      // const batch1 = db.batch();
+      // const batch2 = db.batch();
 
-      myConnections.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      await batch.commit();
-      // roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
+      // myConnectionsTo.forEach((doc) => {
+      //   batch1.delete(doc.ref);
+      // });
+      // myConnectionsFrom.forEach((doc) => {
+      //   batch2.delete(doc.ref);
+      // });
+      // await batch1.commit();
+      // await batch2.commit();
+      roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
     },
     listenNewUsers() {
       const myId = this.getUser.uid;
@@ -368,9 +378,9 @@ export default {
   beforeDestroy() {
     this.hangUp();
   },
-  beforeMount() {
-    window.addEventListener('beforeunload', this.hangUp);
-  },
+  // beforeMount() {
+  //   window.addEventListener('beforeunload', this.hangUp);
+  // },
 };
 </script>
 

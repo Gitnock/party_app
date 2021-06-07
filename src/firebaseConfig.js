@@ -3,6 +3,7 @@ import 'firebase/firestore';
 import 'firebase/database';
 import 'firebase/auth';
 import 'firebase/storage';
+import 'firebase/functions';
 
 const config = {
   apiKey: process.env.VUE_APP_API_KEY,
@@ -23,6 +24,14 @@ const auth = firebase.auth();
 const { currentUser } = auth;
 const rtDb = firebase.database();
 const storage = firebase.storage();
+
+// emulator
+// if (window.location.hostname === 'localhost') {
+//   db.useEmulator('localhost', 8080);
+//   auth.useEmulator('http://localhost:9099');
+//   storage.useEmulator('localhost', 9199);
+//   firebase.functions().useEmulator('localhost', 5001);
+// }
 
 // firebase collections
 const usersCollection = db.collection('users');

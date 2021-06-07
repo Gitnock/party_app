@@ -126,7 +126,6 @@ export default {
     },
     // eslint-disable-next-line consistent-return
     setImage(e) {
-      console.log('HELOOOOOO');
       this.isEdit = true;
       const file = e.target.files[0];
 

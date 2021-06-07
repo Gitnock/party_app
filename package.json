@@ -10,7 +10,8 @@
   "dependencies": {
     "buefy": "^0.9.4",
     "core-js": "^3.6.5",
-    "firebase": "^8.2.9",
+    "firebase": "^8.6.2",
+    "firebase-tools": "^9.11.0",
     "register-service-worker": "^1.7.1",
     "vee-validate": "^3.4.5",
     "vue": "^2.6.11",
