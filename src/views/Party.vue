@@ -30,6 +30,11 @@ const configuration = {
     {
       urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
     },
+    {
+      url: 'turn:192.158.29.39:3478?transport=udp',
+      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+      username: '28224511:1379330808',
+    },
   ],
   iceCandidatePoolSize: 2,
 };
@@ -109,7 +114,7 @@ export default {
       peer.pc.addEventListener('icecandidate', (event) => {
         if (event.candidate) {
           const json = event.candidate.toJSON();
-          callerCandidatesCollection.add(json);
+          callerCandidatesCollection.doc('candidate').set(json);
         }
       });
 
@@ -151,16 +156,12 @@ export default {
       });
 
       // Listen for remote ICE candidates below
-      connectionRef.collection('calleeCandidates').onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const candidate = new RTCIceCandidate(change.doc.data());
-            peer.pc.addIceCandidate(candidate);
-            // console.log(
-            //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
-            // );
-          }
-        });
+      connectionRef.collection('calleeCandidates').doc('candidate').onSnapshot((doc) => {
+        const candidate = new RTCIceCandidate(doc.data());
+        peer.pc.addIceCandidate(candidate);
+        // console.log(
+        //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
+        // );
       });
     },
     async listenNewConnections() {
@@ -214,7 +215,7 @@ export default {
                     return;
                   }
                   // console.log('Got candidate: ', event.candidate);
-                  calleeCandidatesCollection.add(event.candidate.toJSON());
+                  calleeCandidatesCollection.doc('candidate').set(event.candidate.toJSON());
                 },
               );
 
@@ -240,18 +241,14 @@ export default {
 
               connectionRef
                 .collection('callerCandidates')
-                .onSnapshot((snap) => {
-                  snap.docChanges().forEach((change2) => {
-                    // console.log(change2);
-                    if (change.type === 'added') {
-                      const data2 = change2.doc.data();
-                      if (this.peers[data.from].pc !== undefined) {
-                        this.peers[data.from].pc.addIceCandidate(
-                          new RTCIceCandidate(data2),
-                        );
-                      }
-                    }
-                  });
+                .doc('candidate')
+                .onSnapshot((doc) => {
+                  const data2 = doc.data();
+                  if (this.peers[data.from].pc !== undefined) {
+                    this.peers[data.from].pc.addIceCandidate(
+                      new RTCIceCandidate(data2),
+                    );
+                  }
                 });
             }
           }
@@ -279,7 +276,8 @@ export default {
           `Connection state change: ${peerConnection.connectionState}`,
         );
         if (peerConnection.connectionState === 'disconnected') {
-          delete this.peers[id];
+          // this.$delete(this.peers, id);
+          console.log('userLEFT: ', id);
         }
       });
 
@@ -288,6 +286,11 @@ export default {
       });
 
       peerConnection.addEventListener('iceconnectionstatechange ', () => {
+        if (peerConnection.iceConnectionState === 'failed') {
+          /* possibly reconfigure the connection in some way here */
+          /* then request ICE restart */
+          peerConnection.restartIce();
+        }
         console.log(
           `ICE connection state change: ${peerConnection.iceConnectionState}`,
         );
@@ -326,7 +329,7 @@ export default {
     },
     async userLeft() {
       const roomRef = roomsCollection.doc(this.roomId);
-      // roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
+      roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
       // const myConnectionsTo = await roomRef
       //   .collection('connections')
       //   .where('to', '==', this.getUser.uid)
@@ -351,18 +354,28 @@ export default {
     listenNewUsers() {
       const myId = this.getUser.uid;
       const roomRef = roomsCollection.doc(this.roomId);
-      roomRef.collection('activeUsers').onSnapshot((snapshot) => {
+      const unsubscribe = roomRef.collection('activeUsers').onSnapshot((snapshot) => {
         snapshot.docChanges().forEach(async (change) => {
+          const newUser = change.doc.id;
           if (change.type === 'added') {
-            const newUser = change.doc.data();
-            if (newUser.userId !== myId) {
-              this.initWebRTC(newUser.userId);
-              this.peers[newUser.userId].peerStream = new MediaStream();
+            if (newUser !== myId) {
+              this.initWebRTC(newUser);
+              this.peers[newUser].peerStream = new MediaStream();
               this.createOffer(
-                this.peers[newUser.userId],
+                this.peers[newUser],
                 myId,
-                newUser.userId,
+                newUser,
               );
+            }
+          }
+          if (change.type === 'removed') {
+            if (newUser !== myId) {
+              this.openNotification('USER', `user: ${change.doc.id} left`, 'danger');
+              this.peers[newUser].pc.close();
+              this.$delete(this.peers, newUser);
+            }
+            if (newUser === myId) {
+              unsubscribe();
             }
           }
         });
