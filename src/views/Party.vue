@@ -23,17 +23,17 @@
 <script>
 import { mapGetters } from 'vuex';
 // import firebase from 'firebase/app';
-import { roomsCollection } from '../firebaseConfig';
+import { db, roomsCollection } from '../firebaseConfig';
 
 const configuration = {
   iceServers: [
     {
-      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+      urls: 'stun:stun1.l.google.com:19302',
     },
     {
-      url: 'turn:192.158.29.39:3478?transport=udp',
-      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-      username: '28224511:1379330808',
+      url: 'turn:18.118.49.54:3478?transport=udp',
+      credential: 'partyapp',
+      username: 'connect',
     },
   ],
   iceCandidatePoolSize: 2,
@@ -52,9 +52,10 @@ export default {
       roomsCollection
         .doc(this.roomId)
         .get()
-        .then((snap) => {
+        .then(async (snap) => {
           if (snap.exists) {
-            this.userJoined();
+            // await this.userLeft();
+            await this.userJoined();
             this.listenNewUsers();
             this.listenNewConnections();
           } else {
@@ -108,9 +109,7 @@ export default {
       });
 
       // Get candidates for caller, save to db
-      const callerCandidatesCollection = connectionRef.collection(
-        'callerCandidates',
-      );
+      const callerCandidatesCollection = connectionRef.collection('callerCandidates');
       peer.pc.addEventListener('icecandidate', (event) => {
         if (event.candidate) {
           const json = event.candidate.toJSON();
@@ -156,13 +155,16 @@ export default {
       });
 
       // Listen for remote ICE candidates below
-      connectionRef.collection('calleeCandidates').doc('candidate').onSnapshot((doc) => {
-        const candidate = new RTCIceCandidate(doc.data());
-        peer.pc.addIceCandidate(candidate);
-        // console.log(
-        //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
-        // );
-      });
+      connectionRef
+        .collection('calleeCandidates')
+        .doc('candidate')
+        .onSnapshot((doc) => {
+          const candidate = new RTCIceCandidate(doc.data());
+          peer.pc.addIceCandidate(candidate);
+          // console.log(
+          //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
+          // );
+        });
     },
     async listenNewConnections() {
       const myId = this.getUser.uid;
@@ -204,9 +206,7 @@ export default {
               });
 
               // Code for collecting ICE candidates below
-              const calleeCandidatesCollection = connectionRef.collection(
-                'calleeCandidates',
-              );
+              const calleeCandidatesCollection = connectionRef.collection('calleeCandidates');
               this.peers[data.from].pc.addEventListener(
                 'icecandidate',
                 (event) => {
@@ -215,7 +215,9 @@ export default {
                     return;
                   }
                   // console.log('Got candidate: ', event.candidate);
-                  calleeCandidatesCollection.doc('candidate').set(event.candidate.toJSON());
+                  calleeCandidatesCollection
+                    .doc('candidate')
+                    .set(event.candidate.toJSON());
                 },
               );
 
@@ -244,7 +246,7 @@ export default {
                 .doc('candidate')
                 .onSnapshot((doc) => {
                   const data2 = doc.data();
-                  if (this.peers[data.from].pc !== undefined) {
+                  if (this.peers[data.from].pc) {
                     this.peers[data.from].pc.addIceCandidate(
                       new RTCIceCandidate(data2),
                     );
@@ -265,35 +267,23 @@ export default {
       // this.onAddStream(this.peers[id]);
     },
     registerPeerConnectionListeners(peerConnection, id) {
-      peerConnection.addEventListener('icegatheringstatechange', () => {
-        console.log(
-          `ICE gathering state changed: ${peerConnection.iceGatheringState}`,
-        );
-      });
-
-      peerConnection.addEventListener('connectionstatechange', () => {
-        console.log(
-          `Connection state change: ${peerConnection.connectionState}`,
-        );
-        if (peerConnection.connectionState === 'disconnected') {
-          // this.$delete(this.peers, id);
-          console.log('userLEFT: ', id);
-        }
-      });
-
-      peerConnection.addEventListener('signalingstatechange', () => {
-        console.log(`Signaling state change: ${peerConnection.signalingState}`);
-      });
-
       peerConnection.addEventListener('iceconnectionstatechange ', () => {
-        if (peerConnection.iceConnectionState === 'failed') {
-          /* possibly reconfigure the connection in some way here */
-          /* then request ICE restart */
-          peerConnection.restartIce();
+        switch (peerConnection.iceConnectionState) {
+          case 'closed': // This means connection is shut down and no longer handling requests.
+            // hangUpCall();
+
+            break;
+          case 'failed':
+            // checkStatePermanent('failed');
+
+            break;
+          case 'disconnected':
+            // checkStatePermanent('disconnected');
+            console.log('DISCONNECTED USER:', id);
+            // this.openNotification('USER', `user: ${id} left`, 'danger');
+            break;
+          default:
         }
-        console.log(
-          `ICE connection state change: ${peerConnection.iceConnectionState}`,
-        );
       });
     },
     openNotification(title, text, color) {
@@ -321,79 +311,94 @@ export default {
       this.peers = {};
       this.userLeft();
     },
-    userJoined() {
+    async userJoined() {
       const roomRef = roomsCollection.doc(this.roomId);
-      roomRef.collection('activeUsers').doc(this.getUser.uid).set({
+      await roomRef.collection('activeUsers').doc(this.getUser.uid).set({
         userId: this.getUser.uid,
       });
     },
     async userLeft() {
       const roomRef = roomsCollection.doc(this.roomId);
       roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
-      // const myConnectionsTo = await roomRef
-      //   .collection('connections')
-      //   .where('to', '==', this.getUser.uid)
-      //   .get();
-      // const myConnectionsFrom = await roomRef
-      //   .collection('connections')
-      //   .where('from', '==', this.getUser.uid)
-      //   .get();
-      // const batch1 = db.batch();
-      // const batch2 = db.batch();
+      const myConnectionsTo = await roomRef
+        .collection('connections')
+        .where('to', '==', this.getUser.uid)
+        .get();
+      const myConnectionsFrom = await roomRef
+        .collection('connections')
+        .where('from', '==', this.getUser.uid)
+        .get();
+      const batch1 = db.batch();
+      const batch2 = db.batch();
 
-      // myConnectionsTo.forEach((doc) => {
-      //   batch1.delete(doc.ref);
-      // });
-      // myConnectionsFrom.forEach((doc) => {
-      //   batch2.delete(doc.ref);
-      // });
-      // await batch1.commit();
-      // await batch2.commit();
-      roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
+      myConnectionsTo.forEach((doc) => {
+        batch1.delete(doc.ref);
+      });
+      myConnectionsFrom.forEach((doc) => {
+        batch2.delete(doc.ref);
+      });
+      await batch1.commit();
+      await batch2.commit();
+      // roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
     },
     listenNewUsers() {
       const myId = this.getUser.uid;
       const roomRef = roomsCollection.doc(this.roomId);
-      const unsubscribe = roomRef.collection('activeUsers').onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach(async (change) => {
-          const newUser = change.doc.id;
-          if (change.type === 'added') {
-            if (newUser !== myId) {
-              this.initWebRTC(newUser);
-              this.peers[newUser].peerStream = new MediaStream();
-              this.createOffer(
-                this.peers[newUser],
-                myId,
-                newUser,
-              );
+      const unsubscribe = roomRef
+        .collection('activeUsers')
+        .onSnapshot((snapshot) => {
+          snapshot.docChanges().forEach(async (change) => {
+            const newUser = change.doc.id;
+            if (change.type === 'added') {
+              if (newUser !== myId) {
+                this.initWebRTC(newUser);
+                this.peers[newUser].peerStream = new MediaStream();
+                this.createOffer(this.peers[newUser], myId, newUser);
+                this.openNotification(
+                  'USER JOIN',
+                  `user: ${change.doc.id}`,
+                  'success',
+                );
+              }
             }
-          }
-          if (change.type === 'removed') {
-            if (newUser !== myId) {
-              this.openNotification('USER', `user: ${change.doc.id} left`, 'danger');
-              this.peers[newUser].pc.close();
-              this.$delete(this.peers, newUser);
+            if (change.type === 'removed') {
+              if (newUser !== myId) {
+                this.openNotification(
+                  'USER',
+                  `user: ${change.doc.id} left`,
+                  'danger',
+                );
+                this.peers[newUser].pc.close();
+                this.$delete(this.peers, newUser);
+              }
+              if (newUser === myId) {
+                unsubscribe();
+              }
             }
-            if (newUser === myId) {
-              unsubscribe();
-            }
-          }
+          });
         });
-      });
+    },
+    removeUser() {
+      console.log('removing user');
     },
   },
   computed: {
     ...mapGetters(['getUser']),
   },
   mounted() {
-    this.init();
+    // this.init();
   },
-  beforeDestroy() {
-    this.hangUp();
-  },
-  // beforeMount() {
-  //   window.addEventListener('beforeunload', this.hangUp);
+  // beforeDestroy() {
+  //   this.hangUp();
   // },
+  created() {
+    console.log('created');
+    this.init();
+    window.addEventListener('beforeunload', this.hangUp);
+  },
+  beforeMount() {
+    window.addEventListener('beforeunload', this.hangUp);
+  },
 };
 </script>
 
