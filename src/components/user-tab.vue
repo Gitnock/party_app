@@ -12,7 +12,6 @@
             <vs-avatar
                 size="38"
                 color="#2B2E43"
-                badge
                 circle
                 badge-color="success"
                 badge-position="bottom-left"
@@ -48,7 +47,7 @@
                     <h5 class="username-text">
                         {{ getProfile.username + "#" + getProfile.tag }}
                     </h5>
-                    <vs-button main flat @click="settingScreen = !settingScreen">
+                    <vs-button main flat @click="openSettings">
                         Manage your account
                     </vs-button>
                     </div>
@@ -57,7 +56,7 @@
                 <div class="prof-bot"></div>
 
                 <footer style="color: #626891" class="clickable">
-                    <p>Privacy policy v-0.2</p>
+                    <p>Privacy policy v-0.5</p>
                 </footer>
                 </div>
             </template>
@@ -106,6 +105,12 @@ export default {
   components: {
     settings,
   },
+  methods: {
+    openSettings() {
+      this.settingScreen = !this.settingScreen;
+      this.activeProfile = !this.activeProfile;
+    },
+  },
 };
 </script>
 
@@ -128,6 +133,7 @@ div.vs-avatar__badge {
 }
 .content-tooltip {
   width: 252px;
+  padding: 12px;
 }
 
 div.vs-dialog--fullScreen {
@@ -135,7 +141,11 @@ div.vs-dialog--fullScreen {
   height: calc(100% - 0px) !important;
   max-width: none !important;
   max-height: none !important;
-  background: #2b2e43 !important;
+  background: #161823 !important;
+  margin: 0 !important;
+}
+div.vs-dialog__content{
+  height: 100%;
 }
 .setting-close {
   width: 100%;
@@ -146,10 +156,13 @@ div.vs-dialog--fullScreen {
   right: 0;
   padding: 18px 32px;
 }
+.settings-view{
+  height: 100%;
+}
 
 /* profile popup */
 div.vs-tooltip {
-  background-color: #2f3247 !important;
+  background-color: #202330 !important;
 }
 .prof-top {
   display: flex;

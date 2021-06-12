@@ -31,12 +31,11 @@ const configuration = {
       urls: 'stun:stun1.l.google.com:19302',
     },
     {
-      url: 'turn:18.118.49.54:3478?transport=udp',
-      credential: 'partyapp',
-      username: 'connect',
+      url: 'turn:18.118.49.54?transport=tcp',
+      username: 'partyapp',
+      credential: 'connect',
     },
   ],
-  iceCandidatePoolSize: 2,
 };
 
 export default {
@@ -59,7 +58,7 @@ export default {
             this.listenNewUsers();
             this.listenNewConnections();
           } else {
-            this.$router.push('/app');
+            this.$router.push('/crew/@me');
             this.openNotification(
               'Error',
               `Party doesn't Exist${this.roomId}`,
@@ -246,7 +245,7 @@ export default {
                 .doc('candidate')
                 .onSnapshot((doc) => {
                   const data2 = doc.data();
-                  if (this.peers[data.from].pc) {
+                  if (this.peers[data.from].pc.localDescription) {
                     this.peers[data.from].pc.addIceCandidate(
                       new RTCIceCandidate(data2),
                     );
@@ -275,7 +274,7 @@ export default {
             break;
           case 'failed':
             // checkStatePermanent('failed');
-
+            peerConnection.restartIce();
             break;
           case 'disconnected':
             // checkStatePermanent('disconnected');

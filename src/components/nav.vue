@@ -1,34 +1,19 @@
 <template>
-  <vs-navbar color="#2F3247" text-white square center-collapsed>
-    <template #left>
-      <div class="partyapp-logo-container">
-        <img
-          src="@/assets/partyapp_logo.svg"
-          alt=""
-          class="partyapp-logo"
-          @click="goHome"
-        />
+  <div class="section-nav">
+      <div class="container-nav">
+        <nav class="nav-left">
+          <img
+              src="@/assets/partyapp_logo.svg"
+              alt="partyapp logo"
+              class="logo-attio"
+              @click="goHome"
+          />
+        </nav>
+        <nav class="nav-right">
+          <user-tab/>
+        </nav>
       </div>
-    </template>
-    <div>
-      <select v-model="curGame" @change="setGame">
-         <option :value={} disabled>Select Game</option>
-        <option
-          v-for="game in getGames"
-          v-bind:key="game.gameId"
-          v-bind:value="game"
-        >
-          {{ game.gameName }}
-        </option>
-      </select>
     </div>
-    <template #right>
-      <div class="userTab">
-        <userTab v-if="isUserAuth" />
-        <button v-else @click="openLogin">Log in</button>
-      </div>
-    </template>
-  </vs-navbar>
 </template>
 
 <script>
@@ -50,10 +35,8 @@ export default {
       this.signOutAction();
     },
     goHome() {
-      this.$router.push('/app');
-    },
-    setGame() {
-      this.$store.commit('setGame', this.curGame);
+      const path = '/crew/@me';
+      if (this.$route.path !== path) this.$router.push(path);
     },
   },
   components: {
@@ -72,10 +55,34 @@ export default {
   display: flex;
   justify-content: center;
 }
-.partyapp-logo {
-  // height: 38px;
-}
 .userTab {
   padding-right: 43px;
+}
+
+// NAV
+.section-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container-nav {
+  // background-color: brown;
+  max-width: 1762px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+.signin-btn {
+  color: #b7bbd5;
+  margin-right: 32px;
+  &:hover {
+    color: white;
+  }
 }
 </style>

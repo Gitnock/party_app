@@ -118,7 +118,6 @@ export default {
     },
     googleauth() {
       this.googleAuthAction().then(() => {
-        // this.$router.push('/app');
         this.init();
       });
     },
@@ -133,7 +132,7 @@ export default {
 
       setTimeout(() => {
         if (this.getProfile.flags) {
-          this.$router.push('/app');
+          this.$router.push('/crew/@me');
         } else {
           this.$router.push('/alpha');
         }

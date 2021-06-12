@@ -381,7 +381,7 @@ export default {
 
       setTimeout(() => {
         if (this.getProfile.flags) {
-          this.$router.push('/app');
+          this.$router.push('/crew/@me');
         } else {
           this.$router.push('/alpha');
         }

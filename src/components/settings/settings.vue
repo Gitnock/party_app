@@ -82,19 +82,20 @@ export default {
 .main {
   display: flex;
   height: 100%;
+  width: 100%;
 }
 //setting left
 .setting-left {
   // background: red;
   width: 329px;
-  max-width: 329px;
+  // max-width: 329px;
   padding-left: 16px;
   margin-right: 16px;
   padding: 16px;
 }
 .setting-menu {
-  // display: flex;
-  // justify-content: center;
+  display: flex;
+  flex-direction: column;
 }
 .setting-menu-item {
   width: 100%;
@@ -102,10 +103,11 @@ export default {
   padding: 12px;
   border-radius: 12px;
   color: #626891;
+  white-space: nowrap;
 }
 
 .selected {
-  color: #b7bbd5;
+  color: #00CD69;
 }
 .setting-menu-item-logout {
   width: 100%;
@@ -113,10 +115,11 @@ export default {
   padding: 12px;
   border-radius: 12px;
   color: #ff4757;
+  white-space: nowrap;
 }
 
 .setting-menu-item:hover {
-  background-color: #2f3247;
+  background-color: #202330;
 }
 .setting-menu-item-logout:hover {
   background-color: rgba(255, 71, 87, 0.15);
@@ -125,22 +128,60 @@ export default {
 //setting right
 .setting-right {
   // width: 630px;
-  height: 86vh;
-  padding-right: 32px;
-  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  // padding-right: 32px;
 }
 .left-content {
-  width: 630px;
-
+  height: 90%;
+  max-width: 630px;
+  flex: 1;
+   //hide scroll
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
   // background-color: rosybrown;
-}
 
-@media only screen and (max-width: 1029px) {
-  .setting-menu-item {
-    font-size: 16px;
+}
+ .left-content::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
-  .left-content {
-    width: 480px;
+
+// @media only screen and (max-width: 1029px) {
+//   .setting-menu-item {
+//     font-size: 16px;
+//   }
+//   .left-content {
+//     width: 480px;
+//   }
+// }
+@media only screen and (max-width: 628px) {
+  .main {
+    flex-direction: column;
+  }
+  .setting-menu {
+    flex-direction: row;
+    //hide scroll
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+  .setting-menu::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  .setting-left {
+    width: 100%;
+    overflow: hidden;
+    padding-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+  .setting-menu-item {
+    width: auto;
+    // height: auto;
   }
 }
 </style>

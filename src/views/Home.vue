@@ -1,37 +1,26 @@
 <template>
-  <div class="main">
-    <topNav></topNav>
-    <div class="main-content">
-      <div class="party-types">
-        <div class="host-content party-type-host">
-          <div class="content-host-button roboto-medium">Host</div>
-          <div class="content-container">
-            <div class="content-text">
-              <h1 class="content-title roboto-medium">Needed Players</h1>
-              <h3 class="content-subtitle roboto-medium">
-                How big is your party going to be?
-              </h3>
-            </div>
-            <b-slider
-              :min="2"
-              :max="getGame.maxPlayers"
-              ticks
-              v-model="players"
-              rounded
-            ></b-slider>
-          </div>
-          <div class="content-container">
-            <button class="content-create roboto-medium" @click="host">
-              create
-            </button>
+  <div class="home-main">
+    <div class="container-main">
+      <div class="select-game-container game-container" v-if="!curGame">
+        <div class="select-game-content">
+          <div
+            class="select-game-card clickable"
+            v-for="game in getGames"
+            v-bind:key="game.gameId"
+            v-bind:value="game"
+            @click="setGame(game)"
+          >
+            <img :src="game.url_square" alt="" />
           </div>
         </div>
-        <button
-          class="party-type-button party-type-join roboto-medium"
-          @click="join"
-        >
-          Join
-        </button>
+      </div>
+      <div class="join-game-container game-container" v-else>
+        <div class="join-game-close">dfdf</div>
+        <div class="join-game-content">
+          <img class="join-game-img" :src="curGame.url" />
+
+          <button class="join-game-btn roboto-black" @click="join">Join</button>
+        </div>
       </div>
     </div>
   </div>
@@ -40,20 +29,19 @@
 <script>
 import firebase from 'firebase/app';
 import { mapActions, mapGetters } from 'vuex';
-import topNav from '../components/nav.vue';
 import { playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
-  components: {
-    topNav,
-  },
+  components: {},
   data: () => ({
-    voiceLink: '',
-    players: 2,
-    flag: 0,
+    curGame: null,
   }),
   methods: {
     ...mapActions(['hostGameAction']),
+    setGame(game) {
+      this.$store.commit('setGame', game);
+      this.curGame = this.getGame;
+    },
     join() {
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
       const playerRef = playersCollection.doc();
@@ -83,31 +71,30 @@ export default {
           });
         });
     },
-    init() {
-    },
-    host() {
-      this.hostGameAction({
-        game: this.getGame.gameId,
-        players: [this.getUser.uid],
-        size: this.players,
-      }).then(() => {
-        if (this.$route.path !== `/crew/${this.getRoom}`) {
-          this.$router.push(`/crew/${this.getRoom}`);
-        }
-        // roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
-        //   const isfull = snapShot.data().full;
-        //   if (isfull) {
-        //     // this.$router.push(`/crew/${this.getRoom}`);
-        //     if (this.$route.path !== `/crew/${this.getRoom}`) {
-        //       this.$router.push(`/crew/${this.getRoom}`);
-        //     }
-        //   }
-        // });
-      });
-    },
+    init() {},
+    // host() {
+    //   this.hostGameAction({
+    //     game: this.getGame.gameId,
+    //     players: [this.getUser.uid],
+    //     size: this.players,
+    //   }).then(() => {
+    //     if (this.$route.path !== `/crew/${this.getRoom}`) {
+    //       this.$router.push(`/crew/${this.getRoom}`);
+    //     }
+    //     // roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
+    //     //   const isfull = snapShot.data().full;
+    //     //   if (isfull) {
+    //     //     // this.$router.push(`/crew/${this.getRoom}`);
+    //     //     if (this.$route.path !== `/crew/${this.getRoom}`) {
+    //     //       this.$router.push(`/crew/${this.getRoom}`);
+    //     //     }
+    //     //   }
+    //     // });
+    //   });
+    // },
   },
   computed: {
-    ...mapGetters(['getUser', 'getGame', 'getRoom', 'getProfile']),
+    ...mapGetters(['getUser', 'getGame', 'getRoom', 'getProfile', 'getGames']),
   },
   mounted() {
     this.init();
@@ -116,98 +103,129 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main {
-  background-color: #2b2e43;
-}
-.main-content {
-  height: 100vh;
+.home-main {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
-
-//party buttons
-.party-types {
+.container-main {
+  height: 100%;
+  max-width: 1320px;
   display: flex;
-  flex-direction: column;
-  // width: 798px;
-  padding: 12px;
-}
-.party-type-button {
-  width: 100%;
-  height: 50px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-}
-.party-type-host {
-  color: white;
-  background: #2f3247;
-}
-.party-type-join {
-  color: #00cd69;
-  background: #25514d;
+  align-items: center;
+  padding: 12px 32px;
 }
 
-//host content
-.host-content {
-  width: 100%;
-  margin-bottom: 12px;
-  border-radius: 8px;
-  max-height: 50px;
-  transition: max-height 0.15s ease-out;
+//GAME CONTAINER
+.game-container {
+  height: 628px;
+  max-width: 445px;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+  border-radius: 16px;
   overflow: hidden;
 }
-.host-content:hover {
-  max-height: 500px;
-  transition: max-height 0.25s ease-in;
-}
 
-.content-host-button {
-  width: 100%;
-  height: 50px;
-  background: #2f3247;
-  color: white;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+// select game
+.select-game-container {
+  background: #202330;
+  //hide scroll
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
-.content-input {
-  width: 100%;
-  height: 38px;
-  border: none;
+.select-game-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.select-game-content {
+  display: inline-flex;
+  // flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  // flex: 1;
+}
+.select-game-card {
+  width: 184px;
+  height: 203px;
   border-radius: 12px;
-  padding: 0px 12px;
-  background: #2b2e43;
-  color: white;
+  margin: 10px;
+  overflow: hidden;
 }
-.content-create {
-  width: 100%;
-  height: 45px;
+
+// join game
+.join-game-container {
+  background: #202330;
+  position: relative;
+}
+.join-game-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.join-game-img {
+  flex: auto;
+  border-radius: 8px 8px 0px 0px;
+  object-fit: cover;
+}
+.join-game-btn {
+  width: 409px;
+  height: 64px;
   border: none;
-  border-radius: 8px;
-  background: #224168;
-  font-size: 16px;
-  color: #0291f4;
-  margin-bottom: 12px;
+  border-radius: 0px 0px 8px 8px;
+  font-size: 18px;
+  background-color: #25514d;
+  color: #00cd69;
 }
-.host-content:hover .content-host-button {
-  display: none;
-  transition: max-height 0.15s ease-out;
+.join-game-close {
+  float: left;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  z-index: 1000;
+  background-color: #92ad40;
 }
-.content-container {
-  margin-top: 12px;
-  padding: 12px 84px;
+
+// MOBILE
+@media only screen and (max-width: 510px) {
+  .select-game-card {
+    width: 144px;
+    height: 159px;
+    border-radius: 12px;
+    margin: 5px;
+  }
+  .container-main {
+    padding: 4px;
+  }
+  .game-container {
+    padding: 9px;
+    height: 70%;
+    max-width: 326px;
+    // margin-bottom: 12px;
+  }
+  .join-game-btn {
+    width: auto;
+    height: 64px;
+  }
 }
-.content-title {
-  color: #b7bbd5;
-  font-size: 24px;
-  padding-bottom: 12px;
-}
-.content-subtitle {
-  color: #626891;
-  font-size: 16px;
-  padding-bottom: 28px;
+
+@media only screen and (max-height: 842px) {
+  .select-game-card {
+    width: 144px;
+    height: 159px;
+    border-radius: 12px;
+    margin: 5px;
+  }
+  .container-main {
+    padding: 4px;
+  }
+  .game-container {
+    padding: 9px;
+    height: 70%;
+    max-width: 326px;
+    margin-bottom: 32px;
+  }
 }
 </style>
