@@ -235,8 +235,13 @@ header {
   padding: 0 30px;
 }
 
-@media (min-width: 960px) {
-  .auth-nav {
+// .test-sidebar{
+//   flex-grow: 0;
+//     width: 480px;
+//     background: #2d2e30;
+// }
+
+.auth-nav {
     display: flex;
     justify-content: flex-end;
     flex-grow: 0;
@@ -295,7 +300,6 @@ header {
   .auth-link-phone {
     display: none;
   }
-}
 
 @media only screen and (max-width: 959px) {
   .sidebar {

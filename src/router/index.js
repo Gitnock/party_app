@@ -6,7 +6,6 @@ import VueRouter from 'vue-router';
 import Signin from '@/views/Signin.vue';
 import Signup from '@/views/Signup.vue';
 import Party from '@/views/Party.vue';
-// import Crew from '@/views/Crew.vue';
 import Index from '@/views/Index.vue';
 import Alpha from '@/views/Alpha.vue';
 import Main from '@/views/Main.vue';
@@ -32,18 +31,12 @@ const routes = [
         component: Home,
       },
       {
-        path: '/crew/:id',
+        path: '/crew/:roomId',
         name: 'party',
         component: Party,
       },
     ],
 
-  },
-  {
-    path: '/app',
-    name: 'home',
-    meta: { requiresAuth: true },
-    component: Home,
   },
   {
     path: '/signin',
@@ -61,18 +54,6 @@ const routes = [
     component: Alpha,
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/crew',
-  //   name: 'crew',
-  //   component: Crew,
-  //   children: [
-  //     {
-  //       path: '/crew/:roomId',
-  //       name: 'party',
-  //       component: Party,
-  //     },
-  //   ],
-  // },
 ];
 
 const router = new VueRouter({

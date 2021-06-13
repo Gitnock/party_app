@@ -237,8 +237,7 @@ header {
   width: 100%;
 }
 
-@media (min-width: 960px) {
-  .auth-nav {
+ .auth-nav {
     display: flex;
     justify-content: flex-end;
     flex-grow: 0;
@@ -302,7 +301,6 @@ header {
   .auth-link-phone {
     display: none;
   }
-}
 
 @media only screen and (max-width: 959px) {
   .sidebar {

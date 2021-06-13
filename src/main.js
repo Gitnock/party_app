@@ -4,7 +4,9 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Vue from 'vue';
 // vuesax
 import Vuesax from 'vuesax';
-import { Select, Field, Slider } from 'buefy';
+import {
+  Select, Field, Slider, Image,
+} from 'buefy';
 
 import VueCropper from 'vue-cropper';
 import App from './App.vue';
@@ -23,6 +25,7 @@ Vue.use(Vuesax);
 Vue.use(Select);
 Vue.use(Field);
 Vue.use(Slider);
+Vue.use(Image);
 let app;
 
 fb.auth.onAuthStateChanged(() => {

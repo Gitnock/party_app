@@ -1,7 +1,7 @@
 <template>
   <div class="home-main">
     <div class="container-main">
-      <div class="select-game-container game-container" v-if="!curGame">
+      <div class="select-game-container game-container" v-if="!curGame" >
         <div class="select-game-content">
           <div
             class="select-game-card clickable"
@@ -10,14 +10,30 @@
             v-bind:value="game"
             @click="setGame(game)"
           >
-            <img :src="game.url_square" alt="" />
+            <img
+              :src="game.url_square"
+              :placeholder="game.url_tiny"
+              :alt="game.gameName"
+            />
           </div>
         </div>
       </div>
-      <div class="join-game-container game-container" v-else>
-        <div class="join-game-close">dfdf</div>
+      <div class="join-game-container game-container" ref="target" v-else>
+        <div class="join-game-close">
+          <vs-avatar circle color="#161823" @click="curGame = null">
+            <i class="bx bx-x" style="color: #ffffff"></i>
+          </vs-avatar>
+        </div>
         <div class="join-game-content">
-          <img class="join-game-img" :src="curGame.url" />
+          <b-image
+            class="join-game-img"
+            :src="curGame.url"
+            :placeholder="curGame.url_tiny"
+            :alt="curGame.gameName"
+            responsive
+            lazy
+            ratio="446by565"
+          />
 
           <button class="join-game-btn roboto-black" @click="join">Join</button>
         </div>
@@ -43,6 +59,15 @@ export default {
       this.curGame = this.getGame;
     },
     join() {
+      const loading = this.$vs.loading({
+        target: this.$refs.target,
+        type: 'corners',
+        background: '#195bff',
+        color: '#fff',
+        opacity: '1',
+        text: 'looking for humans, just a moment',
+      });
+
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
       const playerRef = playersCollection.doc();
       const playerId = playerRef.id;
@@ -52,7 +77,7 @@ export default {
           userId: this.getUser.uid,
           game: this.getGame.gameId,
           createdAt: myTimestamp,
-          size: this.players,
+          size: this.getGame.maxPlayers,
         })
         .then(() => {
           playersCollection.doc(playerId).onSnapshot((snap) => {
@@ -64,12 +89,28 @@ export default {
                   this.$store.commit('setRoom', { roomId });
                   if (this.$route.path !== `/crew/${roomId}`) {
                     this.$router.push(`/crew/${roomId}`);
+                    loading.close();
                   }
                 }
+              }).catch((error) => {
+                this.openNotification('failed', error, 'danger');
+                loading.close();
               });
             }
+          }).catch((error) => {
+            this.openNotification('failed', error, 'danger');
+            loading.close();
           });
         });
+    },
+    openNotification(title, text, color) {
+      this.$vs.notification({
+        // flat: true,
+        title,
+        text,
+        position: 'bottom-center',
+        color,
+      });
     },
     init() {},
     // host() {
@@ -145,6 +186,7 @@ export default {
   // flex-direction: row;
   flex-wrap: wrap;
   align-content: flex-start;
+  width: 409px;
   // flex: 1;
 }
 .select-game-card {
@@ -164,28 +206,27 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
 }
 .join-game-img {
   flex: auto;
-  border-radius: 8px 8px 0px 0px;
-  object-fit: cover;
 }
 .join-game-btn {
   width: 409px;
   height: 64px;
   border: none;
-  border-radius: 0px 0px 8px 8px;
   font-size: 18px;
   background-color: #25514d;
   color: #00cd69;
 }
 .join-game-close {
-  float: left;
+  // margin: 12px;
+  padding: 12px;
   position: absolute;
   right: 0px;
   top: 0px;
   z-index: 1000;
-  background-color: #92ad40;
 }
 
 // MOBILE
@@ -195,6 +236,9 @@ export default {
     height: 159px;
     border-radius: 12px;
     margin: 5px;
+  }
+  .select-game-content{
+    width: 308px;
   }
   .container-main {
     padding: 4px;
@@ -206,7 +250,7 @@ export default {
     // margin-bottom: 12px;
   }
   .join-game-btn {
-    width: auto;
+    width: 308px;
     height: 64px;
   }
 }

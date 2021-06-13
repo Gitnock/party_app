@@ -107,7 +107,7 @@ export default {
 }
 
 .selected {
-  color: #00CD69;
+  color: #b7bbd5;
 }
 .setting-menu-item-logout {
   width: 100%;
@@ -164,13 +164,10 @@ export default {
   .setting-menu {
     flex-direction: row;
     //hide scroll
-    overflow-y: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    overflow-x: auto;
   }
   .setting-menu::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    width: 2px;
   }
   .setting-left {
     width: 100%;
