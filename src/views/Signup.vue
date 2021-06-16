@@ -3,7 +3,6 @@
     <section
       class="sidebar"
       ref="asyncImage"
-      data-src="https://firebasestorage.googleapis.com/v0/b/mifiy-2c32c.appspot.com/o/assets%2Fweb%2Fauth%2Flarge%2Fsignup.png?alt=media&token=a40eac3e-52cc-4a70-973a-741df1abc3c3"
     >
       <div class="sidebar-content">
         <header>
@@ -254,7 +253,7 @@ header {
     width: 480px;
     // background: #2d2e30;
     // color: #865c6c;
-    background-image: url('https://firebasestorage.googleapis.com/v0/b/mifiy-2c32c.appspot.com/o/assets%2Fweb%2Fauth%2Fsmall%2Fsignup_small.png?alt=media&token=7db11eaf-f988-4e08-b8d9-5668cbb869a0');
+    background-image: url('../assets/signup.png');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -392,18 +391,18 @@ export default {
     ...mapGetters(['getEmail', 'getProfile']),
   },
   mounted() {
-    // lazy loading image
+    // // lazy loading image
 
-    // start to load iamge
-    const img = new Image();
-    img.src = this.$refs.asyncImage.dataset.src;
-    // Once image is loaded replace the src of the HTML element
-    img.onload = () => {
-      this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
-    };
-    if (this.getEmail) {
-      this.email = this.getEmail;
-    }
+    // // start to load iamge
+    // const img = new Image();
+    // img.src = this.$refs.asyncImage.dataset.src;
+    // // Once image is loaded replace the src of the HTML element
+    // img.onload = () => {
+    //   this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
+    // };
+    // if (this.getEmail) {
+    //   this.email = this.getEmail;
+    // }
   },
 };
 </script>

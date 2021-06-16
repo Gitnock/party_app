@@ -20,9 +20,10 @@ export default {
 <style lang="scss" scoped>
 .main {
   height: 100%;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .main-container {
-    height: 100%;
+    flex: 1;
 }
 </style>

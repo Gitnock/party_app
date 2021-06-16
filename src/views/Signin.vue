@@ -3,7 +3,6 @@
     <section
       class="sidebar"
       ref="asyncImage"
-      data-src="https://firebasestorage.googleapis.com/v0/b/mifiy-2c32c.appspot.com/o/assets%2Fweb%2Fauth%2Flarge%2Flogin.png?alt=media&token=3c2508d5-5498-425d-a6b5-d50c4817253c"
     >
       <div class="sidebar-content">
         <header>
@@ -142,15 +141,15 @@ export default {
 
   },
   mounted() {
-    // lazy loading image
+    // // lazy loading image
 
-    // start to load iamge
-    const img = new Image();
-    img.src = this.$refs.asyncImage.dataset.src;
-    // Once image is loaded replace the src of the HTML element
-    img.onload = () => {
-      this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
-    };
+    // // start to load iamge
+    // const img = new Image();
+    // img.src = this.$refs.asyncImage.dataset.src;
+    // // Once image is loaded replace the src of the HTML element
+    // img.onload = () => {
+    //   this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
+    // };
   },
   computed: {
     ...mapGetters(['getProfile']),
@@ -260,7 +259,7 @@ header {
     width: 480px;
     // background: #2d2e30;
     color: #fafafa;
-    background-image: url('https://firebasestorage.googleapis.com/v0/b/mifiy-2c32c.appspot.com/o/assets%2Fweb%2Fauth%2Fsmall%2Flogin-small.png?alt=media&token=9487c9e3-3c07-45a7-98c0-eba670324658');
+    background-image: url('../assets/login.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

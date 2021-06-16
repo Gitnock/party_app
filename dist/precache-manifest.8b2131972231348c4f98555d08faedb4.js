@@ -1,7 +1,7 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0c8a7b6427370b87c06b",
-    "url": "/css/app.1ff54a77.css"
+    "revision": "1b8dd3c91b846b0e0a94",
+    "url": "/css/app.09239173.css"
   },
   {
     "revision": "b94014f444fd3c8e4627",
@@ -16,16 +16,24 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/alpha_window.3a18b0c7.svg"
   },
   {
+    "revision": "5d8f027ffb2a076b7b849746cc2e9576",
+    "url": "/img/login.5d8f027f.png"
+  },
+  {
     "revision": "20324b02ca8554ed91fa1c265e408cce",
     "url": "/img/partyapp_logo.20324b02.svg"
   },
   {
-    "revision": "e802421276670f5f0f0a261f727c345c",
+    "revision": "00e8fc2fe84dd419ac6bf563d5abdde2",
+    "url": "/img/signup.00e8fc2f.png"
+  },
+  {
+    "revision": "da05c3f4cc55194cef4cf6a697f06952",
     "url": "/index.html"
   },
   {
-    "revision": "0c8a7b6427370b87c06b",
-    "url": "/js/app.fbe637bd.js"
+    "revision": "1b8dd3c91b846b0e0a94",
+    "url": "/js/app.a6c61a5e.js"
   },
   {
     "revision": "b94014f444fd3c8e4627",

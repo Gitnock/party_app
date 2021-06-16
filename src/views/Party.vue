@@ -1,5 +1,6 @@
 <template>
-  <div class="main">
+  <div class="party-main">
+    <div></div>
     <div class="party-content">
       <div class="columns is-multiline">
         <div class="column">
@@ -17,13 +18,23 @@
         </div>
       </div>
     </div>
+    <div class="party-options-container">
+      <div class="party-options-content">
+        <vs-avatar size="60" circle color="#202330">
+          <i class="bx bxs-microphone"></i>
+        </vs-avatar>
+        <button class="hangup-btn">
+          <img src="@/assets/hangup.svg" alt="" />
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-// import firebase from 'firebase/app';
-import { db, roomsCollection } from '../firebaseConfig';
+import firebase from 'firebase/app';
+import { roomsCollection } from '../firebaseConfig';
 
 const configuration = {
   iceServers: [
@@ -53,7 +64,6 @@ export default {
         .get()
         .then(async (snap) => {
           if (snap.exists) {
-            // await this.userLeft();
             await this.userJoined();
             this.listenNewUsers();
             this.listenNewConnections();
@@ -311,71 +321,68 @@ export default {
       this.userLeft();
     },
     async userJoined() {
+      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
       const roomRef = roomsCollection.doc(this.roomId);
-      await roomRef.collection('activeUsers').doc(this.getUser.uid).set({
+      return roomRef.collection('activeUsers').doc(this.getUser.uid).set({
         userId: this.getUser.uid,
+        createdAt: myTimestamp,
       });
     },
     async userLeft() {
       const roomRef = roomsCollection.doc(this.roomId);
       roomRef.collection('activeUsers').doc(this.getUser.uid).delete();
-      const myConnectionsTo = await roomRef
-        .collection('connections')
-        .where('to', '==', this.getUser.uid)
-        .get();
-      const myConnectionsFrom = await roomRef
-        .collection('connections')
-        .where('from', '==', this.getUser.uid)
-        .get();
-      const batch1 = db.batch();
-      const batch2 = db.batch();
+      // const myConnectionsTo = await roomRef
+      //   .collection('connections')
+      //   .where('to', '==', this.getUser.uid)
+      //   .get();
+      // const myConnectionsFrom = await roomRef
+      //   .collection('connections')
+      //   .where('from', '==', this.getUser.uid)
+      //   .get();
+      // const batch1 = db.batch();
+      // const batch2 = db.batch();
 
-      myConnectionsTo.forEach((doc) => {
-        batch1.delete(doc.ref);
-      });
-      myConnectionsFrom.forEach((doc) => {
-        batch2.delete(doc.ref);
-      });
-      await batch1.commit();
-      await batch2.commit();
+      // myConnectionsTo.forEach((doc) => {
+      //   batch1.delete(doc.ref);
+      // });
+      // myConnectionsFrom.forEach((doc) => {
+      //   batch2.delete(doc.ref);
+      // });
+      // await batch1.commit();
+      // await batch2.commit();
       // roomRef.collection('deleteConnections').add({ userId: this.getUser.uid });
     },
     listenNewUsers() {
       const myId = this.getUser.uid;
       const roomRef = roomsCollection.doc(this.roomId);
-      const unsubscribe = roomRef
-        .collection('activeUsers')
-        .onSnapshot((snapshot) => {
-          snapshot.docChanges().forEach(async (change) => {
+      roomRef.collection('activeUsers').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
             const newUser = change.doc.id;
-            if (change.type === 'added') {
-              if (newUser !== myId) {
-                this.initWebRTC(newUser);
-                this.peers[newUser].peerStream = new MediaStream();
-                this.createOffer(this.peers[newUser], myId, newUser);
-                this.openNotification(
-                  'USER JOIN',
-                  `user: ${change.doc.id}`,
-                  'success',
-                );
-              }
+            if (newUser !== myId) {
+              this.initWebRTC(newUser);
+              this.peers[newUser].peerStream = new MediaStream();
+              this.createOffer(this.peers[newUser], myId, newUser);
+              this.openNotification(
+                'USER JOIN',
+                `user: ${change.doc.id}`,
+                'success',
+              );
             }
-            if (change.type === 'removed') {
-              if (newUser !== myId) {
-                this.openNotification(
-                  'USER',
-                  `user: ${change.doc.id} left`,
-                  'danger',
-                );
-                this.peers[newUser].pc.close();
-                this.$delete(this.peers, newUser);
-              }
-              if (newUser === myId) {
-                unsubscribe();
-              }
+          }
+          if (change.type === 'removed') {
+            const newUser = change.doc.id;
+            if (newUser !== myId) {
+              this.openNotification(
+                'USER',
+                `user: ${change.doc.id} left`,
+                'danger',
+              );
+              this.peers[newUser].pc.close();
             }
-          });
+          }
         });
+      });
     },
     removeUser() {
       console.log('removing user');
@@ -387,26 +394,50 @@ export default {
   mounted() {
     // this.init();
   },
-  // beforeDestroy() {
-  //   this.hangUp();
-  // },
+  beforeDestroy() {
+    // this.hangUp();
+  },
   created() {
     console.log('created');
     this.init();
-    window.addEventListener('beforeunload', this.hangUp);
+    // window.addEventListener('beforeunload', this.hangUp);
   },
   beforeMount() {
-    window.addEventListener('beforeunload', this.hangUp);
+    // window.addEventListener('beforeunload', this.hangUp);
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
+.party-main {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
 .party-content {
-  overflow: hidden;
-  height: 100vh;
+  flex: auto;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+// OPITONS CONTAINER
+.party-options-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.party-options-content {
+  display: flex;
+}
+.hangup-btn {
+  margin-left: 28px;
+  height: 60px;
+  width: 140px;
+  border: none;
+  border-radius: 50px;
+  background-color: #fb4060;
 }
 </style>

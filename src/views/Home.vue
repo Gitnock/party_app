@@ -1,6 +1,6 @@
 <template>
   <div class="home-main">
-    <div class="container-main">
+    <div class="home-container">
       <div class="select-game-container game-container" v-if="!curGame" >
         <div class="select-game-content">
           <div
@@ -30,8 +30,6 @@
             :src="curGame.url"
             :placeholder="curGame.url_tiny"
             :alt="curGame.gameName"
-            responsive
-            lazy
             ratio="446by565"
           />
 
@@ -45,7 +43,7 @@
 <script>
 import firebase from 'firebase/app';
 import { mapActions, mapGetters } from 'vuex';
-import { playersCollection, roomsCollection } from '../firebaseConfig';
+import { db, playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
   components: {},
@@ -90,6 +88,7 @@ export default {
                   if (this.$route.path !== `/crew/${roomId}`) {
                     this.$router.push(`/crew/${roomId}`);
                     loading.close();
+                    this.setRoom(roomId);
                   }
                 }
               }).catch((error) => {
@@ -113,6 +112,12 @@ export default {
       });
     },
     init() {},
+    setRoom(roomId) {
+      const roomRef = db.doc(`/status/${this.getUser.uid}`);
+      roomRef.set({
+        roomId,
+      }, { merge: true });
+    },
     // host() {
     //   this.hostGameAction({
     //     game: this.getGame.gameId,
@@ -149,13 +154,14 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100%;
+    align-items: center;
 }
-.container-main {
-  height: 100%;
-  max-width: 1320px;
-  display: flex;
-  align-items: center;
-  padding: 12px 32px;
+.home-container {
+  // height: 100%;
+  // max-width: 1320px;
+  // display: flex;
+  // align-items: center;
+  // padding: 12px 32px;
 }
 
 //GAME CONTAINER
@@ -211,6 +217,7 @@ export default {
 }
 .join-game-img {
   flex: auto;
+  transition: all .3s linear;
 }
 .join-game-btn {
   width: 409px;
@@ -245,9 +252,10 @@ export default {
   }
   .game-container {
     padding: 9px;
-    height: 70%;
+    height: 100%;
     max-width: 326px;
     // margin-bottom: 12px;
+
   }
   .join-game-btn {
     width: 308px;
@@ -267,9 +275,14 @@ export default {
   }
   .game-container {
     padding: 9px;
-    height: 70%;
     max-width: 326px;
     margin-bottom: 32px;
+    height: 100%;
+  }
+  .join-game-btn {
+    width: 308px;
+    height: 64px;
   }
 }
+
 </style>
