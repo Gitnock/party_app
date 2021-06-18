@@ -1,29 +1,23 @@
 <template>
   <div class="party-main">
-    <div></div>
-    <div class="party-content">
-      <div class="columns is-multiline">
-        <div class="column">
-          <button @click="hangUp">hangup</button>
-        </div>
-        <div class="column">
-          <audio controls ref="localAudio" muted />
-        </div>
+    <div class="party-container">
+      <div class="party-content">
+      <div class="audio-layout">
+        <audioLayout :audioStream="localStream"/>
       </div>
-      <div>
-        <div v-for="peer in peers" :key="peer.userId">
-          <div>{{ peer.userId }}</div>
-          <!-- srcObject is a modifier not a html attribute, so you need to write -->
-          <audio autoplay controls :srcObject.prop="peer.peerStream" />
-        </div>
+      <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
+        <audioLayout :muted="true" :audioStream="peer.peerStream"/>
       </div>
     </div>
+    </div>
+
     <div class="party-options-container">
       <div class="party-options-content">
-        <vs-avatar size="60" circle color="#202330">
-          <i class="bx bxs-microphone"></i>
+        <vs-avatar size="60" circle color="#202330" @click="mute" class="clickable">
+          <i class="bx bxs-microphone" v-if="muted"/>
+          <i class='bx bxs-microphone-off' v-else></i>
         </vs-avatar>
-        <button class="hangup-btn">
+        <button class="hangup-btn" @click="hangUp">
           <img src="@/assets/hangup.svg" alt="" />
         </button>
       </div>
@@ -34,6 +28,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
+import audioLayout from '@/components/call/audio.vue';
 import { roomsCollection } from '../firebaseConfig';
 
 const configuration = {
@@ -54,7 +49,11 @@ export default {
     roomId: '',
     peers: {},
     localStream: undefined,
+    muted: true,
   }),
+  components: {
+    audioLayout,
+  },
   methods: {
     async init() {
       await this.getUserMedia();
@@ -102,7 +101,8 @@ export default {
       // Show stream in HTML mic
       this.$refs.localAudio.srcObject = this.localStream;
       // mute local audio
-      this.$refs.localAudio.volume = 0;
+      // this.$refs.localAudio.volume = 100;
+      this.$refs.localAudio.play();
     },
     async createOffer(peer, from, to) {
       const connectionsCollection = roomsCollection
@@ -319,6 +319,7 @@ export default {
       });
       this.peers = {};
       this.userLeft();
+      this.$router.push('/crew/@me');
     },
     async userJoined() {
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
@@ -387,6 +388,10 @@ export default {
     removeUser() {
       console.log('removing user');
     },
+    mute() {
+      this.muted = !this.muted;
+      this.localStream.getAudioTracks()[0].enabled = this.muted;
+    },
   },
   computed: {
     ...mapGetters(['getUser']),
@@ -400,15 +405,11 @@ export default {
   created() {
     console.log('created');
     this.init();
-    // window.addEventListener('beforeunload', this.hangUp);
-  },
-  beforeMount() {
-    // window.addEventListener('beforeunload', this.hangUp);
   },
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .party-main {
   padding: 16px;
   height: 100%;
@@ -416,18 +417,30 @@ export default {
   flex-direction: column;
   overflow: auto;
 }
-.party-content {
+.party-container{
+  width: 100%;
   flex: auto;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.party-content {
+  display: flex;
+  // align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1248px;
+}
+.audio-layout{
+    margin: 5px;
+  }
 
 // OPITONS CONTAINER
 .party-options-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 24px;
 }
 .party-options-content {
   display: flex;
@@ -440,4 +453,18 @@ export default {
   border-radius: 50px;
   background-color: #fb4060;
 }
+@media only screen and (max-width: 628px) {
+  .party-container{
+    justify-content: flex-end;
+    margin-bottom: 32px;
+    flex-direction: column;
+  }
+  .audio-layout{
+    margin: 5px 0px;
+  }
+  .party-main {
+  padding: 0px;
+  }
+}
+
 </style>

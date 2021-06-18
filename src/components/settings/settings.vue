@@ -71,6 +71,7 @@ export default {
     classObject(num) {
       return {
         selected: this.settingPosition === num,
+        selectedBackground: this.settingPosition === num,
       };
     },
     ...mapActions(['signOutAction']),
@@ -179,6 +180,9 @@ export default {
   .setting-menu-item {
     width: auto;
     // height: auto;
+  }
+  .selectedBackground{
+    background-color: #202330;
   }
 }
 </style>
