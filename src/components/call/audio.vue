@@ -1,7 +1,7 @@
 <template>
   <div class="audio-container">
     <audio :srcObject.prop="audioStream"/>
-    <div class="audio-muted" v-if="muted">
+    <div class="audio-muted" v-if="!muted">
       <vs-avatar
         circle
         color="#161823"

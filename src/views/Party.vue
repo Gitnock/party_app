@@ -3,7 +3,7 @@
     <div class="party-container">
       <div class="party-content">
       <div class="audio-layout">
-        <audioLayout :audioStream="localStream"/>
+        <audioLayout :muted="true" :audioStream="localStream"/>
       </div>
       <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
         <audioLayout :muted="true" :audioStream="peer.peerStream"/>
@@ -99,10 +99,9 @@ export default {
       }
 
       // Show stream in HTML mic
-      this.$refs.localAudio.srcObject = this.localStream;
+      // this.$refs.localAudio.srcObject = this.localStream;
       // mute local audio
-      // this.$refs.localAudio.volume = 100;
-      this.$refs.localAudio.play();
+      // this.$refs.localAudio.volume = 0;
     },
     async createOffer(peer, from, to) {
       const connectionsCollection = roomsCollection
@@ -364,22 +363,23 @@ export default {
               this.initWebRTC(newUser);
               this.peers[newUser].peerStream = new MediaStream();
               this.createOffer(this.peers[newUser], myId, newUser);
-              this.openNotification(
-                'USER JOIN',
-                `user: ${change.doc.id}`,
-                'success',
-              );
+              // this.openNotification(
+              //   'USER JOIN',
+              //   `user: ${change.doc.id}`,
+              //   'success',
+              // );
             }
           }
           if (change.type === 'removed') {
             const newUser = change.doc.id;
             if (newUser !== myId) {
-              this.openNotification(
-                'USER',
-                `user: ${change.doc.id} left`,
-                'danger',
-              );
+              // this.openNotification(
+              //   'USER',
+              //   `user: ${change.doc.id} left`,
+              //   'danger',
+              // );
               this.peers[newUser].pc.close();
+              this.$delete(this.peers, newUser);
             }
           }
         });
@@ -400,7 +400,7 @@ export default {
     // this.init();
   },
   beforeDestroy() {
-    // this.hangUp();
+    this.hangUp();
   },
   created() {
     console.log('created');
