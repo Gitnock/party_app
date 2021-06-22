@@ -7,10 +7,12 @@
 <script>
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import { mapGetters, mapActions } from 'vuex';
 import { db, rtDb } from './firebaseConfig';
 
 export default {
   methods: {
+    ...mapActions(['bindGameRef']),
     rtdb_presence(uid) {
       // Create a reference to this user's specific status node.
       // This is where we will store data about being online/offline.
@@ -109,9 +111,19 @@ export default {
         this.rtdb_and_local_fs_presence(user.uid);
         this.$store.commit('setUser', user);
         this.$store.dispatch('bindUserProfileRef');
-        this.$store.dispatch('bindGameRef');
+        if (localStorage.getItem('gameList') === null) {
+          this.bindGameRef().then(() => {
+            localStorage.setItem('gameList', JSON.stringify(this.getGames));
+          });
+        } else {
+          const games = JSON.parse(localStorage.getItem('gameList'));
+          this.$store.commit('setGames', games);
+        }
       }
     });
+  },
+  computed: {
+    ...mapGetters(['getGames']),
   },
 };
 </script>

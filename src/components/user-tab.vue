@@ -15,6 +15,7 @@
                 circle
                 badge-color="success"
                 badge-position="bottom-left"
+                class="clickable"
                 @click="activeProfile = !activeProfile"
             >
                 <img
@@ -56,7 +57,7 @@
                 <div class="prof-bot"></div>
 
                 <footer style="color: #626891" class="clickable">
-                    <p>Privacy policy | v-0.8.0</p>
+                    <p>Privacy policy | v-0.8.1</p>
                 </footer>
                 </div>
             </template>

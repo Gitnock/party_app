@@ -67,6 +67,7 @@ export default {
       this.signOutAction().then(() => {
         this.$router.push('/signin');
       });
+      localStorage.removeItem('gameList');
     },
     classObject(num) {
       return {
