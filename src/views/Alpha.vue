@@ -3,7 +3,7 @@
     <div class="main-content">
       <div class="alpha-container">
         <div class="container has-text-centered">
-          <img src="../assets/alpha_window.svg" alt="" />
+          <img src="../assets/alpha_window.svg" alt="" draggable="false"/>
           <h1 class="title roboto-black partyapp-title" style="color: black">
             On the wait list
           </h1>

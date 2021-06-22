@@ -11,7 +11,8 @@
               <img
                 class="title"
                 src="../assets/partyapp_text_white.png"
-                alt="m"
+                alt="party app title"
+                draggable="false"
               />
             </div>
           </router-link>

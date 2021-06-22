@@ -2,34 +2,34 @@
   <div class="main">
     <div class="setting-left">
       <div class="setting-menu">
-        <div
+        <button
           class="setting-menu-item roboto-medium clickable"
           v-on:click="settingPosition = 0"
           v-bind:class="classObject(0)"
         >
           Username & Avatar
-        </div>
-        <div
+        </button>
+        <button
           class="setting-menu-item roboto-medium clickable"
           v-on:click="settingPosition = 1"
           v-bind:class="classObject(1)"
         >
           Account Information
-        </div>
-        <div
+        </button>
+        <button
           class="setting-menu-item roboto-medium clickable"
           v-on:click="settingPosition = 2"
           v-bind:class="classObject(2)"
         >
           Password
-        </div>
-        <div class="setting-menu-item roboto-medium clickable">Help</div>
-        <div
+        </button>
+        <button class="setting-menu-item roboto-medium clickable">Help</button>
+        <button
           class="setting-menu-item-logout roboto-medium clickable"
           @click="signOut"
         >
           Log Out
-        </div>
+        </button>
       </div>
     </div>
     <div class="setting-right">
@@ -106,6 +106,9 @@ export default {
   border-radius: 12px;
   color: #626891;
   white-space: nowrap;
+  border: none;
+  background-color: transparent;
+  text-align: left;
 }
 
 .selected {
@@ -118,6 +121,9 @@ export default {
   border-radius: 12px;
   color: #ff4757;
   white-space: nowrap;
+  border: none;
+  background-color: transparent;
+  text-align: left;
 }
 
 .setting-menu-item:hover {

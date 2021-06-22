@@ -18,7 +18,7 @@
           <i class='bx bxs-microphone-off' v-else></i>
         </vs-avatar>
         <button class="hangup-btn" @click="hangUp">
-          <img src="@/assets/hangup.svg" alt="" />
+          <img src="@/assets/hangup.svg" alt="" draggable="false"/>
         </button>
       </div>
     </div>

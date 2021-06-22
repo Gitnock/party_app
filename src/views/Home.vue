@@ -14,6 +14,7 @@
               :src="game.url_square"
               :placeholder="game.url_tiny"
               :alt="game.gameName"
+              draggable="false"
             />
           </div>
         </div>

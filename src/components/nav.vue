@@ -5,8 +5,9 @@
           <img
               src="@/assets/partyapp_logo.svg"
               alt="partyapp logo"
-              class="logo-attio"
+              class="logo-attio clickable"
               @click="goHome"
+              draggable="false"
           />
         </nav>
         <nav class="nav-right">

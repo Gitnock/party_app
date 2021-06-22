@@ -22,6 +22,7 @@
                 v-bind:src="`${getProfile.avatar}`"
                 v-if="getProfile.avatar"
                 alt="profile image"
+                draggable="false"
                 />
                 <template v-if="!getProfile.avatar" #text>
                 {{ getProfile.username }}
@@ -38,6 +39,7 @@
                             v-bind:src="`${getProfile.avatar}`"
                             v-if="getProfile.avatar"
                             alt="profile image"
+                            draggable="false"
                         />
                         <template v-if="!getProfile.avatar" #text>
                             {{  getProfile.username}}
@@ -57,7 +59,7 @@
                 <div class="prof-bot"></div>
 
                 <footer style="color: #626891" class="clickable">
-                    <p>Privacy policy | v-0.8.1</p>
+                    <p>Privacy policy | v-0.8.2</p>
                 </footer>
                 </div>
             </template>

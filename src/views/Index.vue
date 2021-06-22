@@ -8,6 +8,7 @@
               src="@/assets/partyapp_logo.svg"
               alt="partyapp logo"
               class="logo-attio"
+              draggable="false"
           /></a>
         </nav>
         <nav class="nav-right">

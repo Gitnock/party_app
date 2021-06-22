@@ -17,6 +17,7 @@
           v-bind:src="`${user.avatar}`"
           v-if="user.avatar"
           alt="profile image"
+          draggable="false"
         />
         <template v-if="!user.avatar" #text>
           {{ user.username }}

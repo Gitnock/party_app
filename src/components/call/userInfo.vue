@@ -4,7 +4,7 @@
       {{user.username}}
     </h2>
     <button class="copyUsername-btn">
-      <img src="@/assets/copy.svg" alt="copy button">
+      <img src="@/assets/copy.svg" alt="copy button" draggable="false">
     </button>
 
   </div>

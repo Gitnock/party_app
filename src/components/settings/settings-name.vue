@@ -31,6 +31,7 @@
               v-bind:src="`${getProfile.avatar}`"
               v-if="getProfile.avatar"
               alt="profile image"
+              draggable="false"
             />
             <input
               ref="FileInput"
