@@ -1,6 +1,6 @@
 <template>
   <div class="audio-container">
-    <audio :srcObject.prop="audioStream"/>
+    <audio :srcObject.prop="audioStream" />
     <div class="audio-muted" v-if="!muted">
       <vs-avatar
         circle
@@ -13,9 +13,17 @@
     </div>
     <div class="audio-content">
       <vs-avatar size="96" circle color="#161823" class="user-avatar">
+        <img
+          v-bind:src="`${user.avatar}`"
+          v-if="user.avatar"
+          alt="profile image"
+        />
+        <template v-if="!user.avatar" #text>
+          {{ user.username }}
+        </template>
       </vs-avatar>
     </div>
-    <userInfo />
+    <userInfo :user="user"/>
   </div>
 </template>
 
@@ -24,8 +32,7 @@ import userInfo from './userInfo.vue';
 
 export default {
   name: 'audioLayout',
-  data: () => ({
-  }),
+  data: () => ({}),
   components: {
     userInfo,
   },
@@ -33,6 +40,7 @@ export default {
     muted: Boolean,
     audioStream: MediaStream,
     isMe: Boolean,
+    user: Object,
   },
 };
 </script>

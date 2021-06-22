@@ -3,10 +3,10 @@
     <div class="party-container">
       <div class="party-content">
       <div class="audio-layout">
-        <audioLayout :muted="true" :audioStream="localStream"/>
+        <audioLayout :muted="true" :audioStream="localStream" :user="getProfile"/>
       </div>
       <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
-        <audioLayout :muted="true" :audioStream="peer.peerStream"/>
+        <audioLayout :muted="true" :audioStream="peer.peerStream" :user="peer.user"/>
       </div>
     </div>
     </div>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import firebase from 'firebase/app';
 import audioLayout from '@/components/call/audio.vue';
 import { roomsCollection } from '../firebaseConfig';
@@ -55,6 +55,7 @@ export default {
     audioLayout,
   },
   methods: {
+    ...mapActions(['getRoomUsersAction']),
     async init() {
       await this.getUserMedia();
       this.roomId = this.$route.params.roomId;
@@ -63,6 +64,7 @@ export default {
         .get()
         .then(async (snap) => {
           if (snap.exists) {
+            this.getRoomUsersAction({ roomId: this.roomId, userId: this.getUser.uid });
             await this.userJoined();
             this.listenNewUsers();
             this.listenNewConnections();
@@ -266,11 +268,13 @@ export default {
       });
     },
     initWebRTC(id) {
+      const user = this.getRoomUsers.find((x) => x.userId === id);
       this.$set(this.peers, id, {
         userId: id,
         pc: new RTCPeerConnection(configuration),
         peerStream: undefined,
         peerVideo: undefined,
+        user,
       });
       // this.onAddStream(this.peers[id]);
     },
@@ -394,7 +398,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['getUser']),
+    ...mapGetters(['getUser', 'getRoomUsers', 'getProfile']),
   },
   mounted() {
     // this.init();

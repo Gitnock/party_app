@@ -1,7 +1,7 @@
 <template>
   <div class="userInfo-container">
     <h2 class="username roboto-medium username-nowrap">
-      VerudoraTempest
+      {{user.username}}
     </h2>
     <button class="copyUsername-btn">
       <img src="@/assets/copy.svg" alt="copy button">
@@ -13,7 +13,9 @@
 <script>
 export default {
   name: 'userInfo',
-
+  props: {
+    user: Object,
+  },
 };
 </script>
 

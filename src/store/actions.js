@@ -115,16 +115,50 @@ const actions = {
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
   // games list
   bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
+  getRoomUsersAction({ commit }, payload) {
+    return new Promise((res, rej) => {
+      roomsCollection
+        .doc(payload.roomId)
+        .get()
+        .then((doc) => {
+          const data = doc.data();
+          const userArray = data.players.filter((uid) => uid !== payload.userId);
+          // const gameId = data.game;
+          usersCollection
+            .where('userId', 'in', userArray)
+            .get()
+            .then((snap) => {
+              // eslint-disable-next-line prefer-const
+              let users = [];
+              snap.forEach((userDoc) => {
+                const userData = userDoc.data();
+                users.push({
+                  avatar: userData.avatar,
+                  username: userData.username,
+                  userId: userData.userId,
+                });
+              });
+              commit('setRoomUsers', users);
+              res();
+            })
+            .catch((error) => {
+              commit('setError', error.message);
+              rej();
+            });
+        });
+    });
+  },
   hostGameAction({ commit }, payload) {
     const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
     return new Promise((res, rej) => {
-      roomsCollection.add({
-        createdAt: myTimestamp,
-        game: payload.game,
-        players: payload.players,
-        size: payload.size,
-        full: false,
-      })
+      roomsCollection
+        .add({
+          createdAt: myTimestamp,
+          game: payload.game,
+          players: payload.players,
+          size: payload.size,
+          full: false,
+        })
         .then((docRef) => {
           commit('setRoom', docRef.id);
           res();
