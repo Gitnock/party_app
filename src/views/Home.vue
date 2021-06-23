@@ -11,7 +11,7 @@
             @click="setGame(game)"
           >
             <img
-              :src="game.url_square"
+              :src="game.url"
               :placeholder="game.url_tiny"
               :alt="game.gameName"
               draggable="false"

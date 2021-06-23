@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" @contextmenu.prevent>
     <topNav></topNav>
     <div class="main-container">
       <router-view />
