@@ -3,7 +3,9 @@ module.exports = {
   pwa: {
     name: 'PartyApp',
     themeColor: '#4DBA87',
-    msTileColor: '#000000',
+    msTileColor: '#161823',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black',
     manifestOptions: {
       start_url: './crew/@me',
     },

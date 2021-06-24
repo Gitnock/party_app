@@ -60,50 +60,41 @@
         <div class="card-container">
           <div class="card">
             <div class="card-top">
-              <h1 class="card-top-title">1.</h1>
+              <h1 class="card-top-title">01</h1>
             </div>
             <div class="card-mid">
               <h2 class="card-mid-title">
                 Choose your game.
-                <p class="card-mid-subtitle">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
               </h2>
             </div>
             <div class="card-bot">
-              <div class="card-bot-img"></div>
+              <img src="@/assets/index/choose_game.png" class="card-bot-img"/>
             </div>
           </div>
           <div class="card">
             <div class="card-top">
-              <h1 class="card-top-title">2.</h1>
+              <h1 class="card-top-title">02</h1>
             </div>
             <div class="card-mid">
               <h2 class="card-mid-title">
                 Say hi.
-                <p class="card-mid-subtitle">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
               </h2>
             </div>
             <div class="card-bot">
-              <div class="card-bot-img"></div>
+              <img src="@/assets/index/say_hi.png" class="card-bot-img"/>
             </div>
           </div>
           <div class="card">
             <div class="card-top">
-              <h1 class="card-top-title">3.</h1>
+              <h1 class="card-top-title">03</h1>
             </div>
             <div class="card-mid">
               <h2 class="card-mid-title">
                 Add some body.
-                <p class="card-mid-subtitle">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
               </h2>
             </div>
             <div class="card-bot">
-              <div class="card-bot-img"></div>
+              <img src="@/assets/index/copy_username.png" class="card-bot-img"/>
             </div>
           </div>
         </div>
@@ -315,13 +306,13 @@ export default {
   justify-content: center;
 }
 .card {
-  width: 345px;
-  height: 415px;
+  width: 321px;
+  height: 382px;
   margin: 8px;
   border: none;
   border-radius: 16px;
   background-color: #202330;
-  padding: 22px;
+  padding: 18px;
 }
 .card-top {
   display: inline;
@@ -338,19 +329,15 @@ export default {
   font-size: 21px;
   text-align: left;
 }
-.card-mid-subtitle {
-  display: inline;
-  color: #b7bbd5;
-}
 .card-bot {
-  margin-top: 32px;
+  margin-top: 21px;
   display: flex;
   justify-content: center;
 }
 .card-bot-img {
   border: none;
-  width: 236px;
-  height: 179px;
+  width: 282px;
+  height: 246px;
   border-radius: 12px;
   background-color: #2b2e43;
 }
