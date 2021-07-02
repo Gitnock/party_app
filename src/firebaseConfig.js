@@ -35,6 +35,7 @@ const storage = firebase.storage();
 
 // firebase collections
 const usersCollection = db.collection('users');
+const userDataCollection = db.collection('userData');
 const friendsCollection = db.collection('friends');
 const gamesCollection = db.collection('games');
 const playersCollection = db.collection('players');
@@ -55,4 +56,5 @@ export {
   notificationsCollection,
   friendChatCollection,
   storage,
+  userDataCollection,
 };

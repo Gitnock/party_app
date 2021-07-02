@@ -58,7 +58,6 @@
                       :message="errors[0]"
                     >
                       <vs-input
-                        type="text"
                         v-model="username"
                         placeholder="Username"
                         maxlength="15"
@@ -350,7 +349,6 @@ export default {
       username: '',
       email: '',
       password: '',
-      error: '',
     };
   },
   methods: {
@@ -361,11 +359,22 @@ export default {
         username: this.username,
       }).then(() => {
         this.init();
+      }).catch((e) => {
+        this.openNotification('ERROR', e.message, 'danger');
       });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
         this.init();
+      });
+    },
+    openNotification(title, text, color) {
+      this.$vs.notification({
+        // flat: true,
+        title,
+        text,
+        position: 'bottom-center',
+        color,
       });
     },
     init() {
@@ -401,9 +410,9 @@ export default {
     // img.onload = () => {
     //   this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
     // };
-    // if (this.getEmail) {
-    //   this.email = this.getEmail;
-    // }
+    if (this.getEmail) {
+      this.email = this.getEmail;
+    }
   },
 };
 </script>

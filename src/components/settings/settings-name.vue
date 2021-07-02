@@ -170,7 +170,7 @@ export default {
                 avatar: url,
               })
               .then({});
-            this.openNotification('Success', 'Avater was upload', 'success');
+            this.openNotification('Success', 'Avater was uploaded', 'success');
             this.isEdit = !this.isEdit;
           })
           .catch(console.error);
@@ -192,7 +192,7 @@ export default {
           username: this.uname,
         })
         .then(() => {
-          this.openNotification('Success', 'username was update', 'success');
+          this.openNotification('Success', 'username was updated', 'success');
           this.uname = '';
           this.isActive = false;
         });

@@ -9,5 +9,6 @@ module.exports = {
     manifestOptions: {
       start_url: './crew/@me',
     },
+
   },
 };

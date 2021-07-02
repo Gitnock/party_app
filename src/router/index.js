@@ -65,7 +65,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isAuthenticated = firebase.auth().currentUser;
-  console.log('isauthenticated', isAuthenticated);
+  // console.log('isauthenticated', isAuthenticated);
   if (requiresAuth && !isAuthenticated) {
     next('/signin');
   } else {

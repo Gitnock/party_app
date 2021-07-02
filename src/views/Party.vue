@@ -92,7 +92,7 @@ export default {
           },
         });
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         this.openNotification(
           'Error',
           'Permission denied. Refresh to try again.',
@@ -389,9 +389,6 @@ export default {
         });
       });
     },
-    removeUser() {
-      console.log('removing user');
-    },
     mute() {
       this.muted = !this.muted;
       this.localStream.getAudioTracks()[0].enabled = this.muted;
@@ -407,7 +404,6 @@ export default {
     this.hangUp();
   },
   created() {
-    console.log('created');
     this.init();
   },
 };

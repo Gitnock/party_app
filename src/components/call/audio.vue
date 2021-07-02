@@ -20,7 +20,7 @@
           draggable="false"
         />
         <template v-if="!user.avatar" #text>
-          {{ user.username }}
+          {{ user.username.charAt(0) }}
         </template>
       </vs-avatar>
     </div>

@@ -5,6 +5,7 @@ import {
   gamesCollection,
   // playersCollection,
   roomsCollection,
+  userDataCollection,
   usersCollection,
 } from '../firebaseConfig';
 
@@ -22,10 +23,7 @@ const actions = {
             .doc(response.user.uid)
             .set({
               username: payload.username,
-              email: payload.email,
               tag: Math.floor(1000 + Math.random() * 9000),
-              sex: '',
-              dataofbirth: '',
               avatar: '',
               mfa_enabled: false,
               premiumType: '',
@@ -33,6 +31,17 @@ const actions = {
               userId: response.user.uid,
             })
             .then(() => {
+              userDataCollection
+                .doc(response.user.uid)
+                .set({
+                  email: payload.email,
+                  dataofbirth: '',
+                  sex: '',
+                }).then(() => {
+                  res();
+                }).catch((err) => {
+                  rej(err);
+                });
               res();
             });
         })
@@ -88,10 +97,7 @@ const actions = {
               usersRef
                 .set({
                   name: profile.displayName,
-                  email: profile.email,
                   tag: Math.floor(1000 + Math.random() * 9000),
-                  sex: '',
-                  dataofbirth: '',
                   avatar: profile.photoURL,
                   mfa_enabled: false,
                   premiumType: '',
@@ -100,6 +106,17 @@ const actions = {
                 })
                 .then(() => {
                   commit('setUser', data.user);
+                  userDataCollection
+                    .doc(data.user.uid)
+                    .set({
+                      email: profile.email,
+                      dataofbirth: '',
+                      sex: '',
+                    }).then(() => {
+                      res();
+                    }).catch((err) => {
+                      rej(err);
+                    });
                   res();
                 });
             }

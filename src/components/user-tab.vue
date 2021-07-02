@@ -25,7 +25,7 @@
                 draggable="false"
                 />
                 <template v-if="!getProfile.avatar" #text>
-                {{ getProfile.username }}
+                {{ getProfile.username.charAt(0) }}
                 </template>
             </vs-avatar>
 
@@ -42,7 +42,7 @@
                             draggable="false"
                         />
                         <template v-if="!getProfile.avatar" #text>
-                            {{  getProfile.username}}
+                            {{getProfile.username.charAt(0)}}
                         </template>
                         </vs-avatar>
                     </div>

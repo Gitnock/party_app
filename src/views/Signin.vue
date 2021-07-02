@@ -1,9 +1,6 @@
 <template>
   <div class="main">
-    <section
-      class="sidebar"
-      ref="asyncImage"
-    >
+    <section class="sidebar" ref="asyncImage">
       <div class="sidebar-content">
         <header>
           <router-link to="/">
@@ -39,49 +36,77 @@
       <div class="content-main">
         <div class="auth-content">
           <h1 class="subtitle-color roboto-medium">Sign in to PartyApp</h1>
-
-          <form @submit.prevent="emailauth">
-            <div class="auth-form">
-              <div class="container">
-                <label for="uname">
-                  <b class="subtitle-color">Email</b>
-                </label>
-                <vs-input
-                  type="text"
-                  class="vv"
-                  v-model="email"
-                  placeholder="Email"
-                />
-                <label for="psw">
-                  <b class="subtitle-color">Password</b>
-                  <p class="auth-forgot">
-                    <router-link to="passreset">Forgot password</router-link>
-                  </p>
-                </label>
-                <vs-input
-                  type="password"
-                  v-model="password"
-                  placeholder="Password"
-                />
-
-                <div class="auth-buttons">
-                  <button type="submit" class="button email-auth">Login</button>
-                  <button
-                    type="button"
-                    class="button google-auth"
-                    v-on:click="googleauth"
+          <ValidationObserver v-slot="{ handleSubmit }">
+            <form @submit.prevent="handleSubmit(emailauth)">
+              <div class="auth-form">
+                <div class="container">
+                  <label for="uname">
+                    <b class="subtitle-color">Email</b>
+                  </label>
+                  <ValidationProvider
+                    name="email"
+                    rules="required|email"
+                    v-slot="{ errors }"
                   >
-                    <span class="icon">
-                      <i class='bx bxl-google' style='color:#ffffff'  ></i>
-                    </span>
-                  </button>
+                    <b-field
+                      class="field"
+                      type="is-danger"
+                      :message="errors[0]"
+                    >
+                      <vs-input
+                        type="text"
+                        class="vv"
+                        v-model="email"
+                        placeholder="Email"
+                      />
+                    </b-field>
+                  </ValidationProvider>
+
+                  <label for="psw">
+                    <b class="subtitle-color">Password</b>
+                    <p class="auth-forgot">
+                      <router-link to="passreset">Forgot password</router-link>
+                    </p>
+                  </label>
+                  <ValidationProvider
+                    name="password"
+                    rules="required"
+                    v-slot="{ errors }"
+                  >
+                    <b-field
+                      class="field"
+                      type="is-danger"
+                      :message="errors[0]"
+                    >
+                      <vs-input
+                        type="password"
+                        v-model="password"
+                        placeholder="Password"
+                      />
+                    </b-field>
+                  </ValidationProvider>
+
+                  <div class="auth-buttons">
+                    <button type="submit" class="button email-auth">
+                      Login
+                    </button>
+                    <button
+                      type="button"
+                      class="button google-auth"
+                      v-on:click="googleauth"
+                    >
+                      <span class="icon">
+                        <i class="bx bxl-google" style="color: #ffffff"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <p class="auth-link-phone">
+                    <router-link to="Signup">Need an account?</router-link>
+                  </p>
                 </div>
-                <p class="auth-link-phone">
-                  <router-link to="Signup">Need an account?</router-link>
-                </p>
               </div>
-            </div>
-          </form>
+            </form>
+          </ValidationObserver>
         </div>
       </div>
     </section>
@@ -90,8 +115,18 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { ValidationProvider, extend } from 'vee-validate';
+import { required, email } from 'vee-validate/dist/rules';
 // import firebase from 'firebase/app';
 // import { usersCollection } from '../firebaseConfig';
+
+// No message specified.
+extend('email', email);
+// Override the default message.
+extend('required', {
+  ...required,
+  message: 'This field is required',
+});
 
 export default {
   metaInfo: {
@@ -106,15 +141,21 @@ export default {
     return {
       email: '',
       password: '',
-      error: '',
     };
+  },
+  components: {
+    ValidationProvider,
   },
   methods: {
     ...mapActions(['signInAction', 'googleAuthAction']),
     emailauth() {
-      this.signInAction({ email: this.email, password: this.password }).then(() => {
-        this.init();
-      });
+      this.signInAction({ email: this.email, password: this.password })
+        .then(() => {
+          this.init();
+        })
+        .catch((e) => {
+          this.openNotification('ERROR', e.message, 'danger');
+        });
     },
     googleauth() {
       this.googleAuthAction().then(() => {
@@ -139,11 +180,18 @@ export default {
         loading.close();
       }, 1000);
     },
-
+    openNotification(title, text, color) {
+      this.$vs.notification({
+        // flat: true,
+        title,
+        text,
+        position: 'bottom-center',
+        color,
+      });
+    },
   },
   mounted() {
     // // lazy loading image
-
     // // start to load iamge
     // const img = new Image();
     // img.src = this.$refs.asyncImage.dataset.src;
@@ -151,9 +199,12 @@ export default {
     // img.onload = () => {
     //   this.$refs.asyncImage.style.backgroundImage = `url(${this.$refs.asyncImage.dataset.src})`;
     // };
+    if (this.getEmail) {
+      this.email = this.getEmail;
+    }
   },
   computed: {
-    ...mapGetters(['getProfile']),
+    ...mapGetters(['getProfile', 'getEmail']),
   },
 };
 </script>
@@ -242,64 +293,64 @@ header {
 // }
 
 .auth-nav {
-    display: flex;
-    justify-content: flex-end;
-    flex-grow: 0;
-    padding: 30px 30px 0;
-    text-align: right;
-  }
-  .m-nav {
-    display: none;
-  }
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 0;
+  padding: 30px 30px 0;
+  text-align: right;
+}
+.m-nav {
+  display: none;
+}
 
-  .sidebar {
-    display: flex;
-    position: relative;
-    /* overflow: auto; */
-    flex-grow: 0;
-    width: 480px;
-    // background: #2d2e30;
-    color: #fafafa;
-    background-image: url('../assets/login.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  .side-art {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    margin: 0;
-  }
-  .sidebar-content {
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    margin: 0;
-  }
-  .content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: auto;
-    width: 100%;
-  }
-  .auth-content {
-    margin: 0;
-  }
+.sidebar {
+  display: flex;
+  position: relative;
+  /* overflow: auto; */
+  flex-grow: 0;
+  width: 480px;
+  // background: #2d2e30;
+  color: #fafafa;
+  background-image: url('../assets/login.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.side-art {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0;
+}
+.sidebar-content {
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: auto;
+  width: 100%;
+}
+.auth-content {
+  margin: 0;
+}
 
-  .content-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    margin: 0;
-  }
-  .auth-link-phone {
-    display: none;
-  }
+.content-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0;
+}
+.auth-link-phone {
+  display: none;
+}
 
 @media only screen and (max-width: 959px) {
   .sidebar {

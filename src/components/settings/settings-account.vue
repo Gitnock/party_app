@@ -123,7 +123,7 @@ export default {
               email: this.email,
             })
             .then(() => {
-              this.openNotification('Success', 'email was update', 'success');
+              this.openNotification('Success', 'email was updated', 'success');
               this.email = '';
             });
         })
@@ -136,8 +136,8 @@ export default {
   mounted() {
     this.init();
 
-    const profile = auth.currentUser.providerData;
-    console.log(`Sign-in provider: ${profile[0].providerId}`);
+    // const profile = auth.currentUser.providerData;
+    // console.log(`Sign-in provider: ${profile[0].providerId}`);
   },
   computed: {
     ...mapState(['userProfile']),

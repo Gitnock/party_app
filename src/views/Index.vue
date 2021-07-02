@@ -15,7 +15,10 @@
           <div class="roboto-medium signin-btn clickable" @click="openSignin">
             Sign in
           </div>
-          <button class="request-btn roboto-medium nav-request-btn" @click="focusRequest">
+          <button
+            class="request-btn roboto-medium nav-request-btn"
+            @click="focusRequest"
+          >
             Request access
           </button>
         </nav>
@@ -25,8 +28,7 @@
       <div class="container-top">
         <h1 class="title-index roboto-medium">Party-App with us.</h1>
         <h2 class="subtitle-index roboto-medium">
-          PartyApp helps you find and join cool and interesting people while
-          playing the games you love.
+         every match should have voice comms.
         </h2>
         <div class="request-container">
           <div class="request-input-container" id="emailContainer">
@@ -63,12 +65,10 @@
               <h1 class="card-top-title">01</h1>
             </div>
             <div class="card-mid">
-              <h2 class="card-mid-title">
-                Choose your game.
-              </h2>
+              <h2 class="card-mid-title">Choose your game.</h2>
             </div>
             <div class="card-bot">
-              <img src="@/assets/index/choose_game.png" class="card-bot-img"/>
+              <img src="@/assets/index/choose_game.png" class="card-bot-img" />
             </div>
           </div>
           <div class="card">
@@ -76,12 +76,10 @@
               <h1 class="card-top-title">02</h1>
             </div>
             <div class="card-mid">
-              <h2 class="card-mid-title">
-                Say hi.
-              </h2>
+              <h2 class="card-mid-title">Say hi.</h2>
             </div>
             <div class="card-bot">
-              <img src="@/assets/index/say_hi.png" class="card-bot-img"/>
+              <img src="@/assets/index/say_hi.png" class="card-bot-img" />
             </div>
           </div>
           <div class="card">
@@ -89,12 +87,13 @@
               <h1 class="card-top-title">03</h1>
             </div>
             <div class="card-mid">
-              <h2 class="card-mid-title">
-                Add some body.
-              </h2>
+              <h2 class="card-mid-title">Add some body.</h2>
             </div>
             <div class="card-bot">
-              <img src="@/assets/index/copy_username.png" class="card-bot-img"/>
+              <img
+                src="@/assets/index/copy_username.png"
+                class="card-bot-img"
+              />
             </div>
           </div>
         </div>
