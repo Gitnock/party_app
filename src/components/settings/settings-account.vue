@@ -9,13 +9,14 @@
           </h3>
         </div>
         <input
-          placeholder="Date"
+          placeholder="Private"
           class="content-input"
           type="text"
           onfocus="(this.type='date')"
           id="date"
           :min="minDate"
           :max="maxDate"
+          v-model="date"
           @input="isChanged(`date`)"
         />
       </div>
@@ -29,7 +30,7 @@
         <input
           type="email"
           class="content-input"
-          :placeholder="userProfile.email"
+          placeholder="private"
           v-model="email"
           @input="isChanged(`email`)"
         />
@@ -56,33 +57,26 @@
         </select>
       </div> -->
       <div class="content-container" v-if="isActive">
-        <button class="content-save roboto-medium">save</button>
+        <button class="content-save roboto-medium" @click="updateInfo">save</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { auth, usersCollection } from '../../firebaseConfig';
+import { mapGetters } from 'vuex';
+import firebase from 'firebase/app';
+import { auth, userDataCollection } from '../../firebaseConfig';
 
 export default {
   name: 'settings-account-page',
   data() {
-    const today = new Date();
     return {
       email: '',
       sex: '',
-      minDate: new Date(
-        today.getFullYear() - 80,
-        today.getMonth(),
-        today.getDate(),
-      ),
-      maxDate: new Date(
-        today.getFullYear() + 13,
-        today.getMonth(),
-        today.getDate(),
-      ),
+      date: '',
+      minDate: '',
+      maxDate: '',
       isActive: false,
       isGoogle: auth.currentUser.providerData[0].providerId === 'google.com',
     };
@@ -90,7 +84,6 @@ export default {
   methods: {
     savesettings() {},
     init() {
-      this.sex = this.userProfile.sex;
     },
     isChanged(type) {
       if (type === 'email') {
@@ -101,6 +94,10 @@ export default {
         } else {
           this.isActive = false;
         }
+      } else if (this.date) {
+        this.isActive = true;
+      } else {
+        this.isActive = false;
       }
     },
     openNotification(title, text, color) {
@@ -113,34 +110,80 @@ export default {
       });
     },
     updateInfo() {
-      auth.currentUser
-        .updateEmail(this.email)
-        .then(() => {
-          // Update successful.
-          usersCollection
-            .doc(this.currentUser.uid)
-            .update({
-              email: this.email,
-            })
-            .then(() => {
-              this.openNotification('Success', 'email was updated', 'success');
-              this.email = '';
-            });
-        })
-        .catch((error) => {
-          // An error happened.
-          this.openNotification('failed', error, 'danger');
-        });
+      if (!this.date) {
+        auth.currentUser
+          .updateEmail(this.email)
+          .then(() => {
+            // Update successful.
+            userDataCollection
+              .doc(this.getUser.uid)
+              .update({
+                email: this.email,
+              })
+              .then(() => {
+                this.openNotification(
+                  'Success',
+                  'email was updated',
+                  'success',
+                );
+                this.email = '';
+              });
+          })
+          .catch((error) => {
+            // An error happened.
+            this.openNotification('failed', error, 'danger');
+          });
+      } else {
+        const myTimestamp = firebase
+          .firestore
+          .Timestamp
+          .fromDate(new Date(this.date));
+        userDataCollection
+          .doc(this.getUser.uid)
+          .update({
+            dob: myTimestamp,
+          })
+          .then(() => {
+            this.openNotification(
+              'Success',
+              'Date of birth was updated',
+              'success',
+            );
+          }).catch((e) => {
+            console.log(e);
+          });
+      }
+    },
+    formatDate(date) {
+      const d = new Date(date);
+      let month = `${d.getMonth() + 1}`;
+      let day = `${d.getDate()}`;
+      const year = d.getFullYear();
+
+      if (month.length < 2) {
+        month = `0${month}`;
+      }
+      if (day.length < 2) {
+        day = `0${day}`;
+      }
+
+      return [year, month, day].join('-');
     },
   },
   mounted() {
     this.init();
-
+    const today = new Date();
+    this.minDate = this.formatDate(
+      new Date(today.getFullYear() - 80, today.getMonth(), today.getDate()),
+    );
+    this.maxDate = this.formatDate(
+      new Date(today.getFullYear() - 13, today.getMonth(), today.getDate()),
+    );
     // const profile = auth.currentUser.providerData;
     // console.log(`Sign-in provider: ${profile[0].providerId}`);
   },
   computed: {
-    ...mapState(['userProfile']),
+    ...mapGetters(['getUser']),
   },
 };
 </script>

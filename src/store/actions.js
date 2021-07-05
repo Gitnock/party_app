@@ -35,7 +35,7 @@ const actions = {
                 .doc(response.user.uid)
                 .set({
                   email: payload.email,
-                  dataofbirth: '',
+                  dob: firebase.firestore.FieldValue.serverTimestamp(),
                   sex: '',
                 }).then(() => {
                   res();
@@ -96,7 +96,7 @@ const actions = {
             } else {
               usersRef
                 .set({
-                  name: profile.displayName,
+                  username: profile.displayName,
                   tag: Math.floor(1000 + Math.random() * 9000),
                   avatar: profile.photoURL,
                   mfa_enabled: false,
@@ -110,7 +110,7 @@ const actions = {
                     .doc(data.user.uid)
                     .set({
                       email: profile.email,
-                      dataofbirth: '',
+                      dob: firebase.firestore.FieldValue.serverTimestamp(),
                       sex: '',
                     }).then(() => {
                       res();

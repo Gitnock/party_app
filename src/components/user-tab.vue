@@ -1,72 +1,75 @@
 <template>
-    <div>
-    <div class="user-avatar" >
-            <vs-tooltip
-            bottom
-            shadow
-            interactivit
-            not-hover
-            v-model="activeProfile"
-            class="username-text"
-            >
-            <vs-avatar
-                size="38"
-                color="#2B2E43"
-                circle
-                badge-color="success"
-                badge-position="bottom-left"
-                class="clickable"
-                @click="activeProfile = !activeProfile"
-            >
-                <img
-                v-bind:src="`${getProfile.avatar}`"
-                v-if="getProfile.avatar"
-                alt="profile image"
-                draggable="false"
-                />
-                <template v-if="!getProfile.avatar" #text>
-                {{ getProfile.username.charAt(0) }}
-                </template>
-            </vs-avatar>
+  <div>
+    <div class="user-avatar">
+      <vs-tooltip
+        bottom
+        shadow
+        interactivit
+        not-hover
+        v-model="activeProfile"
+        class="username-text"
+      >
+        <vs-avatar
+          size="38"
+          color="#2B2E43"
+          circle
+          badge-color="success"
+          badge-position="bottom-left"
+          class="clickable"
+          @click="activeProfile = !activeProfile"
+        >
+          <img
+            v-bind:src="`${getProfile.avatar}`"
+            v-if="getProfile.avatar"
+            alt="profile image"
+            draggable="false"
+          />
+          <template v-if="!getProfile.avatar && getProfile.username" #text>
+            {{ getProfile.username.charAt(0) }}
+          </template>
+        </vs-avatar>
 
-            <template #tooltip>
-                <div class="content-tooltip">
-                <div class="prof-top">
-                    <div class="prof-tob-content">
-                    <div class="avatar-container">
-                        <vs-avatar size="60" color="#2B2E43" circle>
-                        <img
-                            v-bind:src="`${getProfile.avatar}`"
-                            v-if="getProfile.avatar"
-                            alt="profile image"
-                            draggable="false"
-                        />
-                        <template v-if="!getProfile.avatar" #text>
-                            {{getProfile.username.charAt(0)}}
-                        </template>
-                        </vs-avatar>
-                    </div>
-
-                    <h5 class="username-text">
-                        {{ getProfile.username + "#" + getProfile.tag }}
-                    </h5>
-                    <vs-button main flat @click="openSettings">
-                        Manage your account
-                    </vs-button>
-                    </div>
+        <template #tooltip>
+          <div class="content-tooltip">
+            <div class="prof-top">
+              <div class="prof-tob-content">
+                <div class="avatar-container">
+                  <vs-avatar size="60" color="#2B2E43" circle>
+                    <img
+                      v-bind:src="`${getProfile.avatar}`"
+                      v-if="getProfile.avatar"
+                      alt="profile image"
+                      draggable="false"
+                    />
+                    <template
+                      v-if="!getProfile.avatar && getProfile.username"
+                      #text
+                    >
+                      {{ getProfile.username.charAt(0) }}
+                    </template>
+                  </vs-avatar>
                 </div>
-                <div class="prof-mid"></div>
-                <div class="prof-bot"></div>
 
-                <footer style="color: #626891" class="clickable">
-                    <p>Privacy policy | v-0.8.5</p>
-                </footer>
-                </div>
-            </template>
-            </vs-tooltip>
-        </div>
+                <h5 class="username-text">
+                  {{ getProfile.username + '#' + getProfile.tag }}
+                </h5>
+                <vs-button main flat @click="openSettings">
+                  Manage your account
+                </vs-button>
+              </div>
+            </div>
+            <div class="prof-mid"></div>
+            <div class="prof-bot"></div>
 
-        <vs-dialog
+            <footer style="color: #626891" class="clickable">
+              <p>Privacy policy | v-0.6.2.1</p>
+            </footer>
+          </div>
+        </template>
+      </vs-tooltip>
+    </div>
+
+    <vs-dialog
       square
       full-screen
       not-close
@@ -81,15 +84,14 @@
               color="#2B2E43"
               @click="settingScreen = !settingScreen"
             >
-              <i class="bx bx-x" style="color:#ffffff"></i>
+              <i class="bx bx-x" style="color: #ffffff"></i>
             </vs-avatar>
           </div>
         </div>
         <settings></settings>
       </div>
     </vs-dialog>
-    </div>
-
+  </div>
 </template>
 
 <script>
@@ -101,6 +103,7 @@ export default {
   data: () => ({
     activeProfile: false,
     settingScreen: false,
+    usernameChar: '',
   }),
   computed: {
     ...mapGetters(['getProfile']),
@@ -147,7 +150,7 @@ div.vs-dialog--fullScreen {
   background: #161823 !important;
   margin: 0 !important;
 }
-div.vs-dialog__content{
+div.vs-dialog__content {
   height: 100%;
 }
 .setting-close {
@@ -159,7 +162,7 @@ div.vs-dialog__content{
   right: 0;
   padding: 18px 32px;
 }
-.settings-view{
+.settings-view {
   height: 100%;
 }
 
@@ -192,5 +195,4 @@ div.vs-tooltip {
 .avatar-main-cantainer {
   display: flex;
 }
-
 </style>

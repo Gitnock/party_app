@@ -54,8 +54,7 @@
                       :message="errors[0]"
                     >
                       <vs-input
-                        type="text"
-                        class="vv"
+                        type="email"
                         v-model="email"
                         placeholder="Email"
                       />

@@ -2,23 +2,38 @@
   <div class="party-main">
     <div class="party-container">
       <div class="party-content">
-      <div class="audio-layout">
-        <audioLayout :muted="true" :audioStream="localStream" :user="getProfile"/>
+        <div class="audio-layout">
+          <audioLayout
+            :muted="true"
+            :audioStream="localStream"
+            :user="getProfile"
+          />
+        </div>
+        <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
+          <audioLayout
+            :muted="true"
+            :audioStream="peer.peerStream"
+            :user="peer.user"
+            v-if="peer.user"
+          />
+        </div>
       </div>
-      <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
-        <audioLayout :muted="true" :audioStream="peer.peerStream" :user="peer.user"/>
-      </div>
-    </div>
     </div>
 
     <div class="party-options-container">
       <div class="party-options-content">
-        <vs-avatar size="60" circle color="#202330" @click="mute" class="clickable">
-          <i class="bx bxs-microphone" v-if="muted"/>
-          <i class='bx bxs-microphone-off' v-else></i>
+        <vs-avatar
+          size="60"
+          circle
+          color="#202330"
+          @click="mute"
+          class="clickable"
+        >
+          <i class="bx bxs-microphone" v-if="muted" />
+          <i class="bx bxs-microphone-off" v-else></i>
         </vs-avatar>
         <button class="hangup-btn" @click="hangUp">
-          <img src="@/assets/hangup.svg" alt="" draggable="false"/>
+          <img src="@/assets/hangup.svg" alt="" draggable="false" />
         </button>
       </div>
     </div>
@@ -37,7 +52,7 @@ const configuration = {
       urls: 'stun:stun1.l.google.com:19302',
     },
     {
-      url: 'turn:18.118.49.54?transport=tcp',
+      urls: 'turn:18.118.49.54?transport=tcp',
       username: 'partyapp',
       credential: 'connect',
     },
@@ -64,12 +79,17 @@ export default {
         .get()
         .then(async (snap) => {
           if (snap.exists) {
-            this.getRoomUsersAction({ roomId: this.roomId, userId: this.getUser.uid });
+            this.getRoomUsersAction({
+              roomId: this.roomId,
+              userId: this.getUser.uid,
+            });
             await this.userJoined();
             this.listenNewUsers();
             this.listenNewConnections();
           } else {
-            this.$router.push('/crew/@me');
+            if (this.$route.path !== '/crew/@me') {
+              this.$router.push('/crew/@me');
+            }
             this.openNotification(
               'Error',
               `Party doesn't Exist${this.roomId}`,
@@ -111,7 +131,7 @@ export default {
         .collection('connections');
 
       const connectionRef = connectionsCollection.doc(`user${from}user${to}`);
-
+      let remoteDescSet = false;
       this.registerPeerConnectionListeners(peer.pc, to);
       // setting local track in connection
       this.localStream.getTracks().forEach((track) => {
@@ -154,13 +174,13 @@ export default {
         });
       });
 
-      // Listening for remote session description (answer) below
       connectionRef.onSnapshot(async (snapshot) => {
         const data = snapshot.data();
         if (!peer.pc.currentRemoteDescription && data.answer) {
           console.log('Set remote description: ', data.answer);
           const answer = new RTCSessionDescription(data.answer);
           await peer.pc.setRemoteDescription(answer);
+          remoteDescSet = true;
         }
       });
 
@@ -169,8 +189,19 @@ export default {
         .collection('calleeCandidates')
         .doc('candidate')
         .onSnapshot((doc) => {
-          const candidate = new RTCIceCandidate(doc.data());
-          peer.pc.addIceCandidate(candidate);
+          if (remoteDescSet) {
+            const candidate = new RTCIceCandidate(doc.data());
+            if (doc.data()) {
+              peer.pc.addIceCandidate(candidate).catch((e) => {
+                console.log('HEEEEE', e);
+              });
+            } else {
+              peer.pc.addIceCandidate({ candidate: '' }).catch((e) => {
+                console.log('ehhhhhh', e);
+              });
+            }
+          }
+
           // console.log(
           //   `Got new remote ICE candidate: ${JSON.stringify(candidate)}`,
           // );
@@ -322,7 +353,9 @@ export default {
       });
       this.peers = {};
       this.userLeft();
-      this.$router.push('/crew/@me');
+      if (this.$route.path !== '/crew/@me') {
+        this.$router.push('/crew/@me');
+      }
     },
     async userJoined() {
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
@@ -417,7 +450,7 @@ export default {
   flex-direction: column;
   overflow: auto;
 }
-.party-container{
+.party-container {
   width: 100%;
   flex: auto;
   display: flex;
@@ -431,9 +464,9 @@ export default {
   flex-wrap: wrap;
   max-width: 1248px;
 }
-.audio-layout{
-    margin: 5px;
-  }
+.audio-layout {
+  margin: 5px;
+}
 
 // OPITONS CONTAINER
 .party-options-container {
@@ -454,17 +487,16 @@ export default {
   background-color: #fb4060;
 }
 @media only screen and (max-width: 628px) {
-  .party-container{
+  .party-container {
     justify-content: flex-end;
     margin-bottom: 32px;
     flex-direction: column;
   }
-  .audio-layout{
+  .audio-layout {
     margin: 5px 0px;
   }
   .party-main {
-  padding: 0px;
+    padding: 0px;
   }
 }
-
 </style>

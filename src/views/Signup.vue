@@ -84,6 +84,7 @@
                         v-model="email"
                         placeholder="Email"
                         maxlength="125"
+                        autocomplete="email"
                       />
                     </b-field>
                   </ValidationProvider>

@@ -82,9 +82,9 @@ export default {
           playersCollection.doc(playerId).onSnapshot((snap) => {
             const { roomId } = snap.data();
             if (roomId !== '') {
-              roomsCollection.doc(roomId).onSnapshot((snapShot) => {
-                const isfull = snapShot.data().full;
-                if (isfull) {
+              roomsCollection.doc(roomId).onSnapshot((snap2) => {
+                const { full } = snap2.data();
+                if (full) {
                   this.$store.commit('setRoom', { roomId });
                   if (this.$route.path !== `/crew/${roomId}`) {
                     this.$router.push(`/crew/${roomId}`);
@@ -92,15 +92,12 @@ export default {
                     this.setRoom(roomId);
                   }
                 }
-              }).catch((error) => {
-                this.openNotification('failed', error, 'danger');
-                loading.close();
               });
             }
-          }).catch((error) => {
-            this.openNotification('failed', error, 'danger');
-            loading.close();
           });
+        }).catch((error) => {
+          this.openNotification('failed', error, 'danger');
+          loading.close();
         });
     },
     openNotification(title, text, color) {
@@ -169,7 +166,7 @@ export default {
 .game-container {
   height: 628px;
   max-width: 445px;
-  padding: 18px;
+  padding: 8px;
   display: flex;
   justify-content: center;
   border-radius: 16px;
@@ -208,6 +205,7 @@ export default {
 .join-game-container {
   background: #202330;
   position: relative;
+  padding: 0px !important;
 }
 .join-game-content {
   height: 100%;

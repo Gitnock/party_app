@@ -385,23 +385,4 @@ export default {
     padding: 32px 12px 0px;
   }
 }
-
-// animation
-@keyframes slideInFromTop {
-  0% {
-    transform: translateY(-52%);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes colorToDanger {
-  0% {
-    border-color: red;
-  }
-  100% {
-    border-color: rgba(183, 187, 213, 0.4);
-  }
-}
 </style>

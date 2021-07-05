@@ -34,9 +34,9 @@
     </div>
     <div class="setting-right">
       <div class="left-content">
-        <settingsName v-if="settingPosition === 0"></settingsName>
-        <settingsAccount v-if="settingPosition === 1"></settingsAccount>
-        <settingsPassword v-if="settingPosition === 2"></settingsPassword>
+        <settingsName class="setting-item" v-if="settingPosition === 0"></settingsName>
+        <settingsAccount  class="setting-item" v-if="settingPosition === 1"></settingsAccount>
+        <settingsPassword  class="setting-item" v-if="settingPosition === 2"></settingsPassword>
       </div>
     </div>
   </div>
@@ -157,14 +157,11 @@ export default {
     height: 0;
   }
 
-// @media only screen and (max-width: 1029px) {
-//   .setting-menu-item {
-//     font-size: 16px;
-//   }
-//   .left-content {
-//     width: 480px;
-//   }
-// }
+//animation
+.setting-item{
+  animation: 0.1s ease-out 0s 1 slideInFromTop;
+}
+
 @media only screen and (max-width: 628px) {
   .main {
     flex-direction: column;

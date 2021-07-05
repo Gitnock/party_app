@@ -19,7 +19,7 @@
           alt="profile image"
           draggable="false"
         />
-        <template v-if="!user.avatar" #text>
+        <template v-if="!user.avatar && user.username" #text>
           {{ user.username.charAt(0) }}
         </template>
       </vs-avatar>
@@ -33,7 +33,9 @@ import userInfo from './userInfo.vue';
 
 export default {
   name: 'audioLayout',
-  data: () => ({}),
+  data: () => ({
+    usernameChar: '',
+  }),
   components: {
     userInfo,
   },

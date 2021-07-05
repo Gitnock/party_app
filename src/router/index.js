@@ -54,6 +54,7 @@ const routes = [
     component: Alpha,
     meta: { requiresAuth: true },
   },
+
 ];
 
 const router = new VueRouter({

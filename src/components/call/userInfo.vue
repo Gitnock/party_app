@@ -1,6 +1,6 @@
 <template>
   <div class="userInfo-container">
-    <h2 class="username roboto-medium username-nowrap">
+    <h2 class="username roboto-medium username-nowrap" v-if="user">
       {{user.username}}
     </h2>
     <button class="copyUsername-btn">

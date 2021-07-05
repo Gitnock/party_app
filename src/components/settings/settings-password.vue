@@ -113,7 +113,7 @@ export default {
         .reauthenticateWithCredential(credential)
         .then(() => {
           // User re-authenticated.
-          this.openNotification('success', 'worked', 'success');
+          this.openNotification('success', 'Password updated', 'success');
         })
         .catch((error) => {
           // An error happened.
