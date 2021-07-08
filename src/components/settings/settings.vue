@@ -1,23 +1,27 @@
 <template>
   <div class="main">
     <div class="setting-left">
-      <div class="setting-menu">
+      <div
+        class="setting-menu"
+        v-dragscroll.x
+        ref="settingsScroll"
+      >
         <button
-          class="setting-menu-item roboto-medium clickable"
+          class="setting-menu-item roboto-medium clickable btn-drop"
           v-on:click="settingPosition = 0"
           v-bind:class="classObject(0)"
         >
           Username & Avatar
         </button>
         <button
-          class="setting-menu-item roboto-medium clickable"
+          class="setting-menu-item roboto-medium clickable btn-drop"
           v-on:click="settingPosition = 1"
           v-bind:class="classObject(1)"
         >
           Account Information
         </button>
         <button
-          class="setting-menu-item roboto-medium clickable"
+          class="setting-menu-item roboto-medium clickable btn-drop"
           v-on:click="settingPosition = 2"
           v-bind:class="classObject(2)"
         >
@@ -25,7 +29,7 @@
         </button>
         <button class="setting-menu-item roboto-medium clickable">Help</button>
         <button
-          class="setting-menu-item-logout roboto-medium clickable"
+          class="setting-menu-item-logout roboto-medium clickable btn-drop"
           @click="signOut"
         >
           Log Out
@@ -34,9 +38,18 @@
     </div>
     <div class="setting-right">
       <div class="left-content">
-        <settingsName class="setting-item" v-if="settingPosition === 0"></settingsName>
-        <settingsAccount  class="setting-item" v-if="settingPosition === 1"></settingsAccount>
-        <settingsPassword  class="setting-item" v-if="settingPosition === 2"></settingsPassword>
+        <settingsName
+          class="setting-item"
+          v-if="settingPosition === 0"
+        ></settingsName>
+        <settingsAccount
+          class="setting-item"
+          v-if="settingPosition === 1"
+        ></settingsAccount>
+        <settingsPassword
+          class="setting-item"
+          v-if="settingPosition === 2"
+        ></settingsPassword>
       </div>
     </div>
   </div>
@@ -145,20 +158,19 @@ export default {
   height: 90%;
   max-width: 630px;
   flex: 1;
-   //hide scroll
-    overflow-y: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  //hide scroll
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
   // background-color: rosybrown;
-
 }
- .left-content::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
+.left-content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
 
 //animation
-.setting-item{
+.setting-item {
   animation: 0.1s ease-out 0s 1 slideInFromTop;
 }
 
@@ -170,7 +182,14 @@ export default {
     flex-direction: row;
     //hide scroll
     overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    margin-bottom: 4px;
   }
+  .setting-menu::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
   .setting-menu::-webkit-scrollbar {
     width: 2px;
   }
@@ -185,7 +204,7 @@ export default {
     width: auto;
     // height: auto;
   }
-  .selectedBackground{
+  .selectedBackground {
     background-color: #202330;
   }
 }

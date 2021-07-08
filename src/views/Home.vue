@@ -1,10 +1,10 @@
 <template>
   <div class="home-main">
     <div class="home-container">
-      <div class="select-game-container game-container" v-if="!curGame" >
+      <div class="select-game-container game-container" v-if="!curGame">
         <div class="select-game-content">
-          <div
-            class="select-game-card clickable"
+          <button
+            class="select-game-card btn-div btn-drop"
             v-for="game in getGames"
             v-bind:key="game.gameId"
             v-bind:value="game"
@@ -16,16 +16,22 @@
               :alt="game.gameName"
               draggable="false"
             />
-          </div>
+          </button>
         </div>
       </div>
-      <div class="join-game-container game-container" ref="target" v-else>
-        <div class="join-game-close">
-          <vs-avatar circle color="#161823" @click="curGame = null">
-            <i class="bx bx-x" style="color: #ffffff"></i>
-          </vs-avatar>
+      <div class="join-game-container game-container" v-else>
+        <div class="close-btn-container" v-if="!isLoading">
+          <button class="back-btn btn-div btn-drop" @click="curGame = null">
+            <i class="bx bx-arrow-back" style="color: #ffffff"></i>
+          </button>
         </div>
-        <div class="join-game-content">
+
+        <div class="close-btn-container" v-if="isLoading">
+          <button class="close-btn btn-div btn-drop" @click="closeLoading">
+            <i class="bx bx-x btn-icon"></i>
+          </button>
+        </div>
+        <div class="join-game-content" ref="target">
           <b-image
             class="join-game-img"
             :src="curGame.url"
@@ -34,7 +40,13 @@
             ratio="446by565"
           />
 
-          <button class="join-game-btn roboto-black" @click="join">Join</button>
+          <button
+            class="join-game-btn roboto-black"
+            @click="join"
+            :disabled="isLoading"
+          >
+            Join
+          </button>
         </div>
       </div>
     </div>
@@ -50,6 +62,8 @@ export default {
   components: {},
   data: () => ({
     curGame: null,
+    isLoading: false,
+    loading: null,
   }),
   methods: {
     ...mapActions(['hostGameAction']),
@@ -58,15 +72,16 @@ export default {
       this.curGame = this.getGame;
     },
     join() {
-      const loading = this.$vs.loading({
+      this.loading = this.$vs.loading({
         target: this.$refs.target,
         type: 'corners',
         background: '#195bff',
         color: '#fff',
         opacity: '1',
-        text: 'looking for humans, just a moment',
+        text: 'looking for partys',
       });
 
+      this.isLoading = true;
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
       const playerRef = playersCollection.doc();
       const playerId = playerRef.id;
@@ -84,20 +99,21 @@ export default {
             if (roomId !== '') {
               roomsCollection.doc(roomId).onSnapshot((snap2) => {
                 const { full } = snap2.data();
-                if (full) {
+                if (full && this.isLoading) {
                   this.$store.commit('setRoom', { roomId });
+                  this.closeLoading();
                   if (this.$route.path !== `/crew/${roomId}`) {
                     this.$router.push(`/crew/${roomId}`);
-                    loading.close();
                     this.setRoom(roomId);
                   }
                 }
               });
             }
           });
-        }).catch((error) => {
+        })
+        .catch((error) => {
           this.openNotification('failed', error, 'danger');
-          loading.close();
+          this.closeLoading();
         });
     },
     openNotification(title, text, color) {
@@ -112,9 +128,16 @@ export default {
     init() {},
     setRoom(roomId) {
       const roomRef = db.doc(`/status/${this.getUser.uid}`);
-      roomRef.set({
-        roomId,
-      }, { merge: true });
+      roomRef.set(
+        {
+          roomId,
+        },
+        { merge: true },
+      );
+    },
+    closeLoading() {
+      this.loading.close();
+      this.isLoading = false;
     },
     // host() {
     //   this.hostGameAction({
@@ -152,7 +175,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100%;
-    align-items: center;
+  align-items: center;
 }
 .home-container {
   // height: 100%;
@@ -216,7 +239,7 @@ export default {
 }
 .join-game-img {
   flex: auto;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
 }
 .join-game-btn {
   width: 409px;
@@ -226,7 +249,7 @@ export default {
   background-color: #25514d;
   color: #00cd69;
 }
-.join-game-close {
+.close-btn-container {
   // margin: 12px;
   padding: 12px;
   position: absolute;
@@ -235,6 +258,24 @@ export default {
   z-index: 1000;
 }
 
+.close-btn {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.back-btn {
+  background: #202330;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
 // MOBILE
 @media only screen and (max-width: 510px) {
   .select-game-card {
@@ -243,7 +284,7 @@ export default {
     border-radius: 12px;
     margin: 5px;
   }
-  .select-game-content{
+  .select-game-content {
     width: 308px;
   }
   .container-main {
@@ -254,7 +295,6 @@ export default {
     height: 100%;
     max-width: 326px;
     // margin-bottom: 12px;
-
   }
   .join-game-btn {
     width: 308px;
@@ -283,5 +323,4 @@ export default {
     height: 64px;
   }
 }
-
 </style>

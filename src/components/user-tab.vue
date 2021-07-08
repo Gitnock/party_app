@@ -15,7 +15,7 @@
           circle
           badge-color="success"
           badge-position="bottom-left"
-          class="clickable"
+          class="clickable btn-drop"
           @click="activeProfile = !activeProfile"
         >
           <img
@@ -77,11 +77,12 @@
       class="full-screen-dialog"
     >
       <div class="settings-view">
-        <div class="setting-close">
-          <div class="setting-close-button">
+        <div class="setting-close-section">
+          <div class="setting-close-container">
             <vs-avatar
               circle
               color="#2B2E43"
+              class="btn-drop"
               @click="settingScreen = !settingScreen"
             >
               <i class="bx bx-x" style="color: #ffffff"></i>
@@ -142,6 +143,7 @@ div.vs-avatar__badge {
   padding: 12px;
 }
 
+// settings
 div.vs-dialog--fullScreen {
   width: calc(100% - 0px) !important;
   height: calc(100% - 0px) !important;
@@ -153,19 +155,22 @@ div.vs-dialog--fullScreen {
 div.vs-dialog__content {
   height: 100%;
 }
-.setting-close {
+.setting-close-section {
   width: 100%;
-  height: 80px;
+  height: 60px;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0px 18px;
 }
-.setting-close-button {
-  position: absolute;
-  right: 0;
-  padding: 18px 32px;
+.setting-close-container {
+  // position: absolute;
+  // right: 0;
 }
 .settings-view {
   height: 100%;
 }
-
 /* profile popup */
 div.vs-tooltip {
   background-color: #202330 !important;
@@ -195,4 +200,5 @@ div.vs-tooltip {
 .avatar-main-cantainer {
   display: flex;
 }
+
 </style>

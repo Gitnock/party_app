@@ -39,7 +39,6 @@ body,
   cursor: pointer;
 }
 
-
 //animation
 @keyframes slideInFromTop {
   0% {
@@ -57,4 +56,19 @@ body,
   100% {
     border-color: rgba(183, 187, 213, 0.4);
   }
+}
+
+//loading
+div.vs-loading {
+  z-index: 0 !important;
+}
+
+//buttons
+.btn-drop:active {
+  transform: translateY(1px);
+}
+.btn-div {
+  border: none;
+  padding: 0px;
+  background: transparent;
 }

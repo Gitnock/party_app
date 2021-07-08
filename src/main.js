@@ -9,6 +9,7 @@ import {
 } from 'buefy';
 
 import VueCropper from 'vue-cropper';
+import VueDragscroll from 'vue-dragscroll';
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
@@ -26,6 +27,7 @@ Vue.use(Select);
 Vue.use(Field);
 Vue.use(Slider);
 Vue.use(Image);
+Vue.use(VueDragscroll);
 let app;
 
 fb.auth.onAuthStateChanged(() => {
