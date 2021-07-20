@@ -177,7 +177,7 @@ export default {
           this.$router.push('/alpha');
         }
         loading.close();
-      }, 1000);
+      }, 800);
     },
     openNotification(title, text, color) {
       this.$vs.notification({

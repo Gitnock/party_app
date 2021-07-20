@@ -19,6 +19,10 @@ const actions = {
         .createUserWithEmailAndPassword(payload.email, payload.password)
         .then((response) => {
           commit('setUser', response.user);
+          response.user.sendEmailVerification().then(() => {
+            // Email verification sent!
+            console.log('Email sent');
+          });
           usersCollection
             .doc(response.user.uid)
             .set({
@@ -31,15 +35,20 @@ const actions = {
               userId: response.user.uid,
             })
             .then(() => {
+              response.user.updateProfile({
+                displayName: payload.username,
+              });
               userDataCollection
                 .doc(response.user.uid)
                 .set({
                   email: payload.email,
                   dob: firebase.firestore.FieldValue.serverTimestamp(),
                   sex: '',
-                }).then(() => {
+                })
+                .then(() => {
                   res();
-                }).catch((err) => {
+                })
+                .catch((err) => {
                   rej(err);
                 });
               res();
@@ -112,9 +121,11 @@ const actions = {
                       email: profile.email,
                       dob: firebase.firestore.FieldValue.serverTimestamp(),
                       sex: '',
-                    }).then(() => {
+                    })
+                    .then(() => {
                       res();
-                    }).catch((err) => {
+                    })
+                    .catch((err) => {
                       rej(err);
                     });
                   res();
@@ -139,7 +150,9 @@ const actions = {
         .get()
         .then((doc) => {
           const data = doc.data();
-          const userArray = data.players.filter((uid) => uid !== payload.userId);
+          const userArray = data.players.filter(
+            (uid) => uid !== payload.userId,
+          );
           // const gameId = data.game;
           usersCollection
             .where('userId', 'in', userArray)

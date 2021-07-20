@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="setting-right">
-      <div class="left-content">
+      <div class="left-content"  v-dragscroll>
         <settingsName
           class="setting-item"
           v-if="settingPosition === 0"

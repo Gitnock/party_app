@@ -154,6 +154,9 @@ export default {
       }
     },
   },
+  mounted() {
+    // console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  },
 };
 </script>
 
