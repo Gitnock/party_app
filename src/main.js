@@ -15,7 +15,7 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 
-const fb = require('./firebaseConfig.js');
+const fb = require('./firebaseConfig');
 
 Vue.config.productionTip = false; // Vuesax styles
 Vue.component('ValidationProvider', ValidationProvider);

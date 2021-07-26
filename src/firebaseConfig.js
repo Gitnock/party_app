@@ -24,6 +24,7 @@ const auth = firebase.auth();
 const { currentUser } = auth;
 const rtDb = firebase.database();
 const storage = firebase.storage();
+const getFireApp = firebase.app();
 
 // emulator
 // if (window.location.hostname === 'localhost') {
@@ -57,4 +58,5 @@ export {
   friendChatCollection,
   storage,
   userDataCollection,
+  getFireApp,
 };

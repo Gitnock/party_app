@@ -9,6 +9,7 @@ import Party from '@/views/Party.vue';
 import Index from '@/views/Index.vue';
 import Alpha from '@/views/Alpha.vue';
 import Main from '@/views/Main.vue';
+import Test from '@/views/Party2.vue';
 import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
@@ -34,6 +35,11 @@ const routes = [
         path: '/crew/:roomId',
         name: 'party',
         component: Party,
+      },
+      {
+        path: '/test',
+        name: 'test',
+        component: Test,
       },
     ],
 
