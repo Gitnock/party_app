@@ -3,22 +3,13 @@
     <div class="section-nav">
       <div class="container-nav">
         <nav class="nav-left">
-          <a
-            ><img
-              src="@/assets/partyapp_logo.svg"
-              alt="partyapp logo"
-              class="logo-attio"
-              draggable="false"
-          /></a>
+          <a><img src="@/assets/partyapp_logo.svg" alt="partyapp logo" draggable="false"/></a>
         </nav>
         <nav class="nav-right">
           <div class="roboto-medium signin-btn clickable" @click="openSignin">
             Sign in
           </div>
-          <button
-            class="request-btn roboto-medium nav-request-btn"
-            @click="focusRequest"
-          >
+          <button class="request-btn roboto-medium nav-request-btn" @click="focusRequest">
             Request access
           </button>
         </nav>
@@ -28,7 +19,7 @@
       <div class="container-top">
         <h1 class="title-index roboto-medium">Party-App with us.</h1>
         <h2 class="subtitle-index roboto-medium">
-         every match should have voice comms.
+          every match should have voice comms.
         </h2>
         <div class="request-container">
           <div class="request-input-container" id="emailContainer">
@@ -39,10 +30,7 @@
               ref="email"
               v-model="email"
             />
-            <button
-              class="request-btn roboto-medium request-btn-desktop"
-              @click="openSignup"
-            >
+            <button class="request-btn roboto-medium request-btn-desktop" @click="openSignup">
               Request access
             </button>
           </div>
@@ -68,7 +56,11 @@
               <h2 class="card-mid-title">Choose your game.</h2>
             </div>
             <div class="card-bot">
-              <img src="@/assets/index/choose_game.png" class="card-bot-img" />
+              <img
+                src="@/assets/index/choose_game.png"
+                class="card-bot-img"
+                alt="choose game screen snippet"
+              />
             </div>
           </div>
           <div class="card">
@@ -79,7 +71,11 @@
               <h2 class="card-mid-title">Say hi.</h2>
             </div>
             <div class="card-bot">
-              <img src="@/assets/index/say_hi.png" class="card-bot-img" />
+              <img
+                src="@/assets/index/say_hi.png"
+                class="card-bot-img"
+                alt="mic unmute button snippet"
+              />
             </div>
           </div>
           <div class="card">
@@ -93,6 +89,7 @@
               <img
                 src="@/assets/index/copy_username.png"
                 class="card-bot-img"
+                alt="copy ingame username button snippet"
               />
             </div>
           </div>

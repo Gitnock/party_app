@@ -5,7 +5,7 @@ import VueRouter from 'vue-router';
 
 import Signin from '@/views/Signin.vue';
 import Signup from '@/views/Signup.vue';
-import Party from '@/views/Party.vue';
+// import Party from '@/views/Party.vue';
 import Index from '@/views/Index.vue';
 import Alpha from '@/views/Alpha.vue';
 import Main from '@/views/Main.vue';
@@ -34,7 +34,7 @@ const routes = [
       {
         path: '/crew/:roomId',
         name: 'party',
-        component: Party,
+        component: Test,
       },
       {
         path: '/test',

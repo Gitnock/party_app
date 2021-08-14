@@ -143,7 +143,9 @@ const actions = {
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
   // games list
   bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
-  getRoomUsersAction({ commit }, payload) {
+  // room
+  bindRoomDataRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('roomData', roomsCollection.doc(state.roomId))),
+  setRoomUsersAction({ commit }, payload) {
     return new Promise((res, rej) => {
       roomsCollection
         .doc(payload.roomId)
@@ -178,6 +180,14 @@ const actions = {
         });
     });
   },
+  setRoomIdAction({ commit }, payload) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        commit('setRoomId', payload);
+        resolve();
+      }, 1000);
+    });
+  },
   hostGameAction({ commit }, payload) {
     const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
     return new Promise((res, rej) => {
@@ -190,7 +200,7 @@ const actions = {
           full: false,
         })
         .then((docRef) => {
-          commit('setRoom', docRef.id);
+          commit('setRoomId', docRef.id);
           res();
         })
         .catch((error) => {
@@ -218,7 +228,7 @@ const actions = {
   //             roomsCollection.doc(roomId).onSnapshot((snapShot) => {
   //               const isfull = snapShot.data().full;
   //               if (isfull) {
-  //                 commit('setRoom', { roomId });
+  //                 commit('setRoom', roomId );
   //                 res();
   //               }
   //             });

@@ -1,7 +1,7 @@
 <template>
   <div class="home-main">
     <div class="home-container">
-      <div class="select-game-container game-container" v-if="!curGame">
+      <div class="select-game-container game-container" v-show="!curGame">
         <div class="select-game-content">
           <button
             class="select-game-card btn-div btn-drop"
@@ -10,16 +10,15 @@
             v-bind:value="game"
             @click="setGame(game)"
           >
-            <img
+            <b-image
               :src="game.url"
-              :placeholder="game.url_tiny"
               :alt="game.gameName"
               draggable="false"
             />
           </button>
         </div>
       </div>
-      <div class="join-game-container game-container" v-else>
+      <div class="join-game-container game-container" v-if="curGame">
         <div class="close-btn-container" v-if="!isLoading">
           <button class="back-btn btn-div btn-drop" @click="curGame = null">
             <i class="bx bx-arrow-back" style="color: #ffffff"></i>
@@ -35,7 +34,6 @@
           <b-image
             class="join-game-img"
             :src="curGame.url"
-            :placeholder="curGame.url_tiny"
             :alt="curGame.gameName"
             ratio="446by565"
           />
@@ -50,28 +48,49 @@
         </div>
       </div>
     </div>
+    <div>
+      <template>
+        <confirm v-if="active" @close="active = false" :roomId="roomId"/>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase/app';
 import { mapActions, mapGetters } from 'vuex';
+import confirm from '@/components/modal/confirm-modal.vue';
+import eventBus from '@/eventBus';
 import { db, playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
-  components: {},
+  components: {
+    confirm,
+  },
   data: () => ({
+    active: false,
     curGame: null,
     isLoading: false,
     loading: null,
+    searching: null,
+    roomListener: null,
+    roomId: '',
   }),
   methods: {
-    ...mapActions(['hostGameAction']),
+    ...mapActions(['hostGameAction', 'setRoomIdAction', 'bindRoomDataRef']),
     setGame(game) {
       this.$store.commit('setGame', game);
       this.curGame = this.getGame;
     },
     join() {
+      // if (this.searching !== null) {
+      //   this.searching();
+      //   this.searching = null;
+      // }
+      // if (this.roomListener !== null) {
+      //   this.roomListener();
+      //   this.roomListener = null;
+      // }
       this.loading = this.$vs.loading({
         target: this.$refs.target,
         type: 'corners',
@@ -94,22 +113,34 @@ export default {
           size: this.getGame.maxPlayers,
         })
         .then(() => {
-          playersCollection.doc(playerId).onSnapshot((snap) => {
-            const { roomId } = snap.data();
-            if (roomId !== '') {
-              roomsCollection.doc(roomId).onSnapshot((snap2) => {
-                const { full } = snap2.data();
-                if (full && this.isLoading) {
-                  this.$store.commit('setRoom', { roomId });
-                  this.closeLoading();
-                  if (this.$route.path !== `/crew/${roomId}`) {
-                    this.$router.push(`/crew/${roomId}`);
-                    this.setRoom(roomId);
+          this.searching = playersCollection
+            .doc(playerId)
+            .onSnapshot((snap) => {
+              const { roomId } = snap.data();
+              if (roomId) {
+                this.roomId = roomId;
+                this.roomListener = roomsCollection.doc(roomId).onSnapshot(async (snap2) => {
+                  const { full, isActive } = snap2.data();
+                  if (full && this.isLoading && isActive) {
+                    // this.$store.commit('setRoomId', roomId);
+                    await this.setRoomIdAction(roomId);
+                    this.bindRoomDataRef();
+                    this.active = !this.active;
+                    if (this.roomListener !== null) {
+                      this.roomListener();
+                      this.roomListener = null;
+                    }
+                    this.closeLoading();
+                  } else if (this.isLoading && !isActive) {
+                    console.log('LEFT ROOM', isActive);
+                    this.closeLoading();
+                    this.join();
                   }
-                }
-              });
-            }
-          });
+                }, (error) => {
+                  this.openNotification('Join room failed', error, 'danger');
+                });
+              }
+            });
         })
         .catch((error) => {
           this.openNotification('failed', error, 'danger');
@@ -135,9 +166,21 @@ export default {
         { merge: true },
       );
     },
+    disRoom() {
+      if (this.roomId)roomsCollection.doc(this.roomId).update({ isActive: false });
+    },
     closeLoading() {
       this.loading.close();
       this.isLoading = false;
+      if (this.searching !== null) {
+        this.searching();
+        this.searching = null;
+      }
+      if (this.roomListener !== null) {
+        this.roomListener();
+        this.roomListener = null;
+      }
+      this.disRoom();
     },
     // host() {
     //   this.hostGameAction({
@@ -161,10 +204,13 @@ export default {
     // },
   },
   computed: {
-    ...mapGetters(['getUser', 'getGame', 'getRoom', 'getProfile', 'getGames']),
+    ...mapGetters(['getUser', 'getGame', 'getRoomId', 'getProfile', 'getGames']),
   },
   mounted() {
     this.init();
+    eventBus.$on('join', () => {
+      this.join();
+    });
   },
 };
 </script>
@@ -239,7 +285,6 @@ export default {
 }
 .join-game-img {
   flex: auto;
-  transition: all 0.3s linear;
 }
 .join-game-btn {
   width: 409px;

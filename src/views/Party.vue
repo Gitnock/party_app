@@ -70,7 +70,7 @@ export default {
     audioLayout,
   },
   methods: {
-    ...mapActions(['getRoomUsersAction']),
+    ...mapActions(['setRoomUsersAction']),
     async init() {
       await this.getUserMedia();
       this.roomId = this.$route.params.roomId;
@@ -79,7 +79,7 @@ export default {
         .get()
         .then(async (snap) => {
           if (snap.exists) {
-            this.getRoomUsersAction({
+            this.setRoomUsersAction({
               roomId: this.roomId,
               userId: this.getUser.uid,
             });

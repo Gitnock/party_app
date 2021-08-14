@@ -13,8 +13,8 @@ const mutations = {
   setGames(state, payload) {
     state.gamesList = payload;
   },
-  setRoom(state, payload) {
-    state.room = payload;
+  setRoomId(state, payload) {
+    state.roomId = payload;
   },
   setEmail(state, payload) {
     state.email = payload;

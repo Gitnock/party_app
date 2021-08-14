@@ -26,6 +26,10 @@ const rtDb = firebase.database();
 const storage = firebase.storage();
 const getFireApp = firebase.app();
 
+/* automatically manages online and offline data access and synchronizes
+ local data when the device is back online */
+db.enablePersistence();
+
 // emulator
 // if (window.location.hostname === 'localhost') {
 //   db.useEmulator('localhost', 8080);

@@ -8,7 +8,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user: null, error: null, userProfile: {}, gamesList: [], currentGame: {}, room: '', email: '', roomUsers: [],
+    user: null, error: null, userProfile: {}, gamesList: [], currentGame: {}, roomId: '', email: '', roomUsers: [], roomData: {},
   },
   mutations,
   actions,

@@ -17,14 +17,17 @@ const getters = {
   getGame(state) {
     return state.currentGame;
   },
-  getRoom(state) {
-    return state.room;
+  getRoomId(state) {
+    return state.roomId;
   },
   getEmail(state) {
     return state.email;
   },
   getRoomUsers(state) {
     return state.roomUsers;
+  },
+  getRoomData(state) {
+    return state.roomData;
   },
 };
 
