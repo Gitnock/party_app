@@ -57,6 +57,7 @@ export default {
     timeleft: 100,
     isAccept: false,
     isClosed: false,
+    submitTimer: undefined,
   }),
   props: {
     roomId: {
@@ -66,46 +67,50 @@ export default {
   },
   methods: {
     countDown() {
-      const submitTimer = setInterval(() => {
+      this.submitTimer = setInterval(() => {
         if (this.timeleft <= 0) {
-          clearInterval(submitTimer);
-          if (this.isAccept) eventBus.$emit('join');
+          clearInterval(this.submitTimer);
+          if (this.isAccept) eventBus.$emit('search');
           this.$emit('close');
-        } else if (this.$refs.sumbitBar) {
+        } else {
           if (this.isGood) {
+            clearInterval(this.submitTimer);
             this.joinRoom();
             this.$emit('close');
           } else if (this.isAccept && this.isAllSub) {
-            eventBus.$emit('join');
+            clearInterval(this.submitTimer);
+            eventBus.$emit('search');
             this.$emit('close');
           }
           this.timeleft -= 5;
-        } else {
-          clearInterval(submitTimer);
         }
+        // else {
+        //   clearInterval(submitTimer);
+        // }
       }, 500);
     },
     accept() {
-      if (this.roomId !== '' && this.timeleft >= 0 && !this.isAccept) {
+      if (this.roomId !== '' && this.timeleft >= 5 && !this.isAccept && this.getRoomData.full === true) {
+        console.log('ACCEPTCLICKED rm: ', this.roomId);
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
         }).then(() => {
-          this.isAccept = true;
-          this.isClosed = true;
           if (this.isGood) {
             this.joinRoom();
             this.$emit('close');
           }
         });
+        this.isAccept = true;
+        this.isClosed = true;
       }
     },
     decline() {
-      if (this.roomId !== '' && !this.isClosed) {
+      if (this.roomId !== '' && !this.isClosed && this.getRoomData.full === true) {
+        console.log('DECLINE CLICKED rm: ', this.roomId);
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${0}-${this.getUser.uid}`),
-        }).then(() => {
-          this.isClosed = true;
         });
+        this.isClosed = true;
       }
     },
     joinRoom() {
@@ -117,6 +122,10 @@ export default {
   mounted() {
     this.countDown();
     this.$on('close', () => this.decline());
+  },
+  beforeDestroy() {
+    clearInterval(this.submitTimer);
+    this.$emit('close');
   },
   computed: {
     isGood() {

@@ -120,21 +120,23 @@ export default {
               if (roomId) {
                 this.roomId = roomId;
                 this.roomListener = roomsCollection.doc(roomId).onSnapshot(async (snap2) => {
-                  const { full, isActive } = snap2.data();
-                  if (full && this.isLoading && isActive) {
+                  if (snap2.exists) {
+                    const { full, isActive } = snap2.data();
+                    if (full && this.isLoading && isActive) {
                     // this.$store.commit('setRoomId', roomId);
-                    await this.setRoomIdAction(roomId);
-                    this.bindRoomDataRef();
-                    this.active = !this.active;
-                    if (this.roomListener !== null) {
-                      this.roomListener();
-                      this.roomListener = null;
+                      await this.setRoomIdAction(roomId);
+                      this.bindRoomDataRef();
+                      this.active = !this.active;
+                      if (this.roomListener !== null) {
+                        this.roomListener();
+                        this.roomListener = null;
+                      }
+                      this.closeLoading();
+                    } else if (this.isLoading && !isActive) {
+                      console.log('LEFT ROOM', isActive);
+                      this.closeLoading();
+                      this.join();
                     }
-                    this.closeLoading();
-                  } else if (this.isLoading && !isActive) {
-                    console.log('LEFT ROOM', isActive);
-                    this.closeLoading();
-                    this.join();
                   }
                 }, (error) => {
                   this.openNotification('Join room failed', error, 'danger');
@@ -170,6 +172,7 @@ export default {
       if (this.roomId)roomsCollection.doc(this.roomId).update({ isActive: false });
     },
     closeLoading() {
+      this.disRoom();
       this.loading.close();
       this.isLoading = false;
       if (this.searching !== null) {
@@ -180,7 +183,6 @@ export default {
         this.roomListener();
         this.roomListener = null;
       }
-      this.disRoom();
     },
     // host() {
     //   this.hostGameAction({
@@ -208,7 +210,7 @@ export default {
   },
   mounted() {
     this.init();
-    eventBus.$on('join', () => {
+    eventBus.$on('search', () => {
       this.join();
     });
   },
