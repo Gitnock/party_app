@@ -17,13 +17,13 @@
             <h1 class="modal-title roboto-medium">MATCH FOUND</h1>
             <div class="dots-container" v-if="getRoomData">
               <div v-for="(dot, i) in getRoomData.isConfirmed" :key="i">
-                <div class="dot dot-green" v-if="dot[0] === '1'"/>
-                <div class="dot dot-red" v-else/>
+                <div class="dot dot-green" v-if="dot[0] === '1'" />
+                <div class="dot dot-red" v-else />
               </div>
             </div>
           </div>
 
-          <div class="modal-footer" v-if="!isAccept">
+          <div class="modal-footer" v-if="canSub">
             <button
               class="modal-accept-button modal-button roboto-medium btn-drop"
               ref="accept-btn"
@@ -47,17 +47,17 @@
 <script>
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
-import eventBus from '@/eventBus';
-import { roomsCollection } from '../../firebaseConfig';
+// import eventBus from '@/eventBus';
+import { roomsCollection, rtDb } from '../../firebaseConfig';
 
 export default {
   components: {},
   data: () => ({
     showModal: false,
     timeleft: 100,
-    isAccept: false,
-    isClosed: false,
+    canSub: true,
     submitTimer: undefined,
+    serverTimeOffset: 0,
   }),
   props: {
     roomId: {
@@ -67,30 +67,29 @@ export default {
   },
   methods: {
     countDown() {
-      this.submitTimer = setInterval(() => {
-        if (this.timeleft <= 0) {
-          clearInterval(this.submitTimer);
-          if (this.isAccept) eventBus.$emit('search');
-          this.$emit('close');
-        } else {
-          if (this.isGood) {
-            clearInterval(this.submitTimer);
-            this.joinRoom();
-            this.$emit('close');
-          } else if (this.isAccept && this.isAllSub) {
-            clearInterval(this.submitTimer);
-            eventBus.$emit('search');
-            this.$emit('close');
-          }
-          this.timeleft -= 5;
+      const ref = rtDb.ref(`countdown/${this.roomId}`);
+      rtDb.ref('.info/serverTimeOffset').on('value', (snapshot) => { this.serverTimeOffset = snapshot.val(); });
+      ref.get().then((snapshot) => {
+        if (snapshot.exists()) {
+          const { seconds } = snapshot.val();
+          const { timestamp } = snapshot.val();
+          this.submitTimer = setInterval(() => {
+            const timeLeft = (seconds * 1000) - (Date.now() - timestamp - this.serverTimeOffset);
+            if (timeLeft < 0) {
+              this.canSub = false;
+              this.$emit('close');
+            } else {
+              const t = ((parseFloat(`${Math.floor(timeLeft / 1000)}.${timeLeft % 1000}`) * 10.0) / 2.0).toFixed(2);
+              if (t < this.timeleft) {
+                this.timeleft = t;
+              }
+            }
+          }, 100);
         }
-        // else {
-        //   clearInterval(submitTimer);
-        // }
-      }, 500);
+      });
     },
     accept() {
-      if (this.roomId !== '' && this.timeleft >= 5 && !this.isAccept && this.getRoomData.full === true) {
+      if (this.timeLeft > 0 && this.canSub) {
         console.log('ACCEPTCLICKED rm: ', this.roomId);
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
@@ -100,17 +99,15 @@ export default {
             this.$emit('close');
           }
         });
-        this.isAccept = true;
-        this.isClosed = true;
       }
     },
     decline() {
-      if (this.roomId !== '' && !this.isClosed && this.getRoomData.full === true) {
-        console.log('DECLINE CLICKED rm: ', this.roomId);
+      if (this.timeleft > 0 && this.canSub) {
+        console.log(`DECLINE rm: ${this.roomId} = isFull: ${this.getRoomData.full}`);
+        this.canSub = false;
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${0}-${this.getUser.uid}`),
         });
-        this.isClosed = true;
       }
     },
     joinRoom() {
@@ -121,10 +118,12 @@ export default {
   },
   mounted() {
     this.countDown();
-    this.$on('close', () => this.decline());
+    this.$on('close', () => {
+      clearInterval(this.submitTimer);
+      this.decline();
+    });
   },
   beforeDestroy() {
-    clearInterval(this.submitTimer);
     this.$emit('close');
   },
   computed: {
@@ -247,11 +246,10 @@ export default {
   display: inline-block;
   margin: 0px 4px;
 }
-.dot-green{
-  background-color:#00CD69;
+.dot-green {
+  background-color: #00cd69;
 }
-.dot-red{
-  background-color:#FF5441;
+.dot-red {
+  background-color: #ff5441;
 }
-
 </style>

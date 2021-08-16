@@ -22,6 +22,9 @@ const mutations = {
   setRoomUsers(state, payload) {
     state.roomUsers = payload;
   },
+  setRoomUsersListener(state, payload) {
+    state.roomUsersListener = payload;
+  },
   ...vuexfireMutations,
 };
 

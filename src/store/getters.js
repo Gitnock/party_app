@@ -29,6 +29,9 @@ const getters = {
   getRoomData(state) {
     return state.roomData;
   },
+  getRoomUsersListener(state) {
+    return state.roomUsersListener;
+  },
 };
 
 export default getters;

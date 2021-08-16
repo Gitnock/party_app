@@ -40,13 +40,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import audioLayout from '@/components/call/audio.vue';
-import { joinRoom } from 'trystero/src/firebase';
+import { joinRoom, selfId } from 'trystero/src/firebase';
 import { roomsCollection } from '../firebaseConfig';
 // import firebase from 'firebase/app';
 // import { getFireApp } from '../firebaseConfig';
 // import { roomsCollection, rtDb } from '../firebaseConfig';
-let room;
-let sendUid;
+
 const configuration = {
   iceServers: [
     {
@@ -69,9 +68,9 @@ export default {
   data: () => ({
     roomId: '',
     peers: {},
-    idsToUid: {},
     localStream: undefined,
     muted: true,
+    room: null,
   }),
   components: {
     audioLayout,
@@ -100,24 +99,18 @@ export default {
       // this.$refs.localAudio.volume = 0;
     },
     roomEvents() {
-      let getUid;
-      [sendUid, getUid] = room.makeAction('uid');
-      if (room) sendUid(this.getUser.uid);
-      // listen for peers naming themselves
-      getUid((uid, id) => { this.idsToUid[id] = uid; });
-
-      room.onPeerJoin((id) => {
+      this.room.onPeerJoin((id) => {
         // this.openNotification('USER JOIN', `${id} joined`, 'success');
-        room.addStream(this.localStream);
-        sendUid(this.getUser.uid, id);
-        // this.initP(id);
+        this.room.addStream(this.localStream);
+        this.initPeer(id);
       });
-      room.onPeerStream((stream, id) => {
-        this.initPeer(id, this.idsToUid[id]);
-        this.peers[id].peerStream = stream;
+      this.room.onPeerStream((stream, id) => {
+        if (this.peers[id]) {
+          this.peers[id].peerStream = stream;
+        }
       });
 
-      room.onPeerLeave((id) => {
+      this.room.onPeerLeave((id) => {
         // this.openNotification(
         //   'USER LEFT',
         //   `${this.idsToUid[id]} left`,
@@ -131,7 +124,7 @@ export default {
       this.localStream.getAudioTracks()[0].enabled = this.muted;
     },
     hangUp() {
-      room.leave();
+      this.room.leave();
       const tracks = this.localStream.getTracks();
       tracks.forEach((track) => {
         track.stop();
@@ -150,12 +143,12 @@ export default {
       }
     },
     leaveRoom() {
-      room.leave();
+      this.room.leave();
     },
-    initPeer(id, uid) {
-      const user = this.getRoomUsers.find((x) => x.userId === uid);
+    initPeer(id) {
+      const user = this.getRoomUsers.find((x) => x.chatId === id);
       this.$set(this.peers, id, {
-        userId: uid,
+        userId: user.userId,
         peerStream: undefined,
         user,
       });
@@ -182,12 +175,13 @@ export default {
         .get()
         .then(async (snap) => {
           if (snap.exists) {
+            await this.sendChatId();
             this.setRoomUsersAction({
               roomId: this.roomId,
               userId: this.getUser.uid,
             });
             await this.getUserMedia();
-            room = joinRoom(config, this.roomId);
+            this.room = joinRoom(config, this.roomId);
             this.roomEvents();
           } else {
             if (this.$route.path !== '/crew/@me') {
@@ -201,12 +195,15 @@ export default {
           }
         });
     },
-    registerListeners() {
-
+    async sendChatId() {
+      await roomsCollection.doc(this.roomId).collection('activePlayers').doc(this.getUser.uid).set({
+        uid: this.getUser.uid,
+        chatId: selfId,
+      });
     },
   },
   computed: {
-    ...mapGetters(['getUser', 'getRoomUsers', 'getProfile']),
+    ...mapGetters(['getUser', 'getRoomUsers', 'getProfile', 'getRoomUsersListener']),
   },
   mounted() {
     this.init();
@@ -225,7 +222,8 @@ export default {
       if (this.peers[user].pc) this.peers[user].pc.close();
     });
     this.peers = {};
-    room.leave();
+    this.getRoomUsersListener();
+    this.room.leave();
   },
   created() {},
 };

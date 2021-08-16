@@ -145,39 +145,57 @@ const actions = {
   bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
   // room
   bindRoomDataRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('roomData', roomsCollection.doc(state.roomId))),
+  unbindRoomDataRef: firestoreAction(({ unbindFirestoreRef }) => {
+    unbindFirestoreRef('roomData');
+  }),
   setRoomUsersAction({ commit }, payload) {
     return new Promise((res, rej) => {
-      roomsCollection
+      const unsub = roomsCollection
         .doc(payload.roomId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          const userArray = data.players.filter(
-            (uid) => uid !== payload.userId,
+        .collection('activePlayers')
+        .onSnapshot((querySnapshot) => {
+          const userIds = [];
+          querySnapshot.forEach((doc) => {
+            const { uid, chatId } = doc.data();
+            userIds.push({ uid, chatId });
+          });
+
+          const userArray = userIds.filter(
+            (user) => user.uid !== payload.userId,
           );
-          // const gameId = data.game;
-          usersCollection
-            .where('userId', 'in', userArray)
-            .get()
-            .then((snap) => {
+          if (userArray.map((user) => user.uid).length > 0) {
+            usersCollection
+              .where(
+                'userId',
+                'in',
+                userArray.map((user) => user.uid),
+              )
+              .get()
+              .then((snap) => {
               // eslint-disable-next-line prefer-const
-              let users = [];
-              snap.forEach((userDoc) => {
-                const userData = userDoc.data();
-                users.push({
-                  avatar: userData.avatar,
-                  username: userData.username,
-                  userId: userData.userId,
+                let users = [];
+                snap.forEach((userDoc) => {
+                  const userData = userDoc.data();
+                  const ids = userArray
+                    .filter((user) => user.uid === userData.userId)
+                    .map((x) => x.chatId);
+                  users.push({
+                    avatar: userData.avatar,
+                    username: userData.username,
+                    userId: userData.userId,
+                    chatId: ids[0],
+                  });
                 });
+                commit('setRoomUsers', users);
+                res();
+              })
+              .catch((error) => {
+                commit('setError', error.message);
+                rej();
               });
-              commit('setRoomUsers', users);
-              res();
-            })
-            .catch((error) => {
-              commit('setError', error.message);
-              rej();
-            });
+          }
         });
+      commit('setRoomUsersListener', unsub);
     });
   },
   setRoomIdAction({ commit }, payload) {

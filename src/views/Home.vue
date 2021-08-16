@@ -1,7 +1,7 @@
 <template>
   <div class="home-main">
     <div class="home-container">
-      <div class="select-game-container game-container" v-show="!curGame">
+      <div class="select-game-container game-container" v-if="!curGame">
         <div class="select-game-content">
           <button
             class="select-game-card btn-div btn-drop"
@@ -18,15 +18,15 @@
           </button>
         </div>
       </div>
-      <div class="join-game-container game-container" v-if="curGame">
+      <div class="join-game-container game-container" v-else>
         <div class="close-btn-container" v-if="!isLoading">
-          <button class="back-btn btn-div btn-drop" @click="curGame = null">
+          <button class="back-btn btn-div btn-drop" @click="curGame = null" >
             <i class="bx bx-arrow-back" style="color: #ffffff"></i>
           </button>
         </div>
 
         <div class="close-btn-container" v-if="isLoading">
-          <button class="close-btn btn-div btn-drop" @click="closeLoading">
+          <button class="close-btn btn-div btn-drop" @click="cancelSearch" v-if="isBtn">
             <i class="bx bx-x btn-icon"></i>
           </button>
         </div>
@@ -68,6 +68,7 @@ export default {
     confirm,
   },
   data: () => ({
+    isBtn: false,
     active: false,
     curGame: null,
     isLoading: false,
@@ -77,7 +78,7 @@ export default {
     roomId: '',
   }),
   methods: {
-    ...mapActions(['hostGameAction', 'setRoomIdAction', 'bindRoomDataRef']),
+    ...mapActions(['hostGameAction', 'setRoomIdAction', 'bindRoomDataRef', 'unbindRoomDataRef']),
     setGame(game) {
       this.$store.commit('setGame', game);
       this.curGame = this.getGame;
@@ -100,7 +101,12 @@ export default {
         text: 'looking for partys',
       });
 
+      // hide close match button for 3 sec
+      this.isBtn = false;
+      setTimeout(() => { this.isBtn = true; }, 2000);
+
       this.isLoading = true;
+
       const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
       const playerRef = playersCollection.doc();
       const playerId = playerRef.id;
@@ -118,28 +124,27 @@ export default {
             .onSnapshot((snap) => {
               const { roomId } = snap.data();
               if (roomId) {
+                console.log('ROOM FOUND: ', roomId);
                 this.roomId = roomId;
                 this.roomListener = roomsCollection.doc(roomId).onSnapshot(async (snap2) => {
                   if (snap2.exists) {
                     const { full, isActive } = snap2.data();
-                    if (full && this.isLoading && isActive) {
+                    if (full && this.isLoading && isActive === true) {
                     // this.$store.commit('setRoomId', roomId);
                       await this.setRoomIdAction(roomId);
+                      this.unbindRoomDataRef();
                       this.bindRoomDataRef();
                       this.active = !this.active;
-                      if (this.roomListener !== null) {
-                        this.roomListener();
-                        this.roomListener = null;
-                      }
                       this.closeLoading();
-                    } else if (this.isLoading && !isActive) {
-                      console.log('LEFT ROOM', isActive);
+                    } else if (this.isLoading && isActive !== true) {
+                      // console.log('LEFT ROOM', isActive);
                       this.closeLoading();
                       this.join();
                     }
                   }
                 }, (error) => {
                   this.openNotification('Join room failed', error, 'danger');
+                  this.closeLoading();
                 });
               }
             });
@@ -171,8 +176,11 @@ export default {
     disRoom() {
       if (this.roomId)roomsCollection.doc(this.roomId).update({ isActive: false });
     },
-    closeLoading() {
+    cancelSearch() {
       this.disRoom();
+      this.closeLoading();
+    },
+    closeLoading() {
       this.loading.close();
       this.isLoading = false;
       if (this.searching !== null) {
@@ -207,6 +215,11 @@ export default {
   },
   computed: {
     ...mapGetters(['getUser', 'getGame', 'getRoomId', 'getProfile', 'getGames']),
+  },
+  watch: {
+    // roomId(newRoomId, oldRoomID) {
+
+    // },
   },
   mounted() {
     this.init();
