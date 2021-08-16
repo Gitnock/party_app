@@ -79,6 +79,9 @@ export default {
               this.canSub = false;
               this.$emit('close');
             } else {
+              if (this.isGood) {
+                this.joinRoom();
+              }
               const t = ((parseFloat(`${Math.floor(timeLeft / 1000)}.${timeLeft % 1000}`) * 10.0) / 2.0).toFixed(2);
               if (t < this.timeleft) {
                 this.timeleft = t;
@@ -89,13 +92,13 @@ export default {
       });
     },
     accept() {
-      if (this.timeLeft > 0 && this.canSub) {
-        console.log('ACCEPTCLICKED rm: ', this.roomId);
+      if (this.timeleft > 0 && this.canSub) {
+        // console.log(`ACCEPT rm: ${this.roomId} = isFull: ${this.getRoomData.full}`);
+        this.canSub = false;
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
         }).then(() => {
           if (this.isGood) {
-            this.joinRoom();
             this.$emit('close');
           }
         });

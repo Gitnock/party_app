@@ -84,14 +84,6 @@ export default {
       this.curGame = this.getGame;
     },
     join() {
-      // if (this.searching !== null) {
-      //   this.searching();
-      //   this.searching = null;
-      // }
-      // if (this.roomListener !== null) {
-      //   this.roomListener();
-      //   this.roomListener = null;
-      // }
       this.loading = this.$vs.loading({
         target: this.$refs.target,
         type: 'corners',
@@ -124,13 +116,11 @@ export default {
             .onSnapshot((snap) => {
               const { roomId } = snap.data();
               if (roomId) {
-                console.log('ROOM FOUND: ', roomId);
                 this.roomId = roomId;
                 this.roomListener = roomsCollection.doc(roomId).onSnapshot(async (snap2) => {
                   if (snap2.exists) {
                     const { full, isActive } = snap2.data();
                     if (full && this.isLoading && isActive === true) {
-                    // this.$store.commit('setRoomId', roomId);
                       await this.setRoomIdAction(roomId);
                       this.unbindRoomDataRef();
                       this.bindRoomDataRef();
