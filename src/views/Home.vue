@@ -210,7 +210,6 @@ export default {
     // },
   },
   mounted() {
-    this.waitLoad();
     eventBus.$on('search', () => {
       this.join();
     });
@@ -334,6 +333,7 @@ export default {
   }
   .select-game-content {
     width: 308px;
+    height: 338px;
   }
   .container-main {
     padding: 4px;
@@ -356,6 +356,10 @@ export default {
     height: 159px;
     border-radius: 12px;
     margin: 5px;
+  }
+  .select-game-content {
+    width: 308px;
+    height: 338px;
   }
   .container-main {
     padding: 4px;
