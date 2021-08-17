@@ -353,6 +353,14 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['signUpAction', 'googleAuthAction']),
+    loadImage(objs) {
+      const imgs = objs.map((obj) => obj.url);
+      imgs.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    },
     emailauth() {
       this.signUpAction({
         email: this.email,
@@ -386,7 +394,7 @@ export default {
         opacity: '1',
         text: 'Checking you out, just a moment',
       });
-
+      this.loadImage(this.getGames);
       setTimeout(() => {
         if (this.getProfile.flags) {
           this.$router.push('/crew/@me');
@@ -396,10 +404,9 @@ export default {
         loading.close();
       }, 1000);
     },
-    ...mapActions(['signUpAction', 'googleAuthAction']),
   },
   computed: {
-    ...mapGetters(['getEmail', 'getProfile']),
+    ...mapGetters(['getEmail', 'getProfile', 'getGames']),
   },
   mounted() {
     // // lazy loading image

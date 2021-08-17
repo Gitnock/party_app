@@ -53,8 +53,8 @@
     <vs-dialog not-close v-model="isEdit" ref="editImage">
       <div class="editImage-main">
         <div class="editImage-top">
-          <div class="addFriend-top-button">
-            <vs-avatar circle color="#2B2E43" @click="isEdit = !isEdit">
+          <div class="close-top-right" v-if="!isLoading">
+            <vs-avatar circle color="#2B2E43" @click="isEdit = !isEdit" >
               <i class="bx bx-x" style="color:#ffffff"></i>
             </vs-avatar>
           </div>
@@ -105,6 +105,7 @@ export default {
       isActive: false,
       isEdit: false,
       imgSrc: '',
+      isLoading: false,
       option: {
         autoCrop: true,
         autoCropWidth: 200,
@@ -158,6 +159,7 @@ export default {
 
         const metadata = {
           contentType: blob.type,
+          cacheControl: 'public,max-age=300',
         };
         this.openLoadingCropper();
         const task = storageRef.child(fileDest).put(blob, metadata);
@@ -205,8 +207,10 @@ export default {
         opacity: 1,
         color: '#fff',
       });
+      this.isLoading = true;
       setTimeout(() => {
         loading.close();
+        this.isLoading = false;
       }, 3000);
     },
   },

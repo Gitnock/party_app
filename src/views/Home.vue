@@ -1,8 +1,8 @@
 <template>
   <div class="home-main">
-    <div class="home-container">
+    <div class="home-container" >
       <div class="select-game-container game-container" v-if="!curGame">
-        <div class="select-game-content">
+        <div class="select-game-content" >
           <button
             class="select-game-card btn-div btn-drop"
             v-for="game in getGames"
@@ -13,7 +13,6 @@
             <b-image
               :src="game.url"
               :alt="game.gameName"
-              draggable="false"
             />
           </button>
         </div>
@@ -153,7 +152,6 @@ export default {
         color,
       });
     },
-    init() {},
     setRoom(roomId) {
       const roomRef = db.doc(`/status/${this.getUser.uid}`);
       roomRef.set(
@@ -212,7 +210,7 @@ export default {
     // },
   },
   mounted() {
-    this.init();
+    this.waitLoad();
     eventBus.$on('search', () => {
       this.join();
     });

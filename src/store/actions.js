@@ -142,7 +142,14 @@ const actions = {
   // Profile
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
   // games list
-  bindGameRef: firestoreAction(({ bindFirestoreRef }) => bindFirestoreRef('gamesList', gamesCollection)),
+  bindGameRef({ commit }) {
+    gamesCollection.get().then((querySnapshot) => {
+      if (querySnapshot) {
+        const documents = querySnapshot.docs.map((doc) => doc.data());
+        commit('setGames', documents);
+      }
+    });
+  },
   // room
   bindRoomDataRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('roomData', roomsCollection.doc(state.roomId))),
   unbindRoomDataRef: firestoreAction(({ unbindFirestoreRef }) => {
@@ -172,7 +179,7 @@ const actions = {
               )
               .get()
               .then((snap) => {
-              // eslint-disable-next-line prefer-const
+                // eslint-disable-next-line prefer-const
                 let users = [];
                 snap.forEach((userDoc) => {
                   const userData = userDoc.data();

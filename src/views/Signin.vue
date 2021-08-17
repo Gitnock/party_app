@@ -147,6 +147,13 @@ export default {
   },
   methods: {
     ...mapActions(['signInAction', 'googleAuthAction']),
+    loadImage(objs) {
+      const imgs = objs.map((obj) => obj.url);
+      imgs.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    },
     emailauth() {
       this.signInAction({ email: this.email, password: this.password })
         .then(() => {
@@ -169,7 +176,7 @@ export default {
         opacity: '1',
         text: 'Checking you out, just a moment',
       });
-
+      this.loadImage(this.getGames);
       setTimeout(() => {
         if (this.getProfile.flags) {
           this.$router.push('/crew/@me');
@@ -177,7 +184,7 @@ export default {
           this.$router.push('/alpha');
         }
         loading.close();
-      }, 800);
+      }, 1000);
     },
     openNotification(title, text, color) {
       this.$vs.notification({
@@ -203,7 +210,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getProfile', 'getEmail']),
+    ...mapGetters(['getProfile', 'getEmail', 'getGames']),
   },
 };
 </script>
