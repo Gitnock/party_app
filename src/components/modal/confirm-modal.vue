@@ -47,7 +47,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
-// import eventBus from '@/eventBus';
+import eventBus from '@/eventBus';
 import { roomsCollection, rtDb } from '../../firebaseConfig';
 
 export default {
@@ -56,6 +56,7 @@ export default {
     showModal: false,
     timeleft: 100,
     canSub: true,
+    isAccepted: false,
     submitTimer: undefined,
     serverTimeOffset: 0,
   }),
@@ -77,10 +78,18 @@ export default {
             const timeLeft = (seconds * 1000) - (Date.now() - timestamp - this.serverTimeOffset);
             if (timeLeft < 0) {
               this.canSub = false;
+              if (this.isAccepted) {
+                eventBus.$emit('search');
+              }
               this.$emit('close');
             } else {
-              if (this.isGood) {
-                this.joinRoom();
+              if (this.isAllSub) {
+                if (this.isGood) {
+                  this.joinRoom();
+                } else if (this.isAccepted) {
+                  eventBus.$emit('search');
+                }
+                this.$emit('close');
               }
               const t = ((parseFloat(`${Math.floor(timeLeft / 1000)}.${timeLeft % 1000}`) * 10.0) / 2.0).toFixed(2);
               if (t < this.timeleft) {
@@ -93,20 +102,16 @@ export default {
     },
     accept() {
       if (this.timeleft > 0 && this.canSub) {
-        // console.log(`ACCEPT rm: ${this.roomId} = isFull: ${this.getRoomData.full}`);
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
         }).then(() => {
-          if (this.isGood) {
-            this.$emit('close');
-          }
+          this.isAccepted = true;
         });
       }
     },
     decline() {
       if (this.timeleft > 0 && this.canSub) {
-        console.log(`DECLINE rm: ${this.roomId} = isFull: ${this.getRoomData.full}`);
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${0}-${this.getUser.uid}`),
@@ -131,7 +136,7 @@ export default {
   },
   computed: {
     isGood() {
-      if (this.getRoomData) return this.getRoomData.isConfirmed.every((i) => i[0] === '1') && this.isAllSub;
+      if (this.getRoomData) return this.getRoomData.isConfirmed.every((i) => i[0] === '1');
       return false;
     },
     isAllSub() {
