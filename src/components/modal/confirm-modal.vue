@@ -68,45 +68,37 @@ export default {
   },
   methods: {
     countDown() {
-      const ref = rtDb.ref(`countdown/${this.roomId}`);
       rtDb.ref('.info/serverTimeOffset').on('value', (snapshot) => { this.serverTimeOffset = snapshot.val(); });
-      ref.get().then((snapshot) => {
-        if (snapshot.exists()) {
-          const { seconds } = snapshot.val();
-          const { timestamp } = snapshot.val();
-          this.submitTimer = setInterval(() => {
-            const timeLeft = (seconds * 1000) - (Date.now() - timestamp - this.serverTimeOffset);
-            if (timeLeft < 0) {
-              this.canSub = false;
-              if (this.isAccepted) {
-                eventBus.$emit('search');
-              }
-              this.$emit('close');
-            } else {
-              if (this.isAllSub) {
-                if (this.isGood) {
-                  this.joinRoom();
-                } else if (this.isAccepted) {
-                  eventBus.$emit('search');
-                }
-                this.$emit('close');
-              }
-              const t = ((parseFloat(`${Math.floor(timeLeft / 1000)}.${timeLeft % 1000}`) * 10.0) / 2.0).toFixed(2);
-              if (t < this.timeleft) {
-                this.timeleft = t;
-              }
+      const roomCreatedAt = Date.now();
+      this.submitTimer = setInterval(() => {
+        const timeLeft = (20 * 1000) - (Date.now() - roomCreatedAt - this.serverTimeOffset);
+        if (timeLeft < 0) {
+          this.canSub = false;
+          if (this.isAccepted) {
+            eventBus.$emit('search');
+          }
+          this.$emit('close');
+        } else {
+          if (this.isAllSub) {
+            console.log('ALL SUBBED', this.isGood, this.isAccepted);
+            if (this.isGood) {
+              this.joinRoom();
+            } else if (this.isAccepted) {
+              eventBus.$emit('search');
             }
-          }, 100);
+            this.$emit('close');
+          }
+          const t = ((timeLeft / 1000) * 10.0) / 2.0;
+          this.timeleft = t;
         }
-      });
+      }, 100);
     },
     accept() {
       if (this.timeleft > 0 && this.canSub) {
+        this.isAccepted = true;
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
           isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
-        }).then(() => {
-          this.isAccepted = true;
         });
       }
     },

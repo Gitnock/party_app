@@ -225,13 +225,6 @@ export default {
   height: 100%;
   align-items: center;
 }
-.home-container {
-  // height: 100%;
-  // max-width: 1320px;
-  // display: flex;
-  // align-items: center;
-  // padding: 12px 32px;
-}
 
 //GAME CONTAINER
 .game-container {
