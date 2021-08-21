@@ -20,6 +20,9 @@
                 <div class="dot dot-green" v-if="dot[0] === '1'" />
                 <div class="dot dot-red" v-else />
               </div>
+              <div v-for="(dot, i) in empDot" :key="i">
+                 <div class="dot dot-emp"/>
+              </div>
             </div>
           </div>
 
@@ -133,6 +136,10 @@ export default {
     isAllSub() {
       if (this.getRoomData) return this.getRoomData.size === this.getRoomData.isConfirmed.length;
       return false;
+    },
+    empDot() {
+      if (this.getRoomData) return this.getRoomData.size - this.getRoomData.isConfirmed.length;
+      return 0;
     },
     ...mapGetters(['getRoomData', 'getRoomId', 'getUser']),
   },
@@ -250,5 +257,8 @@ export default {
 }
 .dot-red {
   background-color: #ff5441;
+}
+.dot-emp{
+  background-color: #202330;
 }
 </style>
