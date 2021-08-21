@@ -80,7 +80,6 @@ export default {
           this.$emit('close');
         } else {
           if (this.isAllSub) {
-            console.log('ALL SUBBED', this.isGood, this.isAccepted);
             if (this.isGood) {
               this.joinRoom();
             } else if (this.isAccepted) {
