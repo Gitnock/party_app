@@ -3,7 +3,7 @@
     <div class="home-container" >
       <div class="select-game-container game-container" v-if="!curGame">
         <div class="select-game-content" >
-          <button
+            <button
             class="select-game-card btn-div btn-drop"
             v-for="game in getGames"
             v-bind:key="game.gameId"
@@ -15,6 +15,7 @@
               :alt="game.gameName"
             />
           </button>
+
         </div>
       </div>
       <div class="join-game-container game-container" v-else>
@@ -213,6 +214,9 @@ export default {
     eventBus.$on('search', () => {
       this.join();
     });
+    eventBus.$on('disRoom', () => {
+
+    });
   },
 };
 </script>
@@ -306,6 +310,7 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  animation: fadeIn 1s 1;
 }
 .back-btn {
   background: #202330;
@@ -316,6 +321,7 @@ export default {
   height: 50px;
   border-radius: 50%;
 }
+
 // MOBILE
 @media only screen and (max-width: 510px) {
   .select-game-card {

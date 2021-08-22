@@ -3,10 +3,7 @@
     <div class="party-container">
       <div class="party-content">
         <div class="audio-layout">
-          <audioLayout
-            :muted="true"
-            :user="getProfile"
-          />
+          <audioLayout :muted="true" :user="getProfile" />
         </div>
         <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
           <audioLayout
@@ -88,7 +85,7 @@ export default {
         // console.log(error);
         this.openNotification(
           'Error',
-          'Permission denied. Refresh to try again.',
+          'Mic permission denied. Refresh to try again.',
           'danger',
         );
       }
@@ -124,20 +121,22 @@ export default {
       this.localStream.getAudioTracks()[0].enabled = this.muted;
     },
     hangUp() {
-      this.room.leave();
-      const tracks = this.localStream.getTracks();
-      tracks.forEach((track) => {
-        track.stop();
-      });
-      Object.keys(this.peers).forEach((user) => {
-        if (this.peers[user].peerStream) {
-          this.peers[user].peerStream
-            .getTracks()
-            .forEach((track) => track.stop());
-        }
-        if (this.peers[user].pc) this.peers[user].pc.close();
-      });
-      this.peers = {};
+      if (this.localStream !== undefined) {
+        this.room.leave();
+        const tracks = this.localStream.getTracks();
+        tracks.forEach((track) => {
+          track.stop();
+        });
+        Object.keys(this.peers).forEach((user) => {
+          if (this.peers[user].peerStream) {
+            this.peers[user].peerStream
+              .getTracks()
+              .forEach((track) => track.stop());
+          }
+          if (this.peers[user].pc) this.peers[user].pc.close();
+        });
+        this.peers = {};
+      }
       if (this.$route.path !== '/crew/@me') {
         this.$router.push('/crew/@me');
       }
@@ -180,6 +179,7 @@ export default {
               roomId: this.roomId,
               userId: this.getUser.uid,
             });
+
             await this.getUserMedia();
             this.room = joinRoom(config, this.roomId);
             this.roomEvents();
@@ -196,34 +196,46 @@ export default {
         });
     },
     async sendChatId() {
-      await roomsCollection.doc(this.roomId).collection('activePlayers').doc(this.getUser.uid).set({
-        uid: this.getUser.uid,
-        chatId: selfId,
-      });
+      await roomsCollection
+        .doc(this.roomId)
+        .collection('activePlayers')
+        .doc(this.getUser.uid)
+        .set({
+          uid: this.getUser.uid,
+          chatId: selfId,
+        });
     },
   },
   computed: {
-    ...mapGetters(['getUser', 'getRoomUsers', 'getProfile', 'getRoomUsersListener']),
+    ...mapGetters([
+      'getUser',
+      'getRoomUsers',
+      'getProfile',
+      'getRoomUsersListener',
+    ]),
   },
   mounted() {
     this.init();
   },
   beforeDestroy() {
-    const tracks = this.localStream.getTracks();
-    tracks.forEach((track) => {
-      track.stop();
-    });
-    Object.keys(this.peers).forEach((user) => {
-      if (this.peers[user].peerStream) {
-        this.peers[user].peerStream
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
-      if (this.peers[user].pc) this.peers[user].pc.close();
-    });
-    this.peers = {};
+    if (this.localStream !== undefined) {
+      const tracks = this.localStream.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+      });
+      Object.keys(this.peers).forEach((user) => {
+        if (this.peers[user].peerStream) {
+          this.peers[user].peerStream
+            .getTracks()
+            .forEach((track) => track.stop());
+        }
+        if (this.peers[user].pc) this.peers[user].pc.close();
+      });
+      this.peers = {};
+
+      this.room.leave();
+    }
     this.getRoomUsersListener();
-    this.room.leave();
   },
   created() {},
 };

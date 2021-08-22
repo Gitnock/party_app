@@ -58,6 +58,26 @@ body,
   }
 }
 
+@keyframes fadeIn {
+  0%{
+    opacity:0;
+  }
+  100%{
+    opacity:1;
+  }
+}
+
+
+// .fade-enter-active{
+  
+//   position: fixed;
+// }
+// .fade-leave-active {
+//   transition: opacity .5s;
+// }
+
+
+
 //loading
 div.vs-loading {
   z-index: 0 !important;

@@ -20,8 +20,8 @@
                 <div class="dot dot-green" v-if="dot[0] === '1'" />
                 <div class="dot dot-red" v-else />
               </div>
-              <div v-for="(dot, i) in empDot" :key="i">
-                 <div class="dot dot-emp"/>
+              <div v-for="(dot, i) in empDot" :key="'a' + i">
+                <div class="dot dot-emp" />
               </div>
             </div>
           </div>
@@ -71,10 +71,12 @@ export default {
   },
   methods: {
     countDown() {
-      rtDb.ref('.info/serverTimeOffset').on('value', (snapshot) => { this.serverTimeOffset = snapshot.val(); });
+      rtDb.ref('.info/serverTimeOffset').on('value', (snapshot) => {
+        this.serverTimeOffset = snapshot.val();
+      });
       const roomCreatedAt = Date.now();
       this.submitTimer = setInterval(() => {
-        const timeLeft = (20 * 1000) - (Date.now() - roomCreatedAt - this.serverTimeOffset);
+        const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.serverTimeOffset);
         if (timeLeft < 0) {
           this.canSub = false;
           if (this.isAccepted) {
@@ -100,7 +102,9 @@ export default {
         this.isAccepted = true;
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
-          isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${1}-${this.getUser.uid}`),
+          isConfirmed: firebase.firestore.FieldValue.arrayUnion(
+            `${1}-${this.getUser.uid}`,
+          ),
         });
       }
     },
@@ -108,7 +112,9 @@ export default {
       if (this.timeleft > 0 && this.canSub) {
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
-          isConfirmed: firebase.firestore.FieldValue.arrayUnion(`${0}-${this.getUser.uid}`),
+          isConfirmed: firebase.firestore.FieldValue.arrayUnion(
+            `${0}-${this.getUser.uid}`,
+          ),
         });
       }
     },
@@ -130,15 +136,21 @@ export default {
   },
   computed: {
     isGood() {
-      if (this.getRoomData) return this.getRoomData.isConfirmed.every((i) => i[0] === '1');
+      if (this.getRoomData.isConfirmed) {
+        return this.getRoomData.isConfirmed.every((i) => i[0] === '1');
+      }
       return false;
     },
     isAllSub() {
-      if (this.getRoomData) return this.getRoomData.size === this.getRoomData.isConfirmed.length;
+      if (this.getRoomData.isConfirmed) {
+        return this.getRoomData.size === this.getRoomData.isConfirmed.length;
+      }
       return false;
     },
     empDot() {
-      if (this.getRoomData) return this.getRoomData.size - this.getRoomData.isConfirmed.length;
+      if (this.getRoomData.isConfirmed) {
+        return this.getRoomData.size - this.getRoomData.isConfirmed.length;
+      }
       return 0;
     },
     ...mapGetters(['getRoomData', 'getRoomId', 'getUser']),
@@ -147,80 +159,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  display: table;
-  transition: opacity 0.3s ease;
-}
+@import '@/assets/styles/modal.scss';
 
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.modal-container {
-  width: 373px;
-  margin: 0px auto;
-  padding: 24px;
-  background-color: #161823;
-  border-radius: 28px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  transition: all 0.3s ease;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-.modal-body {
-  margin: 20px 0;
-}
-
-.modal-footer {
-  width: 100%;
-  height: 52px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-button {
-  border: none;
-  border-radius: 24px;
-  color: white;
-  font-size: 18px;
-}
-.modal-leave-button {
-  width: 106px;
-  background-color: #202330;
-}
-.modal-accept-button {
-  width: 202px;
-  background-color: #195bff;
-}
-
-.modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .modal-title {
   color: #b7bbd5;
   font-size: 24px;
@@ -258,7 +198,7 @@ export default {
 .dot-red {
   background-color: #ff5441;
 }
-.dot-emp{
+.dot-emp {
   background-color: #202330;
 }
 </style>
