@@ -17,6 +17,24 @@ const getters = {
   getGame(state) {
     return state.currentGame;
   },
+  getFavGames(state) {
+    return state.favGames;
+  },
+  getFavGamesSettings(state) {
+    const games = [];
+    state.favGames.forEach((game) => {
+      const newGm = state.gamesList.filter((x) => x.gameId === game.gameId)[0];
+      console.log(newGm);
+      games.push({
+        gameId: newGm.gameId,
+        url_square: newGm.url_square,
+        gameName: newGm.gameName,
+        uname: game.uname,
+      });
+    });
+
+    return games;
+  },
   getRoomId(state) {
     return state.roomId;
   },

@@ -12,7 +12,7 @@ import { db, rtDb } from './firebaseConfig';
 
 export default {
   methods: {
-    ...mapActions(['bindGameRef']),
+    ...mapActions(['bindGameRef', 'favGameAction']),
     rtdb_presence(uid) {
       // Create a reference to this user's specific status node.
       // This is where we will store data about being online/offline.
@@ -112,6 +112,7 @@ export default {
         this.$store.commit('setUser', user);
         this.$store.dispatch('bindUserProfileRef');
         this.$store.dispatch('bindGameRef');
+        this.favGameAction(user.uid);
         // if (localStorage.getItem('gameList') === null) {
         //   this.bindGameRef().then(() => {
         //     localStorage.setItem('gameList', JSON.stringify(this.getGames));

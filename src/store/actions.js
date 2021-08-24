@@ -1,3 +1,4 @@
+import { Promise } from 'core-js';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { firestoreAction } from 'vuexfire';
@@ -213,26 +214,42 @@ const actions = {
       }, 1000);
     });
   },
-  hostGameAction({ commit }, payload) {
-    const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+  favGameAction({ commit }, uid) {
     return new Promise((res, rej) => {
-      roomsCollection
-        .add({
-          createdAt: myTimestamp,
-          game: payload.game,
-          players: payload.players,
-          size: payload.size,
-          full: false,
-        })
-        .then((docRef) => {
-          commit('setRoomId', docRef.id);
-          res();
-        })
-        .catch((error) => {
-          rej(error);
+      usersCollection.doc(uid).collection('favGames').get().then((querySnapshot) => {
+        const favGames = [];
+        querySnapshot.forEach((doc) => {
+          favGames.push(doc.data());
+        });
+        console.log(favGames[0]);
+        commit('setFavGames', favGames);
+        res();
+      })
+        .catch(() => {
+          rej();
         });
     });
   },
+  // hostGameAction({ commit }, payload) {
+  //   const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+  //   return new Promise((res, rej) => {
+  //     roomsCollection
+  //       .add({
+  //         createdAt: myTimestamp,
+  //         game: payload.game,
+  //         players: payload.players,
+  //         size: payload.size,
+  //         full: false,
+  //       })
+  //       .then((docRef) => {
+  //         commit('setRoomId', docRef.id);
+  //         res();
+  //       })
+  //       .catch((error) => {
+  //         rej(error);
+  //       });
+  //   });
+  // },
   // joinGameAction({ commit }, payload) {
   //   const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
   //   const playerRef = playersCollection.doc();

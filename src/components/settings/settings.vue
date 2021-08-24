@@ -18,12 +18,19 @@
           v-on:click="settingPosition = 1"
           v-bind:class="classObject(1)"
         >
-          Account Information
+          Games
         </button>
         <button
           class="setting-menu-item roboto-medium clickable btn-drop"
           v-on:click="settingPosition = 2"
           v-bind:class="classObject(2)"
+        >
+          Account Information
+        </button>
+        <button
+          class="setting-menu-item roboto-medium clickable btn-drop"
+          v-on:click="settingPosition = 3"
+          v-bind:class="classObject(3)"
         >
           Password
         </button>
@@ -42,14 +49,19 @@
           class="setting-item"
           v-if="settingPosition === 0"
         ></settingsName>
-        <settingsAccount
+        <settingsGame
           class="setting-item"
           v-if="settingPosition === 1"
+        ></settingsGame>
+        <settingsAccount
+          class="setting-item"
+          v-if="settingPosition === 2"
         ></settingsAccount>
         <settingsPassword
           class="setting-item"
-          v-if="settingPosition === 2"
+          v-if="settingPosition === 3"
         ></settingsPassword>
+
       </div>
     </div>
   </div>
@@ -59,6 +71,7 @@
 import settingsName from '@/components/settings/settings-name.vue';
 import settingsAccount from '@/components/settings/settings-account.vue';
 import settingsPassword from '@/components/settings/settings-password.vue';
+import settingsGame from '@/components/settings/settings-games.vue';
 import { mapActions } from 'vuex';
 
 export default {
@@ -66,6 +79,7 @@ export default {
     settingsName,
     settingsAccount,
     settingsPassword,
+    settingsGame,
   },
   data() {
     return {
@@ -183,7 +197,7 @@ export default {
     //hide scroll
     overflow-x: auto;
     scrollbar-width: none; /* Firefox */
-    margin-bottom: 4px;
+    margin-bottom: 32px;
   }
   .setting-menu::-webkit-scrollbar {
     width: 0;

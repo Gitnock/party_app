@@ -1,32 +1,32 @@
 <template>
   <div class="home-main">
-    <div class="home-container" >
+    <div class="home-container">
       <div class="select-game-container game-container" v-if="!curGame">
-        <div class="select-game-content" >
-            <button
+        <div class="select-game-content">
+          <button
             class="select-game-card btn-div btn-drop"
             v-for="game in getGames"
             v-bind:key="game.gameId"
             v-bind:value="game"
             @click="setGame(game)"
           >
-            <b-image
-              :src="game.url"
-              :alt="game.gameName"
-            />
+            <b-image :src="game.url" :alt="game.gameName" />
           </button>
-
         </div>
       </div>
       <div class="join-game-container game-container" v-else>
         <div class="close-btn-container" v-if="!isLoading">
-          <button class="back-btn btn-div btn-drop" @click="curGame = null" >
+          <button class="back-btn btn-div btn-drop" @click="curGame = null">
             <i class="bx bx-arrow-back" style="color: #ffffff"></i>
           </button>
         </div>
 
         <div class="close-btn-container" v-if="isLoading">
-          <button class="close-btn btn-div btn-drop" @click="cancelSearch" v-if="isBtn">
+          <button
+            class="close-btn btn-div btn-drop"
+            @click="cancelSearch"
+            v-if="isBtn"
+          >
             <i class="bx bx-x btn-icon"></i>
           </button>
         </div>
@@ -40,7 +40,7 @@
 
           <button
             class="join-game-btn roboto-black"
-            @click="join"
+            @click="(hasGame)? join():addUsername()"
             :disabled="isLoading"
           >
             Join
@@ -50,7 +50,12 @@
     </div>
     <div>
       <template>
-        <confirm v-if="active" @close="active = false" :roomId="roomId"/>
+        <confirm v-if="isConfirm" @close="isConfirm = false" :roomId="roomId" />
+      </template>
+    </div>
+    <div>
+      <template>
+        <username v-if="isUsername" @close="isUsername = false" />
       </template>
     </div>
   </div>
@@ -60,16 +65,19 @@
 import firebase from 'firebase/app';
 import { mapActions, mapGetters } from 'vuex';
 import confirm from '@/components/modal/confirm-modal.vue';
+import username from '@/components/modal/username-modal.vue';
 import eventBus from '@/eventBus';
 import { db, playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
   components: {
     confirm,
+    username,
   },
   data: () => ({
     isBtn: false,
-    active: false,
+    isConfirm: false,
+    isUsername: false,
     curGame: null,
     isLoading: false,
     loading: null,
@@ -78,7 +86,12 @@ export default {
     roomId: '',
   }),
   methods: {
-    ...mapActions(['hostGameAction', 'setRoomIdAction', 'bindRoomDataRef', 'unbindRoomDataRef']),
+    ...mapActions([
+      'hostGameAction',
+      'setRoomIdAction',
+      'bindRoomDataRef',
+      'unbindRoomDataRef',
+    ]),
     setGame(game) {
       this.$store.commit('setGame', game);
       this.curGame = this.getGame;
@@ -95,7 +108,9 @@ export default {
 
       // hide close match button for 3 sec
       this.isBtn = false;
-      setTimeout(() => { this.isBtn = true; }, 2000);
+      setTimeout(() => {
+        this.isBtn = true;
+      }, 2000);
 
       this.isLoading = true;
 
@@ -117,25 +132,28 @@ export default {
               const { roomId } = snap.data();
               if (roomId) {
                 this.roomId = roomId;
-                this.roomListener = roomsCollection.doc(roomId).onSnapshot(async (snap2) => {
-                  if (snap2.exists) {
-                    const { full, isActive } = snap2.data();
-                    if (full && this.isLoading && isActive === true) {
-                      await this.setRoomIdAction(roomId);
-                      this.unbindRoomDataRef();
-                      this.bindRoomDataRef();
-                      this.active = !this.active;
-                      this.closeLoading();
-                    } else if (this.isLoading && isActive !== true) {
-                      // console.log('LEFT ROOM', isActive);
-                      this.closeLoading();
-                      this.join();
+                this.roomListener = roomsCollection.doc(roomId).onSnapshot(
+                  async (snap2) => {
+                    if (snap2.exists) {
+                      const { full, isActive } = snap2.data();
+                      if (full && this.isLoading && isActive === true) {
+                        await this.setRoomIdAction(roomId);
+                        this.unbindRoomDataRef();
+                        this.bindRoomDataRef();
+                        this.isConfirm = !this.isConfirm;
+                        this.closeLoading();
+                      } else if (this.isLoading && isActive !== true) {
+                        // console.log('LEFT ROOM', isActive);
+                        this.closeLoading();
+                        this.join();
+                      }
                     }
-                  }
-                }, (error) => {
-                  this.openNotification('Join room failed', error, 'danger');
-                  this.closeLoading();
-                });
+                  },
+                  (error) => {
+                    this.openNotification('Join room failed', error, 'danger');
+                    this.closeLoading();
+                  },
+                );
               }
             });
         })
@@ -163,7 +181,7 @@ export default {
       );
     },
     disRoom() {
-      if (this.roomId)roomsCollection.doc(this.roomId).update({ isActive: false });
+      if (this.roomId) { roomsCollection.doc(this.roomId).update({ isActive: false }); }
     },
     cancelSearch() {
       this.disRoom();
@@ -180,6 +198,10 @@ export default {
         this.roomListener();
         this.roomListener = null;
       }
+    },
+    addUsername() {
+      console.log('NO GAME');
+      this.isUsername = true;
     },
     // host() {
     //   this.hostGameAction({
@@ -203,20 +225,29 @@ export default {
     // },
   },
   computed: {
-    ...mapGetters(['getUser', 'getGame', 'getRoomId', 'getProfile', 'getGames']),
+    hasGame() {
+      return this.getFavGames
+        ? this.getFavGames.some((id) => id.gameId === this.curGame.gameId)
+        : false;
+    },
+    ...mapGetters([
+      'getUser',
+      'getGame',
+      'getRoomId',
+      'getProfile',
+      'getGames',
+      'getFavGames',
+    ]),
   },
   watch: {
     // roomId(newRoomId, oldRoomID) {
-
     // },
   },
   mounted() {
     eventBus.$on('search', () => {
       this.join();
     });
-    eventBus.$on('disRoom', () => {
-
-    });
+    eventBus.$on('disRoom', () => {});
   },
 };
 </script>

@@ -24,7 +24,6 @@
   border-radius: 28px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
 .modal-body {
@@ -72,3 +71,34 @@
   flex-direction: column;
   align-items: center;
 }
+@media screen and (max-width: 510px){
+  
+.modal-container {
+  width: 340px;
+}
+.modal-button {
+  font-size: 16px;
+}
+
+.modal-accept-button {
+  width: 162px;
+}
+
+}
+
+@media screen and (max-width: 330px){
+  
+  .modal-container {
+    width: 300px;
+  }
+  .modal-button {
+    font-size: 16px;
+  }
+  .modal-leave-button {
+    width: 80px;
+  }
+  .modal-accept-button {
+    width: 152px;
+  }
+  
+  }

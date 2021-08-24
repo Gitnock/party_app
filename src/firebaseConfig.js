@@ -45,7 +45,8 @@ const friendsCollection = db.collection('friends');
 const gamesCollection = db.collection('games');
 const playersCollection = db.collection('players');
 const roomsCollection = db.collection('rooms');
-// const activePlayersCollection = db.collection('activePlayers');
+// const activePlayersCollection = collection('activePlayers');
+// const favGames = collection('favGames');
 const notificationsCollection = db.collection('notifications');
 const friendChatCollection = db.collection('friendChat');
 

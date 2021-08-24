@@ -13,6 +13,9 @@ const mutations = {
   setGames(state, payload) {
     state.gamesList = payload;
   },
+  setFavGames(state, payload) {
+    state.favGames = payload;
+  },
   setRoomId(state, payload) {
     state.roomId = payload;
   },

@@ -132,7 +132,7 @@ export default {
       const file = e.target.files[0];
 
       if (!/\.(jpg|jpeg|png|bmp|JPG|PNG)$/.test(e.target.value)) {
-        this.openNotification('failed', 'jpeg,jpg,png,bmp', 'danger');
+        this.openNotification('Failed', 'jpeg,jpg,png,bmp', 'danger');
         this.isEdit = !this.isEdit;
         return false;
       }
@@ -146,7 +146,7 @@ export default {
         };
         reader.readAsDataURL(file);
       } else {
-        this.openNotification('failed', 'Sorry, FileReader API not supported', 'danger');
+        this.openNotification('Failed', 'Sorry, FileReader API not supported', 'danger');
       }
 
       // reset file input
