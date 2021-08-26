@@ -164,10 +164,6 @@ div.vs-dialog__content {
   justify-content: flex-end;
   padding: 0px 18px;
 }
-.setting-close-container {
-  // position: absolute;
-  // right: 0;
-}
 .settings-view {
   height: 100%;
 }

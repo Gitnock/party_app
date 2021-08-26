@@ -83,8 +83,6 @@ export default {
           this.canSub = false;
           if (this.isAccepted) {
             eventBus.$emit('search');
-          } else {
-            this.statusEmpty();
           }
           this.$emit('close');
         } else {
@@ -92,11 +90,8 @@ export default {
             if (this.isGood) {
               this.setRoom(this.roomId, this.getRoomData.game);
               this.joinRoom();
-              this.statusFound();
             } else if (this.isAccepted) {
               eventBus.$emit('search');
-            } else {
-              this.statusEmpty();
             }
             this.$emit('close');
           }
@@ -141,14 +136,11 @@ export default {
         { merge: true },
       );
     },
-    statusFound() {
-      this.updateStatus('found');
-    },
     statusEmpty() {
       this.updateStatus('still');
     },
-    updateStatus(activity) {
-      statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+    async updateStatus(activity) {
+      await statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
     },
   },
   mounted() {
@@ -156,6 +148,7 @@ export default {
     this.$on('close', () => {
       clearInterval(this.submitTimer);
       this.decline();
+      this.statusEmpty();
     });
   },
   beforeDestroy() {

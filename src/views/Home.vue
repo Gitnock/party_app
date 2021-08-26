@@ -40,7 +40,7 @@
 
           <button
             class="join-game-btn roboto-black"
-            @click="(hasGame)? join():addUsername()"
+            @click="hasGame ? join(false) : addUsername()"
             :disabled="isLoading"
           >
             Join
@@ -67,7 +67,11 @@ import { mapActions, mapGetters } from 'vuex';
 import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
 import eventBus from '@/eventBus';
-import { playersCollection, roomsCollection, statusCollection } from '../firebaseConfig';
+import {
+  playersCollection,
+  roomsCollection,
+  statusCollection,
+} from '../firebaseConfig';
 
 export default {
   components: {
@@ -96,9 +100,10 @@ export default {
       this.$store.commit('setGame', game);
       this.curGame = this.getGame;
     },
-    join() {
-      if (this.getUserStatus.activity !== 'looking') {
+    join(isSearch) {
+      if (this.getUserStatus.activity !== 'looking' || isSearch) {
         this.statusLooking();
+        this.disTpRoom();
         this.loading = this.$vs.loading({
           target: this.$refs.target,
           type: 'corners',
@@ -146,14 +151,18 @@ export default {
                           this.isConfirm = !this.isConfirm;
                           this.closeLoading();
                         } else if (this.isLoading && isActive !== true) {
-                        // console.log('LEFT ROOM', isActive);
+                          // console.log('LEFT ROOM', isActive);
                           this.closeLoading();
                           this.join();
                         }
                       }
                     },
                     (error) => {
-                      this.openNotification('Join room failed', error, 'danger');
+                      this.openNotification(
+                        'Join room failed',
+                        error,
+                        'danger',
+                      );
                       this.closeLoading();
                     },
                   );
@@ -178,7 +187,9 @@ export default {
       });
     },
     disRoom() {
-      if (this.roomId) { roomsCollection.doc(this.roomId).update({ isActive: false }); }
+      if (this.roomId) {
+        roomsCollection.doc(this.roomId).update({ isActive: false });
+      }
     },
     statusLooking() {
       this.updateStatus('looking');
@@ -198,7 +209,9 @@ export default {
       this.statusEmpty();
     },
     closeLoading() {
-      this.loading.close();
+      if (this.loading !== null) {
+        this.loading.close();
+      }
       this.isLoading = false;
       if (this.searching !== null) {
         this.searching();
@@ -210,14 +223,17 @@ export default {
       }
     },
     addUsername() {
-      console.log('NO GAME');
       this.isUsername = true;
     },
     setTempRoom(tempRoomId) {
-      statusCollection.doc(this.getUser.uid).set({ tempRoomId }, { merge: true });
+      statusCollection
+        .doc(this.getUser.uid)
+        .set({ tempRoomId }, { merge: true });
     },
     disTpRoom() {
-      roomsCollection.doc(this.getUserStatus.tempRoomId).update({ isActive: false });
+      roomsCollection
+        .doc(this.getUserStatus.tempRoomId)
+        .update({ isActive: false });
     },
     // host() {
     //   this.hostGameAction({
@@ -264,13 +280,12 @@ export default {
     activity(newV) {
       if (newV === 'still') {
         this.disTpRoom();
-        this.closeLoading();
       }
     },
   },
   mounted() {
     eventBus.$on('search', () => {
-      this.join();
+      this.join(true);
     });
     eventBus.$on('disRoom', () => {});
   },
