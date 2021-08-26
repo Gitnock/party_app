@@ -84,7 +84,7 @@ export default {
   display: flex;
   padding: 16px;
   border-radius: 12px;
-  transition: all 1s;
+  transition: all 0.3s ease;
 }
 .game-img-container {
   width: 70px;
@@ -140,16 +140,7 @@ export default {
 }
 
 //animations
-.list-complete-item {
-  transition: all 0.3s;
-  display: inline-block;
-  margin-right: 10px;
-}
 .list-enter, .list-leave-to{
   opacity: 0;
-  transform: translateX(30px);
-}
-.list-leave-active {
-  position: absolute;
 }
 </style>
