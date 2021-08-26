@@ -8,7 +8,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { mapGetters, mapActions } from 'vuex';
-import { db, rtDb } from './firebaseConfig';
+import { db, rtDb, statusCollection } from './firebaseConfig';
 
 export default {
   methods: {
@@ -58,6 +58,9 @@ export default {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
+    },
+    statusEmpty(uid) {
+      statusCollection.doc(uid).set({ activity: 'still' }, { merge: true });
     },
     rtdb_and_local_fs_presence(uid) {
       const userStatusDatabaseRef = rtDb.ref(`/status/${uid}`);
@@ -114,6 +117,7 @@ export default {
         this.$store.dispatch('bindGameRef');
         this.favGameAction(user.uid);
         this.bindUserStatusRef();
+        this.statusEmpty(user.uid);
         // if (localStorage.getItem('gameList') === null) {
         //   this.bindGameRef().then(() => {
         //     localStorage.setItem('gameList', JSON.stringify(this.getGames));

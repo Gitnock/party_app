@@ -67,7 +67,7 @@ import { mapActions, mapGetters } from 'vuex';
 import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
 import eventBus from '@/eventBus';
-import { playersCollection, roomsCollection } from '../firebaseConfig';
+import { playersCollection, roomsCollection, statusCollection } from '../firebaseConfig';
 
 export default {
   components: {
@@ -97,70 +97,76 @@ export default {
       this.curGame = this.getGame;
     },
     join() {
-      this.loading = this.$vs.loading({
-        target: this.$refs.target,
-        type: 'corners',
-        background: '#195bff',
-        color: '#fff',
-        opacity: '1',
-        text: 'looking for partys',
-      });
-
-      // hide close match button for 3 sec
-      this.isBtn = false;
-      setTimeout(() => {
-        this.isBtn = true;
-      }, 2000);
-
-      this.isLoading = true;
-
-      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-      const playerRef = playersCollection.doc();
-      const playerId = playerRef.id;
-      playersCollection
-        .doc(playerId)
-        .set({
-          userId: this.getUser.uid,
-          game: this.getGame.gameId,
-          createdAt: myTimestamp,
-          size: this.getGame.maxPlayers,
-        })
-        .then(() => {
-          this.searching = playersCollection
-            .doc(playerId)
-            .onSnapshot((snap) => {
-              const { roomId } = snap.data();
-              if (roomId) {
-                this.roomId = roomId;
-                this.roomListener = roomsCollection.doc(roomId).onSnapshot(
-                  async (snap2) => {
-                    if (snap2.exists) {
-                      const { full, isActive } = snap2.data();
-                      if (full && this.isLoading && isActive === true) {
-                        await this.setRoomIdAction(roomId);
-                        this.unbindRoomDataRef();
-                        this.bindRoomDataRef();
-                        this.isConfirm = !this.isConfirm;
-                        this.closeLoading();
-                      } else if (this.isLoading && isActive !== true) {
-                        // console.log('LEFT ROOM', isActive);
-                        this.closeLoading();
-                        this.join();
-                      }
-                    }
-                  },
-                  (error) => {
-                    this.openNotification('Join room failed', error, 'danger');
-                    this.closeLoading();
-                  },
-                );
-              }
-            });
-        })
-        .catch((error) => {
-          this.openNotification('failed', error, 'danger');
-          this.closeLoading();
+      if (this.getUserStatus.activity !== 'looking') {
+        this.statusLooking();
+        this.loading = this.$vs.loading({
+          target: this.$refs.target,
+          type: 'corners',
+          background: '#195bff',
+          color: '#fff',
+          opacity: '1',
+          text: 'looking for partys',
         });
+
+        // hide close match button for 3 sec
+        this.isBtn = false;
+        setTimeout(() => {
+          this.isBtn = true;
+        }, 2000);
+
+        this.isLoading = true;
+
+        const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+        const playerRef = playersCollection.doc();
+        const playerId = playerRef.id;
+        playersCollection
+          .doc(playerId)
+          .set({
+            userId: this.getUser.uid,
+            game: this.getGame.gameId,
+            createdAt: myTimestamp,
+            size: this.getGame.maxPlayers,
+          })
+          .then(() => {
+            this.searching = playersCollection
+              .doc(playerId)
+              .onSnapshot((snap) => {
+                const { roomId } = snap.data();
+                if (roomId) {
+                  this.roomId = roomId;
+                  this.setTempRoom(roomId);
+                  this.roomListener = roomsCollection.doc(roomId).onSnapshot(
+                    async (snap2) => {
+                      if (snap2.exists) {
+                        const { full, isActive } = snap2.data();
+                        if (full && this.isLoading && isActive === true) {
+                          await this.setRoomIdAction(roomId);
+                          this.unbindRoomDataRef();
+                          this.bindRoomDataRef();
+                          this.isConfirm = !this.isConfirm;
+                          this.closeLoading();
+                        } else if (this.isLoading && isActive !== true) {
+                        // console.log('LEFT ROOM', isActive);
+                          this.closeLoading();
+                          this.join();
+                        }
+                      }
+                    },
+                    (error) => {
+                      this.openNotification('Join room failed', error, 'danger');
+                      this.closeLoading();
+                    },
+                  );
+                }
+              });
+          })
+          .catch((error) => {
+            this.openNotification('failed', error, 'danger');
+            this.closeLoading();
+          });
+      } else {
+        this.openNotification('Failed', 'another instance is already looking for a game', 'danger');
+      }
     },
     openNotification(title, text, color) {
       this.$vs.notification({
@@ -174,9 +180,22 @@ export default {
     disRoom() {
       if (this.roomId) { roomsCollection.doc(this.roomId).update({ isActive: false }); }
     },
+    statusLooking() {
+      this.updateStatus('looking');
+    },
+    statusFound() {
+      this.updateStatus('found');
+    },
+    statusEmpty() {
+      this.updateStatus('still');
+    },
+    updateStatus(activity) {
+      statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+    },
     cancelSearch() {
       this.disRoom();
       this.closeLoading();
+      this.statusEmpty();
     },
     closeLoading() {
       this.loading.close();
@@ -193,6 +212,12 @@ export default {
     addUsername() {
       console.log('NO GAME');
       this.isUsername = true;
+    },
+    setTempRoom(tempRoomId) {
+      statusCollection.doc(this.getUser.uid).set({ tempRoomId }, { merge: true });
+    },
+    disTpRoom() {
+      roomsCollection.doc(this.getUserStatus.tempRoomId).update({ isActive: false });
     },
     // host() {
     //   this.hostGameAction({
@@ -216,6 +241,9 @@ export default {
     // },
   },
   computed: {
+    activity() {
+      return this.getUserStatus.activity;
+    },
     hasGame() {
       return this.getFavGames
         ? this.getFavGames.some((id) => id.gameId === this.curGame.gameId)
@@ -229,11 +257,16 @@ export default {
       'getGames',
       'getFavGames',
       'getRoomData',
+      'getUserStatus',
     ]),
   },
   watch: {
-    // roomId(newRoomId, oldRoomID) {
-    // },
+    activity(newV) {
+      if (newV === 'still') {
+        this.disTpRoom();
+        this.closeLoading();
+      }
+    },
   },
   mounted() {
     eventBus.$on('search', () => {

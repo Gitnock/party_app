@@ -38,7 +38,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import audioLayout from '@/components/call/audio.vue';
 import { joinRoom, selfId } from 'trystero/src/firebase';
-import { roomsCollection } from '../firebaseConfig';
+import { roomsCollection, statusCollection } from '../firebaseConfig';
 // import firebase from 'firebase/app';
 // import { getFireApp } from '../firebaseConfig';
 // import { roomsCollection, rtDb } from '../firebaseConfig';
@@ -120,6 +120,12 @@ export default {
       this.muted = !this.muted;
       this.localStream.getAudioTracks()[0].enabled = this.muted;
     },
+    statusEmpty() {
+      this.updateStatus('still');
+    },
+    updateStatus(activity) {
+      statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+    },
     hangUp() {
       if (this.localStream !== undefined) {
         this.room.leave();
@@ -136,6 +142,7 @@ export default {
           if (this.peers[user].pc) this.peers[user].pc.close();
         });
         this.peers = {};
+        this.statusEmpty();
       }
       if (this.$route.path !== '/crew/@me') {
         this.$router.push('/crew/@me');
@@ -216,7 +223,7 @@ export default {
       'getUserStatus',
     ]),
   },
-  async mounted() {
+  mounted() {
     this.init();
   },
   beforeDestroy() {
