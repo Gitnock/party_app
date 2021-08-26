@@ -67,7 +67,7 @@ import { mapActions, mapGetters } from 'vuex';
 import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
 import eventBus from '@/eventBus';
-import { db, playersCollection, roomsCollection } from '../firebaseConfig';
+import { playersCollection, roomsCollection } from '../firebaseConfig';
 
 export default {
   components: {
@@ -171,15 +171,6 @@ export default {
         color,
       });
     },
-    setRoom(roomId) {
-      const roomRef = db.doc(`/status/${this.getUser.uid}`);
-      roomRef.set(
-        {
-          roomId,
-        },
-        { merge: true },
-      );
-    },
     disRoom() {
       if (this.roomId) { roomsCollection.doc(this.roomId).update({ isActive: false }); }
     },
@@ -237,6 +228,7 @@ export default {
       'getProfile',
       'getGames',
       'getFavGames',
+      'getRoomData',
     ]),
   },
   watch: {

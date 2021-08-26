@@ -51,7 +51,7 @@
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
-import { roomsCollection, rtDb } from '../../firebaseConfig';
+import { db, roomsCollection, rtDb } from '../../firebaseConfig';
 
 export default {
   components: {},
@@ -86,6 +86,7 @@ export default {
         } else {
           if (this.isAllSub) {
             if (this.isGood) {
+              this.setRoom(this.roomId, this.getRoomData.game);
               this.joinRoom();
             } else if (this.isAccepted) {
               eventBus.$emit('search');
@@ -122,6 +123,16 @@ export default {
       if (this.$route.path !== `/crew/${this.roomId}`) {
         this.$router.push(`/crew/${this.roomId}`);
       }
+    },
+    setRoom(roomId, gameId) {
+      const roomRef = db.doc(`/status/${this.getUser.uid}`);
+      roomRef.set(
+        {
+          roomId,
+          gameId,
+        },
+        { merge: true },
+      );
     },
   },
   mounted() {

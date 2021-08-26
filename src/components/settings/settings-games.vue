@@ -1,7 +1,7 @@
 <template>
   <div class="settings-password-main">
-    <div class="content-main">
-      <transition-group name="list" tag="div" class="game-list">
+    <div class="content-main" v-show="getFavGamesSettings.length > 0">
+      <transition-group name="list" tag="div">
         <div
           v-for="game in getFavGamesSettings"
           :key="game.gameId"
@@ -23,6 +23,16 @@
           </div>
         </div>
       </transition-group>
+    </div>
+    <div class="content-main" v-show="getFavGamesSettings.length === 0">
+      <div class="content-google" >
+        <div class="con-google-main">
+          <div>
+            You have no games with a username.
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </template>
@@ -130,8 +140,12 @@ export default {
 }
 
 //animations
-.list-enter, .list-leave-to
-/* .list-complete-leave-active below version 2.1.8 */ {
+.list-complete-item {
+  transition: all 0.3s;
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter, .list-leave-to{
   opacity: 0;
   transform: translateX(30px);
 }

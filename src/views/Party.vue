@@ -5,7 +5,7 @@
         <div class="audio-layout">
           <audioLayout :muted="true" :user="getProfile" />
         </div>
-        <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
+        <div class="audio-layout fadeInAnim" v-for="peer in peers" :key="peer.userId">
           <audioLayout
             :muted="false"
             :audioStream="peer.peerStream"
@@ -73,7 +73,7 @@ export default {
     audioLayout,
   },
   methods: {
-    ...mapActions(['setRoomUsersAction']),
+    ...mapActions(['setRoomUsersAction', 'bindRoomDataRef', 'setRoomIdAction']),
     async getUserMedia() {
       try {
         // get user mic permissions and mic stream
@@ -175,9 +175,10 @@ export default {
         .then(async (snap) => {
           if (snap.exists) {
             await this.sendChatId();
-            this.setRoomUsersAction({
+            await this.setRoomUsersAction({
               roomId: this.roomId,
               userId: this.getUser.uid,
+              gameId: this.getUserStatus.gameId,
             });
 
             await this.getUserMedia();
@@ -212,9 +213,10 @@ export default {
       'getRoomUsers',
       'getProfile',
       'getRoomUsersListener',
+      'getUserStatus',
     ]),
   },
-  mounted() {
+  async mounted() {
     this.init();
   },
   beforeDestroy() {

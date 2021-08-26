@@ -47,19 +47,19 @@
       <div class="left-content"  v-dragscroll>
         <settingsName
           class="setting-item"
-          v-if="settingPosition === 0"
+          v-show="settingPosition === 0"
         ></settingsName>
         <settingsGame
           class="setting-item"
-          v-if="settingPosition === 1"
+          v-show="settingPosition === 1"
         ></settingsGame>
         <settingsAccount
           class="setting-item"
-          v-if="settingPosition === 2"
+          v-show="settingPosition === 2"
         ></settingsAccount>
         <settingsPassword
           class="setting-item"
-          v-if="settingPosition === 3"
+          v-show="settingPosition === 3"
         ></settingsPassword>
 
       </div>
@@ -185,7 +185,7 @@ export default {
 
 //animation
 .setting-item {
-  animation: 0.1s ease-out 0s 1 slideInFromTop;
+  animation: fadeIn 0.5s;
 }
 
 @media only screen and (max-width: 628px) {

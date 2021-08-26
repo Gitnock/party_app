@@ -2,6 +2,9 @@ const getters = {
   getUser(state) {
     return state.user;
   },
+  getUserStatus(state) {
+    return state.userStatus;
+  },
   isUserAuth(state) {
     return !!state.user;
   },
@@ -24,7 +27,6 @@ const getters = {
     const games = [];
     state.favGames.forEach((game) => {
       const newGm = state.gamesList.filter((x) => x.gameId === game.gameId)[0];
-      console.log(newGm);
       games.push({
         gameId: newGm.gameId,
         url_square: newGm.url_square,

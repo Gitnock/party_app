@@ -41,6 +41,7 @@ db.enablePersistence();
 // firebase collections
 const usersCollection = db.collection('users');
 const userDataCollection = db.collection('userData');
+const statusCollection = db.collection('status');
 const friendsCollection = db.collection('friends');
 const gamesCollection = db.collection('games');
 const playersCollection = db.collection('players');
@@ -65,4 +66,5 @@ export {
   storage,
   userDataCollection,
   getFireApp,
+  statusCollection,
 };

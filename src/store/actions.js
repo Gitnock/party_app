@@ -6,6 +6,7 @@ import {
   gamesCollection,
   // playersCollection,
   roomsCollection,
+  statusCollection,
   userDataCollection,
   usersCollection,
 } from '../firebaseConfig';
@@ -142,6 +143,8 @@ const actions = {
   },
   // Profile
   bindUserProfileRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userProfile', usersCollection.doc(state.user.uid))),
+  // status
+  bindUserStatusRef: firestoreAction(({ state, bindFirestoreRef }) => bindFirestoreRef('userStatus', statusCollection.doc(state.user.uid))),
   // games list
   bindGameRef({ commit }) {
     gamesCollection.get().then((querySnapshot) => {
@@ -187,12 +190,22 @@ const actions = {
                   const ids = userArray
                     .filter((user) => user.uid === userData.userId)
                     .map((x) => x.chatId);
-                  users.push({
-                    avatar: userData.avatar,
-                    username: userData.username,
-                    userId: userData.userId,
-                    chatId: ids[0],
-                  });
+
+                  usersCollection.doc(userData.userId).collection('favGames').doc(payload.gameId).get()
+                    .then((favDoc) => {
+                      const { uname } = favDoc.data();
+                      users.push({
+                        avatar: userData.avatar,
+                        username: userData.username,
+                        userId: userData.userId,
+                        chatId: ids[0],
+                        uname,
+                      });
+                    })
+                    .catch((err) => {
+                      commit('setError', err.message);
+                      rej(err);
+                    });
                 });
                 commit('setRoomUsers', users);
                 res();
@@ -221,7 +234,6 @@ const actions = {
         querySnapshot.forEach((doc) => {
           favGames.push(doc.data());
         });
-        console.log(favGames[0]);
         commit('setFavGames', favGames);
         res();
       })

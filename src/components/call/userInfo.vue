@@ -3,7 +3,7 @@
     <h2 class="username roboto-medium username-nowrap" v-if="user">
       {{user.username}}
     </h2>
-    <button class="copyUsername-btn">
+    <button class="copyUsername-btn" @click="copyUsername">
       <img src="@/assets/copy.svg" alt="copy button" draggable="false">
     </button>
 
@@ -15,6 +15,26 @@ export default {
   name: 'userInfo',
   props: {
     user: Object,
+  },
+  methods: {
+    copyUsername() {
+      const username = this.user.uname.substring(0, 990);
+      navigator.clipboard.writeText(username);
+      this.openNotification(
+        'Success',
+        'Username was copied',
+        'success',
+      );
+    },
+    openNotification(title, text, color) {
+      this.$vs.notification({
+        // flat: true,
+        title,
+        text,
+        position: 'bottom-center',
+        color,
+      });
+    },
   },
 };
 </script>
