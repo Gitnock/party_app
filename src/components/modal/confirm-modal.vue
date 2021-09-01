@@ -160,7 +160,6 @@ export default {
       && !this.playFound.ended;
       if (isPlaying) {
         this.playFound.pause();
-        // this.playFound.currentTime = 0;
       }
     });
     this.playFound.volume = 0.2;
