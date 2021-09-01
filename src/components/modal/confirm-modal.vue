@@ -54,6 +54,7 @@ import eventBus from '@/eventBus';
 import {
   db, roomsCollection, rtDb, statusCollection,
 } from '../../firebaseConfig';
+import matchFoundFx from '../../assets/sounds/matchfound.mp3';
 
 export default {
   components: {},
@@ -149,7 +150,11 @@ export default {
       clearInterval(this.submitTimer);
       this.decline();
       this.statusEmpty();
+      this.playFound.pause();
+      this.playFound.currentTime = 0;
     });
+    this.playFound.volume = 0.1;
+    this.playFound.play();
   },
   beforeDestroy() {
     this.$emit('close');
@@ -172,6 +177,9 @@ export default {
         return this.getRoomData.size - this.getRoomData.isConfirmed.length;
       }
       return 0;
+    },
+    playFound() {
+      return new Audio(matchFoundFx);
     },
     ...mapGetters(['getRoomData', 'getRoomId', 'getUser']),
   },
