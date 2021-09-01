@@ -52,7 +52,10 @@ import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
 import {
-  db, roomsCollection, rtDb, statusCollection,
+  db,
+  roomsCollection,
+  rtDb,
+  statusCollection,
 } from '../../firebaseConfig';
 import matchFoundFx from '../../assets/sounds/matchfound.mp3';
 
@@ -141,7 +144,9 @@ export default {
       this.updateStatus('still');
     },
     async updateStatus(activity) {
-      await statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+      await statusCollection
+        .doc(this.getUser.uid)
+        .set({ activity }, { merge: true });
     },
   },
   mounted() {
@@ -150,10 +155,15 @@ export default {
       clearInterval(this.submitTimer);
       this.decline();
       this.statusEmpty();
-      this.playFound.pause();
-      this.playFound.currentTime = 0;
+      const isPlaying = this.playFound.currentTime > 0
+      && !this.playFound.paused
+      && !this.playFound.ended;
+      if (isPlaying) {
+        this.playFound.pause();
+        // this.playFound.currentTime = 0;
+      }
     });
-    this.playFound.volume = 0.1;
+    this.playFound.volume = 0.2;
     this.playFound.play();
   },
   beforeDestroy() {
