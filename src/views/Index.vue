@@ -1,105 +1,150 @@
 <template>
-  <div class="main">
-    <div class="section-nav">
-      <div class="container-nav">
-        <nav class="nav-left">
-          <a><img src="@/assets/partyapp_logo.svg" alt="partyapp logo" draggable="false"/></a>
-        </nav>
-        <nav class="nav-right">
-          <div class="roboto-medium signin-btn clickable" @click="openSignin">
-            Sign in
+  <div class="main" @scroll.passive="onScroll">
+    <div class="part1">
+      <div class="section-nav">
+        <div class="container-nav">
+          <nav class="nav-left">
+            <a
+              ><img
+                src="@/assets/partyapp_logo.svg"
+                alt="partyapp logo"
+                draggable="false"
+            /></a>
+          </nav>
+          <nav class="nav-right">
+            <div
+              class="roboto-m auth-btn signin-btn clickable"
+              @click="openSignin"
+            >
+              Sign in
+            </div>
+            <div
+              class="roboto-m auth-btn signup-btn clickable"
+              @click="openSignin"
+            >
+              Sign in
+            </div>
+            <button
+              class="request-btn roboto-m nav-request-btn"
+              @click="focusRequest"
+            >
+              Request access
+            </button>
+          </nav>
+        </div>
+      </div>
+      <div class="part1-container">
+        <div class="section-top">
+          <div class="container-top">
+            <h2 class="subtitle-index color-green roboto-m">PARTYAPP ALPHA</h2>
+            <h1 class="title-index color-white roboto-m">
+              Every match should have voice comms.
+            </h1>
           </div>
-          <button class="request-btn roboto-medium nav-request-btn" @click="focusRequest">
-            Request access
-          </button>
-        </nav>
+        </div>
+        <div class="section-mid">
+          <div class="container-mid roboto-r">
+            <div class="title-mid-container">
+              <div class="title-mid">Easy as 1-2-3🎵</div>
+            </div>
+            <div class="card-container">
+              <div class="card">
+                <div class="card-top">
+                  <h1 class="card-top-title roboto-mono-m">01</h1>
+                </div>
+                <div class="card-mid">
+                  <h2 class="card-mid-title roboto-m">Choose your game</h2>
+                </div>
+                <div class="card-bot">
+                  <img
+                    src="@/assets/index/choose_game.png"
+                    class="card-bot-img"
+                    alt="choose game screen snippet"
+                  />
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-top">
+                  <h1 class="card-top-title roboto-mono-m">02</h1>
+                </div>
+                <div class="card-mid">
+                  <h2 class="card-mid-title roboto-m">Say hi</h2>
+                </div>
+                <div class="card-bot">
+                  <img
+                    src="@/assets/index/say_hi.png"
+                    class="card-bot-img"
+                    alt="mic unmute button snippet"
+                  />
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-top">
+                  <h1 class="card-top-title roboto-mono-m">03</h1>
+                </div>
+                <div class="card-mid">
+                  <h2 class="card-mid-title roboto-m">Copy a username</h2>
+                </div>
+                <div class="card-bot">
+                  <img
+                    src="@/assets/index/copy_username.png"
+                    class="card-bot-img"
+                    alt="copy ingame username button snippet"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="section-top">
-      <div class="container-top">
-        <h1 class="title-index roboto-medium">Party-App with us.</h1>
-        <h2 class="subtitle-index roboto-medium">
-          every match should have voice comms.
-        </h2>
-        <div class="request-container">
-          <div class="request-input-container" id="emailContainer">
-            <input
-              type="text"
-              class="request-input roboto-regular"
-              placeholder="Enter your email"
-              ref="email"
-              v-model="email"
-            />
-            <button class="request-btn roboto-medium request-btn-desktop" @click="openSignup">
+    <div class="scroll-indicator-container">
+      <div class="indicator-container">
+        <i class="bx bxs-circle bx-fade-down indicator"></i>
+      </div>
+    </div>
+    <div class="part2">
+      <div class="section-bot" ref="sbot">
+        <div class="container-bot">
+          <h2 class="subtitle-index color-red roboto-m">EXPECT BUGS</h2>
+          <h1 class="title-index color-black roboto-m">Less is more</h1>
+          <h3 class="subtitle-small-index roboto-m">
+            Partyapp is made for one thing and one thing only, to find you a
+            party for the games you <span class="">love</span>
+          </h3>
+          <div class="request-container">
+            <div class="request-input-container" id="emailContainer">
+              <input
+                type="text"
+                class="request-input roboto-regular"
+                placeholder="Enter your email"
+                ref="email"
+                v-model="email"
+              />
+              <button
+                class="roboto-medium request-btn-desktop"
+                @click="openSignup"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+          <div class="request-btn-container">
+            <button
+              class="request-btn-mobile roboto-medium"
+              @click="openSignup"
+            >
               Request access
             </button>
           </div>
         </div>
-        <div class="request-btn-container">
-          <button class="request-btn-mobile roboto-medium" @click="openSignup">
-            Request access
-          </button>
-        </div>
       </div>
-    </div>
-    <div class="section-mid">
-      <div class="container-mid roboto-regular">
-        <div class="title-mid-container">
-          <div class="title-mid">Easy as 1-2-3🎵</div>
-        </div>
-        <div class="card-container">
-          <div class="card">
-            <div class="card-top">
-              <h1 class="card-top-title">01</h1>
-            </div>
-            <div class="card-mid">
-              <h2 class="card-mid-title">Choose your game.</h2>
-            </div>
-            <div class="card-bot">
-              <img
-                src="@/assets/index/choose_game.png"
-                class="card-bot-img"
-                alt="choose game screen snippet"
-              />
-            </div>
+
+      <div class="section-footer">
+        <div class="container-footer">
+          <div class="footer-legal">
+            <p>© 2021 PartyApp.</p>
           </div>
-          <div class="card">
-            <div class="card-top">
-              <h1 class="card-top-title">02</h1>
-            </div>
-            <div class="card-mid">
-              <h2 class="card-mid-title">Say hi.</h2>
-            </div>
-            <div class="card-bot">
-              <img
-                src="@/assets/index/say_hi.png"
-                class="card-bot-img"
-                alt="mic unmute button snippet"
-              />
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-top">
-              <h1 class="card-top-title">03</h1>
-            </div>
-            <div class="card-mid">
-              <h2 class="card-mid-title">Add some body.</h2>
-            </div>
-            <div class="card-bot">
-              <img
-                src="@/assets/index/copy_username.png"
-                class="card-bot-img"
-                alt="copy ingame username button snippet"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="section-footer">
-      <div class="container-footer">
-        <div class="footer-legal">
-          <p>© 2021 PartyApp.</p>
         </div>
       </div>
     </div>
@@ -150,18 +195,59 @@ export default {
         }, 2000);
       }
     },
+    onScroll() {
+      const scroll = window.scrollTop;
+      // const div = this.$refs.sbot;
+      console.log('scroll: ', scroll);
+      // if (window.scrollY > (div.offsetTop)) {
+      //   console.log('scroll: ', div.offsetTop);
+      // }
+    },
   },
   mounted() {
-    // console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    // window.addEventListener('scroll', console.log(window.scrollY));
   },
 };
 </script>
 
 <style lang="scss" scoped>
+//colors
+.color-black {
+  color: black;
+}
+.color-white {
+  color: white;
+}
+.color-1 {
+}
+.color-2 {
+}
+.color-3 {
+}
+.color-green {
+  color: #00cd69;
+}
+.color-red {
+  color: #ff5441;
+}
 .main {
   background-color: #161823;
-  height: 100vh;
-  overflow: auto;
+  height: 100%;
+}
+
+// PARTS
+.part1 {
+  height: 92% !important;
+}
+.part1-container {
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.part2{
+  background-color: white;
 }
 
 // NAV
@@ -183,30 +269,29 @@ export default {
   display: flex;
   align-items: center;
 }
-.signin-btn {
+.auth-btn {
   color: #b7bbd5;
   margin-right: 32px;
   &:hover {
     color: white;
   }
 }
+.signup-btn {
+  display: none;
+}
 .request-btn {
   padding: 12px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #195bff;
+  background-color: #202330;
   color: white;
   transition: all 0.4s ease 0s;
   font-size: 16px;
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0px 6px 20px rgba(25, 91, 255, 0.4);
-  }
 }
 
 // TOP
 .section-top {
-  padding: 82px 0;
+  padding: 48px 0;
   display: flex;
   justify-content: center;
 }
@@ -216,40 +301,40 @@ export default {
   align-items: center;
 }
 .title-index {
-  font-size: 64px;
-  color: white;
-  margin-bottom: 24px;
+  font-size: 42px;
   text-align: center;
   line-height: 60px;
 }
 .subtitle-index {
-  font-size: 21px;
-  color: #b7bbd5;
+  font-size: 18px;
   max-width: 480px;
-  opacity: 0.6;
   margin: auto;
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 8px;
+}
+.subtitle-red {
 }
 .request-container {
   // background-color: wheat;
+  display: flex;
+  justify-content: center;
 }
 .request-input-container {
-  max-width: 382px;
-  width: 100%;
+  width: 321px;
   height: 52px;
-  margin: auto;
-  border: 1px solid rgba(183, 187, 213, 0.4);
-  border-radius: 12px;
+  border: none;
+  background-color: #f4f7f8;
+  border-radius: 8px;
   display: flex;
-  padding: 2px;
+  padding: 8px;
+  // margin: 32px;
 }
 .request-input {
   background-color: transparent;
   border: none;
   font-size: 16px;
   margin: 0 8px;
-  color: white;
+  // color: white;
   flex: 1 1 auto;
 }
 ::placeholder {
@@ -258,12 +343,24 @@ export default {
 .request-btn-container {
   display: none;
 }
-
+.request-btn-desktop {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  background-color: #195bff;
+  color: white;
+  transition: all 0.4s ease 0s;
+  font-size: 14px;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 6px 20px rgba(25, 91, 255, 0.4);
+  }
+}
 .request-btn-mobile {
   display: initial;
   align-items: center;
   width: 100%;
-  max-width: 382px;
+  width: 321px;
   height: 52px;
   border-radius: 8px;
   background-color: #195bff;
@@ -277,7 +374,7 @@ export default {
 
 // MID
 .section-mid {
-  margin: 60px 0;
+  margin: 0 0 32px;
   display: flex;
   justify-content: center;
 }
@@ -287,16 +384,32 @@ export default {
 .title-mid-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 52px;
+  margin-bottom: 12px;
 }
 .title-mid {
-  background-color: transparent;
-  border: 1px solid rgba(183, 187, 213, 0.4);
+  background-color: #202330;
   border-radius: 8px;
   padding: 4px 12px;
   color: #b7bbd5;
   font-size: 16px;
   display: inline-block;
+}
+.scroll-indicator-container {
+  display: flex;
+  justify-content: center;
+  // margin: 142px 0px 12px;
+  height: 8% !important;
+}
+.indicator-container {
+  background-color: #2f3247;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  padding: 4px 4px 4px 4px;
+  border-radius: 12px;
+}
+.indicator {
+  color: #b7bbd5;
 }
 .card-container {
   display: flex;
@@ -312,24 +425,25 @@ export default {
   border-radius: 16px;
   background-color: #202330;
   padding: 18px;
+  box-shadow: none;
 }
 .card-top {
   display: inline;
 }
 .card-top-title {
-  color: #b7bbd5;
-  font-size: 28px;
+  color: #464a65;
+  font-size: 36px;
 }
 .card-mid {
   margin: 4px 0;
 }
 .card-mid-title {
-  color: white;
+  color: #b7bbd5;
   font-size: 21px;
   text-align: left;
 }
 .card-bot {
-  margin-top: 21px;
+  margin-top: 12px;
   display: flex;
   justify-content: center;
 }
@@ -338,7 +452,28 @@ export default {
   width: 282px;
   height: 246px;
   border-radius: 12px;
-  background-color: #2b2e43;
+  background-color: #161823;
+}
+
+// BOT
+.section-bot {
+  padding: 60px 90px 0px 90px;
+  padding: 48px 0;
+  display: flex;
+  justify-content: center;
+}
+.container-bot {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.subtitle-small-index {
+  font-size: 20px;
+  max-width: 454px;
+  padding: 4px 12px;
+  text-align: center;
+  margin-bottom: 32px;
+  color: #2f3247;
 }
 
 //FOOTER
@@ -359,6 +494,9 @@ export default {
 
 // MOBILE
 @media only screen and (max-width: 705px) {
+  .part1 {
+    height: auto !important;
+  }
   .title-index {
     font-size: 52px;
   }
@@ -375,7 +513,19 @@ export default {
   }
 }
 @media only screen and (max-width: 607px) {
-  .nav-right {
+  .part1 {
+    height: auto !important;
+  }
+  // .nav-right {
+  //   display: none;
+  // }
+  .nav-request-btn {
+    display: none;
+  }
+  .signup-btn {
+    display: block;
+  }
+  .signin-btn {
     display: none;
   }
   .title-index {
@@ -383,6 +533,11 @@ export default {
   }
   .container-top {
     padding: 32px 12px 0px;
+  }
+}
+@media screen and (max-height: 900px) {
+  .part1 {
+    height: auto !important;
   }
 }
 </style>

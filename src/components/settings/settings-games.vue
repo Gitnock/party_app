@@ -12,8 +12,8 @@
           </div>
           <div class="game-card-content">
             <div>
-              <h2 class="gname roboto-medium">{{ game.gameName }}</h2>
-              <h3 class="uname roboto-medium">{{ game.uname }}</h3>
+              <h2 class="gname roboto-m">{{ game.gameName }}</h2>
+              <h3 class="uname roboto-m">{{ game.uname }}</h3>
             </div>
             <div class="game-options-container">
               <button class="game-options" @click="deleteGame(game.gameId)">

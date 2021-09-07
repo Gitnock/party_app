@@ -7,36 +7,36 @@
         ref="settingsScroll"
       >
         <button
-          class="setting-menu-item roboto-medium clickable btn-drop"
+          class="setting-menu-item roboto-m clickable btn-drop"
           v-on:click="settingPosition = 0"
           v-bind:class="classObject(0)"
         >
           Username & Avatar
         </button>
         <button
-          class="setting-menu-item roboto-medium clickable btn-drop"
+          class="setting-menu-item roboto-m clickable btn-drop"
           v-on:click="settingPosition = 1"
           v-bind:class="classObject(1)"
         >
           Games
         </button>
         <button
-          class="setting-menu-item roboto-medium clickable btn-drop"
+          class="setting-menu-item roboto-m clickable btn-drop"
           v-on:click="settingPosition = 2"
           v-bind:class="classObject(2)"
         >
           Account Information
         </button>
         <button
-          class="setting-menu-item roboto-medium clickable btn-drop"
+          class="setting-menu-item roboto-m clickable btn-drop"
           v-on:click="settingPosition = 3"
           v-bind:class="classObject(3)"
         >
           Password
         </button>
-        <button class="setting-menu-item roboto-medium clickable">Help</button>
+        <button class="setting-menu-item roboto-m clickable">Help</button>
         <button
-          class="setting-menu-item-logout roboto-medium clickable btn-drop"
+          class="setting-menu-item-logout roboto-m clickable btn-drop"
           @click="signOut"
         >
           Log Out

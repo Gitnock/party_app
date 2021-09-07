@@ -3,8 +3,8 @@
     <div class="content-main">
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Username</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Username</h1>
+          <h3 class="content-subtitle roboto-m">
             Your username is always public
           </h3>
         </div>
@@ -18,8 +18,8 @@
       </div>
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Avatar</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Avatar</h1>
+          <h3 class="content-subtitle roboto-m">
             Try to be appropriate🤘
           </h3>
         </div>
@@ -44,7 +44,7 @@
         </div>
       </div>
       <div class="content-container" v-if="isActive">
-        <button class="content-save roboto-medium" @click="updateInfo">
+        <button class="content-save roboto-m" @click="updateInfo">
           save
         </button>
       </div>
@@ -76,7 +76,7 @@
             </div>
             <button
               ref="button"
-              class="editImage-upload roboto-medium"
+              class="editImage-upload roboto-m"
               @click="uploadImage"
             >
               upload

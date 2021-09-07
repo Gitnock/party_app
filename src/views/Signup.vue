@@ -27,7 +27,7 @@
         <!-- Left side -->
         <div class="level-left">
           <div class="level-item">
-            <!-- <h1 class="mobile-title roboto-black">PARTYAPP</h1> -->
+            <!-- <h1 class="mobile-title roboto-r">PARTYAPP</h1> -->
           </div>
         </div>
       </nav>
@@ -39,7 +39,7 @@
       </nav>
       <div class="content-main">
         <div class="auth-content">
-          <h1 class="subtitle-color roboto-medium">Sign up to PartyApp</h1>
+          <h1 class="subtitle-color roboto-m">Sign up to PartyApp</h1>
           <ValidationObserver v-slot="{ handleSubmit }">
             <form @submit.prevent="handleSubmit(emailauth)">
               <div class="auth-form">

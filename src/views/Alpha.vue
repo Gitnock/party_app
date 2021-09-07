@@ -4,10 +4,10 @@
       <div class="alpha-container">
         <div class="container has-text-centered">
           <img src="../assets/alpha_window.svg" alt="" draggable="false"/>
-          <h1 class="title roboto-black partyapp-title" style="color: black">
+          <h1 class="title roboto-r partyapp-title" style="color: black">
             On the wait list
           </h1>
-          <h2 class="partyapp-subtitle subtitle roboto-regular">
+          <h2 class="partyapp-subtitle subtitle roboto-r">
             Your on the wait list, you will be emailed when the alpha period begins.
           </h2>
           <div class="has-text-centered button-container">

@@ -14,8 +14,8 @@
                 >
                   <div class="uname-content-container">
                     <div class="content-text">
-                      <h1 class="content-title roboto-medium">Add username</h1>
-                      <h3 class="content-subtitle roboto-medium">
+                      <h1 class="content-title roboto-m">Add username</h1>
+                      <h3 class="content-subtitle roboto-m">
                         Add In game username
                       </h3>
                     </div>
@@ -39,7 +39,7 @@
                 <button
                   class="
                     modal-accept-button modal-button
-                    roboto-medium
+                    roboto-m
                     btn-drop
                   "
                   ref="accept-btn"
@@ -49,7 +49,7 @@
                 </button>
                 <button
                 type="button"
-                  class="modal-leave-button modal-button roboto-medium btn-drop"
+                  class="modal-leave-button modal-button roboto-m btn-drop"
                   @click="$emit('close')"
                 >
                   Cancel

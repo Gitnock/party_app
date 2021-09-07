@@ -15,6 +15,7 @@ export default {
     topNav,
   },
 };
+
 </script>
 
 <style lang="scss" scoped>

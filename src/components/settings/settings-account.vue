@@ -3,8 +3,8 @@
     <div class="content-main">
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Birth Date</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Birth Date</h1>
+          <h3 class="content-subtitle roboto-m">
             Your birthdate is always private
           </h3>
         </div>
@@ -22,8 +22,8 @@
       </div>
       <div class="content-container" v-if="!isGoogle">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Email</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Email</h1>
+          <h3 class="content-subtitle roboto-m">
             Don't worry we won't go crazy
           </h3>
         </div>
@@ -45,8 +45,8 @@
       </div>
       <!-- <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Sex</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Sex</h1>
+          <h3 class="content-subtitle roboto-m">
             Google "sex chromosomes"
           </h3>
         </div>
@@ -57,7 +57,7 @@
         </select>
       </div> -->
       <div class="content-container" v-if="isActive">
-        <button class="content-save roboto-medium" @click="updateInfo">save</button>
+        <button class="content-save roboto-m" @click="updateInfo">save</button>
       </div>
     </div>
   </div>

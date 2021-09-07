@@ -39,7 +39,7 @@
           />
 
           <button
-            class="join-game-btn roboto-black"
+            class="join-game-btn roboto-r"
             @click="hasGame ? join(false) : addUsername()"
             :disabled="isLoading"
           >

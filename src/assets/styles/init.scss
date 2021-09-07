@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap');
 
 $color_one: #161823;
 // $color_two: #2f3247;
@@ -6,18 +7,38 @@ $color_one: #161823;
 // $green_back: #25514d;
 // $grean_front: #00cd69;
 
-.roboto-regular {
+// fonts
+.roboto-r {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
 }
-.roboto-medium {
+.roboto-m {
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
 }
-.roboto-black {
+.roboto-b {
   font-family: 'Roboto', sans-serif;
   font-weight: 900;
 }
+
+.roboto-mono-l{
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 300;
+}
+.roboto-mono-r {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 400;
+}
+.roboto-mono-m {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+}
+.roboto-mono-b {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+}
+
+
 
 html,
 body,

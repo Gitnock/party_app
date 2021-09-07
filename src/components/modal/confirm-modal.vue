@@ -14,7 +14,7 @@
           </div>
 
           <div class="modal-body">
-            <h1 class="modal-title roboto-medium">MATCH FOUND</h1>
+            <h1 class="modal-title roboto-m">MATCH FOUND</h1>
             <div class="dots-container" v-if="getRoomData">
               <div v-for="(dot, i) in getRoomData.isConfirmed" :key="i">
                 <div class="dot dot-green" v-if="dot[0] === '1'" />
@@ -28,14 +28,14 @@
 
           <div class="modal-footer" v-if="canSub">
             <button
-              class="modal-accept-button modal-button roboto-medium btn-drop"
+              class="modal-accept-button modal-button roboto-m btn-drop"
               ref="accept-btn"
               @click="accept"
             >
               Accept
             </button>
             <button
-              class="modal-leave-button modal-button roboto-medium btn-drop"
+              class="modal-leave-button modal-button roboto-m btn-drop"
               @click="$emit('close')"
             >
               Leave

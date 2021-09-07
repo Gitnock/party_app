@@ -4,8 +4,8 @@
     <div class="content-main" v-if="!isGoogle">
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Current Password</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Current Password</h1>
+          <h3 class="content-subtitle roboto-m">
             Please type your current password
           </h3>
         </div>
@@ -19,8 +19,8 @@
       </div>
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">New Password</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">New Password</h1>
+          <h3 class="content-subtitle roboto-m">
             Please type your new password
           </h3>
         </div>
@@ -34,8 +34,8 @@
       </div>
       <div class="content-container">
         <div class="content-text">
-          <h1 class="content-title roboto-medium">Confirm New Password</h1>
-          <h3 class="content-subtitle roboto-medium">
+          <h1 class="content-title roboto-m">Confirm New Password</h1>
+          <h3 class="content-subtitle roboto-m">
             Please re-type your new password
           </h3>
         </div>
@@ -48,7 +48,7 @@
         />
       </div>
       <div class="content-container" v-if="isActive">
-        <button class="content-save roboto-medium" @click="updateInfo">
+        <button class="content-save roboto-m" @click="updateInfo">
           save
         </button>
       </div>
