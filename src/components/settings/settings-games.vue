@@ -17,7 +17,7 @@
             </div>
             <div class="game-options-container">
               <button class="game-options" @click="deleteGame(game.gameId)">
-              <i class="bx bxs-eraser game-options-txt"></i>
+                <i class='bx bxs-x-circle game-options-txt'></i>
               </button>
             </div>
           </div>
