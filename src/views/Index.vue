@@ -12,12 +12,13 @@
             /></a>
           </nav>
           <nav class="nav-right">
-            <div
+            <router-link
+              to="/signin"
               class="roboto-m auth-btn signin-btn clickable"
               @click="openSignin"
             >
               Sign in
-            </div>
+            </router-link>
             <div
               class="roboto-m auth-btn signup-btn clickable"
               @click="openSignin"

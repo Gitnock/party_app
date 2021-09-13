@@ -130,7 +130,7 @@
                     >
                   </p>
                   <p class="auth-terms">
-                    By registering, you agree to Mifiy's
+                    By registering, you agree to PartyApp's
                     <router-link to="Signup">Terms of Service</router-link>
                     and
                     <router-link to="Signup">Privacy Policy</router-link>
@@ -252,7 +252,7 @@ header {
     position: relative;
     flex-grow: 0;
     width: 480px;
-    // background: #2d2e30;
+    background: #090512;
     // color: #865c6c;
     background-image: url('../assets/signup.png');
     background-position: center;

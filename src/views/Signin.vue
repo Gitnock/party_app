@@ -315,7 +315,7 @@ header {
   /* overflow: auto; */
   flex-grow: 0;
   width: 480px;
-  // background: #2d2e30;
+  background: #0C0200;
   color: #fafafa;
   background-image: url('../assets/login.png');
   background-size: cover;
