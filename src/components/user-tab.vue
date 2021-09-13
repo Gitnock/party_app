@@ -135,8 +135,9 @@ $main: #7957d5;
 div.vs-avatar__badge {
   height: 18px !important;
   width: 18px !important;
-  // border: none !important;
-  border: 2px solid #2f3247 !important;
+  border: none !important;
+  // background: $c1_dark !important;
+  // border: 8px solid $c3_dark !important;
 }
 .content-tooltip {
   width: 252px;
@@ -149,7 +150,7 @@ div.vs-dialog--fullScreen {
   height: calc(100% - 0px) !important;
   max-width: none !important;
   max-height: none !important;
-  background: #161823 !important;
+  background-color: $c1_dark;
   margin: 0 !important;
 }
 div.vs-dialog__content {
@@ -169,7 +170,7 @@ div.vs-dialog__content {
 }
 /* profile popup */
 div.vs-tooltip {
-  background-color: #202330 !important;
+  background-color: $c2_dark !important;
 }
 .prof-top {
   display: flex;
@@ -181,8 +182,8 @@ div.vs-tooltip {
 .prof-top-content {
   max-width: 160px;
 }
-.vs-dialog {
-  background: #2f3247 !important;
+.div.vs-dialog {
+  background: $c3_dark !important;
 }
 .avatar-container {
   display: flex;

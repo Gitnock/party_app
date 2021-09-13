@@ -79,7 +79,7 @@ export default {
 .game-card {
   height: 102px;
   width: 100%;
-  background-color: #202330;
+  background-color: $c2_dark;
   margin-bottom: 12px;
   display: flex;
   padding: 16px;
@@ -118,7 +118,7 @@ export default {
 }
 .gname {
   font-size: 16px;
-  color: #b7bbd5;
+  color: $c5_dark;
 }
 .uname {
   font-size: 12px;

@@ -51,6 +51,7 @@
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
+import * as workerTimers from 'worker-timers';
 import {
   db,
   roomsCollection,
@@ -81,7 +82,7 @@ export default {
         this.serverTimeOffset = snapshot.val();
       });
       const roomCreatedAt = Date.now();
-      this.submitTimer = setInterval(() => {
+      this.submitTimer = workerTimers.setInterval(() => {
         const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.serverTimeOffset);
         if (timeLeft < 0) {
           this.canSub = false;
@@ -152,7 +153,7 @@ export default {
   mounted() {
     this.countDown();
     this.$on('close', () => {
-      clearInterval(this.submitTimer);
+      workerTimers.clearInterval(this.submitTimer);
       this.decline();
       this.statusEmpty();
       const isPlaying = this.playFound.currentTime > 0
@@ -199,7 +200,7 @@ export default {
 @import '@/assets/styles/modal.scss';
 
 .modal-title {
-  color: #b7bbd5;
+  color: $c5_dark;
   font-size: 24px;
   padding: 12px 18px;
 }
@@ -209,7 +210,7 @@ export default {
   width: 100%;
   height: 8px;
   border-radius: 8px;
-  background-color: #202330;
+  background-color: $c2_dark;
   overflow: hidden;
 }
 .bar {
@@ -224,7 +225,7 @@ export default {
 .dot {
   height: 30px;
   width: 30px;
-  background-color: #202330;
+  background-color: $c2_dark;
   border-radius: 50%;
   display: inline-block;
   margin: 0px 4px;
@@ -236,6 +237,6 @@ export default {
   background-color: #ff5441;
 }
 .dot-emp {
-  background-color: #202330;
+  background-color: $c2_dark;
 }
 </style>

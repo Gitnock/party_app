@@ -152,6 +152,7 @@ export default {
                           this.closeLoading();
                         } else if (this.isLoading && isActive !== true) {
                           // console.log('LEFT ROOM', isActive);
+                          await this.statusEmpty();
                           this.closeLoading();
                           this.join();
                         }
@@ -197,16 +198,16 @@ export default {
     statusFound() {
       this.updateStatus('found');
     },
-    statusEmpty() {
-      this.updateStatus('still');
+    async statusEmpty() {
+      await this.updateStatus('still');
     },
-    updateStatus(activity) {
-      statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+    async updateStatus(activity) {
+      await statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
     },
     cancelSearch() {
+      this.statusEmpty();
       this.disRoom();
       this.closeLoading();
-      this.statusEmpty();
     },
     closeLoading() {
       if (this.loading !== null) {
@@ -314,7 +315,7 @@ export default {
 
 // select game
 .select-game-container {
-  background: #202330;
+  background: $c2_dark;
   //hide scroll
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
@@ -342,7 +343,7 @@ export default {
 
 // join game
 .join-game-container {
-  background: #202330;
+  background: $c2_dark;
   position: relative;
   padding: 0px !important;
 }
@@ -384,7 +385,7 @@ export default {
   animation: fadeIn 1s 1;
 }
 .back-btn {
-  background: #202330;
+  background: $c2_dark;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,3 +1,6 @@
+// div.vs-dialog--fullScreen{
+//   background-color: #161823;
+// }
 .content-main {
   padding-top: 12px;
 }
@@ -5,7 +8,7 @@
   margin-bottom: 42px;
 }
 .content-title {
-  color: #b7bbd5;
+  color: $c5_dark;
   font-size: 24px;
   padding-bottom: 12px;
 }
@@ -20,7 +23,7 @@
   border: none;
   border-radius: 12px;
   padding: 12px;
-  background: #202330;
+  background: $c2_dark;
   color: white;
 }
 .content-save {
@@ -29,7 +32,7 @@
   border: none;
   border-radius: 8px;
   padding: 12px;
-  background: #2f3247;
+  background: $c3_dark;
   font-size: 16px;
   color: white;
 }
@@ -41,7 +44,7 @@
 .content-avatar-bg {
   width: 241px;
   height: 182px;
-  background-color: #202330;
+  background-color: $c2_dark;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -62,7 +65,7 @@
   margin-bottom: 42px;
   height: 120px;
   width: 100%;
-  background: #202330;
+  background: $c2_dark;
   border: none;
   border-radius: 8px;
 }

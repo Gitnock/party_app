@@ -19,7 +19,7 @@
         <vs-avatar
           size="60"
           circle
-          color="#202330"
+          color="#2B2E43"
           @click="mute"
           class="clickable"
         >
@@ -250,7 +250,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .party-main {
   padding: 16px;
   height: 100%;

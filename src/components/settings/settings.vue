@@ -115,9 +115,7 @@ export default {
 }
 //setting left
 .setting-left {
-  // background: red;
   width: 329px;
-  // max-width: 329px;
   padding-left: 16px;
   margin-right: 16px;
   padding: 16px;
@@ -139,7 +137,7 @@ export default {
 }
 
 .selected {
-  color: #b7bbd5;
+  color: $c5_dark;
 }
 .setting-menu-item-logout {
   width: 100%;
@@ -154,7 +152,7 @@ export default {
 }
 
 .setting-menu-item:hover {
-  background-color: #202330;
+  background-color: $c2_dark;
 }
 .setting-menu-item-logout:hover {
   background-color: rgba(255, 71, 87, 0.15);
@@ -219,7 +217,7 @@ export default {
     // height: auto;
   }
   .selectedBackground {
-    background-color: #202330;
+    background-color: $c2_dark;
   }
 }
 </style>

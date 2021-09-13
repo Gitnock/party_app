@@ -20,7 +20,7 @@
   width: 373px;
   margin: 0px auto;
   padding: 24px;
-  background-color: #161823;
+  background-color: $c1_dark;
   border-radius: 28px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
@@ -45,7 +45,7 @@
 }
 .modal-leave-button {
   width: 106px;
-  background-color: #202330;
+  background-color: $c2_dark;
 }
 .modal-accept-button {
   width: 202px;

@@ -4,7 +4,7 @@
     <div class="audio-muted" v-if="muted">
       <vs-avatar
         circle
-        color="#161823"
+        color="#2B2E43"
         @click="curGame = null"
         class="clickable"
       >
@@ -12,7 +12,7 @@
       </vs-avatar>
     </div>
     <div class="audio-content" v-if="user">
-      <vs-avatar size="96" circle color="#161823" class="user-avatar" >
+      <vs-avatar size="96" circle color="#2B2E43" class="user-avatar" >
         <img
           v-bind:src="`${user.avatar}`"
           v-if="user.avatar"
@@ -52,7 +52,7 @@ export default {
 .audio-container {
   width: 322px;
   height: 218px;
-  background: #202330;
+  background: $c2_dark;
   border-radius: 16px;
   padding: 12px;
   display: flex;

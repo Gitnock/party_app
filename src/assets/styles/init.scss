@@ -5,9 +5,15 @@
 $c1_dark: #161823;
 $c2_dark: #202330;
 $c3_dark: #2f3247;
+$c4_dark: #464a65;
+$c5_dark: #B7BBD5;
+// LIGHT THEME
+$c1_light: white;
+$c2_light: #F4F4F4;
+$c3_light: #B7BBD5;
 // -- fonts
-$green_back: #25514d;
-$grean_front: #00cd69;
+$cg_back: #25514d;
+$cg_front: #00cd69;
 
 // fonts
 .roboto-r {
@@ -39,7 +45,6 @@ $grean_front: #00cd69;
   font-family: 'Roboto Mono', monospace;
   font-weight: 700;
 }
-
 
 
 html,
@@ -80,6 +85,7 @@ body,
     border-color: rgba(183, 187, 213, 0.4);
   }
 }
+
 
 @keyframes fadeIn {
   0%{

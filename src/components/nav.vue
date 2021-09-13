@@ -80,7 +80,7 @@ export default {
   align-items: center;
 }
 .signin-btn {
-  color: #b7bbd5;
+  color: $c5_dark;
   margin-right: 32px;
   &:hover {
     color: white;

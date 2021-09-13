@@ -21,7 +21,7 @@
         <vs-avatar
           size="60"
           circle
-          color="#202330"
+          color="$c2_dark"
           @click="mute"
           class="clickable"
         >

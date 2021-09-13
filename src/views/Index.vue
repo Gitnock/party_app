@@ -1,6 +1,6 @@
 <template>
-  <div class="main" @scroll.passive="onScroll">
-    <div class="part1">
+  <div class="main" ref="main">
+    <div class="part1" ref="part1">
       <div class="section-nav">
         <div class="container-nav">
           <nav class="nav-left">
@@ -140,13 +140,21 @@
         </div>
       </div>
 
-      <div class="section-footer">
-        <div class="container-footer">
-          <div class="footer-legal">
+      <footer class="section-footer">
+        <div class="container-footer roboto-mono-m">
+          <div class="footer-rights">
             <p>© 2021 PartyApp.</p>
           </div>
+          <div class="footer-legal">
+            <div class="legal-Terms">
+              <p>Terms & Conditions</p>
+            </div>
+            <div class="legal-Privacy">
+              <p>Privacy Policy</p>
+            </div>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   </div>
 </template>
@@ -156,12 +164,13 @@ export default {
   data: () => ({
     email: '',
     inputConChanged: true,
+    isDark: false,
   }),
   methods: {
     openSignup() {
       // eslint-disable-next-line
-      const emailVal = /^[\-0-9a-zA-Z\.\+_]+@[\-0-9a-zA-Z\.\+_]+\.[a-zA-Z]{2,}$/;
-      if (this.email.length > 0 && emailVal.test(this.email)) {
+      const eVal = /^[\-0-9a-zA-Z\.\+_]+@[\-0-9a-zA-Z\.\+_]+\.[a-zA-Z]{2,}$/;
+      if (this.email.length > 0 && eVal.test(this.email)) {
         this.$store.commit('setEmail', this.email);
         this.$router.push('/signup');
       } else {
@@ -182,8 +191,8 @@ export default {
     },
     focusRequest() {
       // eslint-disable-next-line
-      const emailVal = /^[\-0-9a-zA-Z\.\+_]+@[\-0-9a-zA-Z\.\+_]+\.[a-zA-Z]{2,}$/;
-      if (this.email.length > 0 && emailVal.test(this.email)) {
+      const eVal = /^[\-0-9a-zA-Z\.\+_]+@[\-0-9a-zA-Z\.\+_]+\.[a-zA-Z]{2,}$/;
+      if (this.email.length > 0 && eVal.test(this.email)) {
         this.$store.commit('setEmail', this.email);
         this.$router.push('/signup');
       } else {
@@ -195,17 +204,40 @@ export default {
         }, 2000);
       }
     },
-    onScroll() {
-      const scroll = window.scrollTop;
-      // const div = this.$refs.sbot;
-      console.log('scroll: ', scroll);
-      // if (window.scrollY > (div.offsetTop)) {
-      //   console.log('scroll: ', div.offsetTop);
-      // }
-    },
+    // onScroll() {
+    //   const isMobile = window.matchMedia('(max-width: 700px)').matches;
+    //   const { part1 } = this.$refs;
+    //   if (!isMobile) {
+    //     this.isDark = !this.inViewport(part1);
+    //   }
+    // },
+    // inViewport(element) {
+    //   const bounds = element.getBoundingClientRect();
+    //   const viewWidth = document.documentElement.clientWidth;
+    //   const viewHeight = document.documentElement.clientHeight;
+
+    //   if (bounds.left < 0) return false;
+    //   if (bounds.top < 0) return false;
+    //   if (bounds.right > viewWidth) return false;
+    //   if (bounds.bottom > viewHeight) return false;
+
+    //   return true;
+    // },
   },
   mounted() {
     // window.addEventListener('scroll', console.log(window.scrollY));
+  },
+  watch: {
+    // isDark(nVal) {
+    //   const { main } = this.$refs;
+    //   if (nVal) {
+    //     main.classList.remove('dark');
+    //     main.classList.add('light');
+    //   } else {
+    //     main.classList.remove('light');
+    //     main.classList.add('dark');
+    //   }
+    // },
   },
 };
 </script>
@@ -218,12 +250,6 @@ export default {
 .color-white {
   color: white;
 }
-.color-1 {
-}
-.color-2 {
-}
-.color-3 {
-}
 .color-green {
   color: #00cd69;
 }
@@ -231,8 +257,9 @@ export default {
   color: #ff5441;
 }
 .main {
-  background-color: #161823;
   height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 // PARTS
@@ -246,7 +273,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.part2{
+.part2 {
   background-color: white;
 }
 
@@ -267,10 +294,11 @@ export default {
 }
 .nav-right {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
 }
 .auth-btn {
-  color: #b7bbd5;
+  color: $c5_dark;
   margin-right: 32px;
   &:hover {
     color: white;
@@ -283,7 +311,7 @@ export default {
   padding: 12px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #202330;
+  background-color: $c2_dark;
   color: white;
   transition: all 0.4s ease 0s;
   font-size: 16px;
@@ -387,10 +415,10 @@ export default {
   margin-bottom: 12px;
 }
 .title-mid {
-  background-color: #202330;
+  background-color: $c2_dark;
   border-radius: 8px;
   padding: 4px 12px;
-  color: #b7bbd5;
+  color: $c5_dark;
   font-size: 16px;
   display: inline-block;
 }
@@ -401,7 +429,7 @@ export default {
   height: 8% !important;
 }
 .indicator-container {
-  background-color: #2f3247;
+  background-color: $c3_dark;
   height: 42px;
   display: flex;
   justify-content: center;
@@ -409,7 +437,7 @@ export default {
   border-radius: 12px;
 }
 .indicator {
-  color: #b7bbd5;
+  color: $c5_dark;
 }
 .card-container {
   display: flex;
@@ -419,11 +447,10 @@ export default {
 }
 .card {
   width: 321px;
-  height: 382px;
   margin: 8px;
   border: none;
   border-radius: 16px;
-  background-color: #202330;
+  background-color: $c2_dark;
   padding: 18px;
   box-shadow: none;
 }
@@ -438,7 +465,7 @@ export default {
   margin: 4px 0;
 }
 .card-mid-title {
-  color: #b7bbd5;
+  color: $c5_dark;
   font-size: 21px;
   text-align: left;
 }
@@ -452,7 +479,7 @@ export default {
   width: 282px;
   height: 246px;
   border-radius: 12px;
-  background-color: #161823;
+  background-color: c1_dark;
 }
 
 // BOT
@@ -473,7 +500,7 @@ export default {
   padding: 4px 12px;
   text-align: center;
   margin-bottom: 32px;
-  color: #2f3247;
+  color: $c3_dark;
 }
 
 //FOOTER
@@ -482,15 +509,65 @@ export default {
   // justify-content: center;
 }
 .container-footer {
+  color: $c1_dark;
   position: relative;
   max-width: 1248px;
   margin-right: auto;
   margin-left: auto;
   padding: 4rem 2rem 2rem;
+  display: flex;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
 }
 .footer-legal {
-  color: #b7bbd5;
+  display: flex;
 }
+.legal-Terms {
+  &:hover{
+      color: $cg_front;
+       text-decoration: underline;
+    }
+}
+.legal-Privacy {
+  margin-left: 32px;
+  &:hover{
+      color: $cg_front;
+       text-decoration: underline;
+    }
+}
+
+// THEME
+// @mixin theme($theme-name, $c1, $c2, $c3,$c4,$title) {
+//   .#{$theme-name} {
+//     background: $c1;
+//     transition: background-color 0.3s ease;
+//     .title-index{
+//        color: $title;
+//        transition: color 0.3s ease;
+//       }
+//     .title-mid{
+//       background-color: $c2;
+//       transition: background-color 0.3s ease;
+//     }
+//     .card {
+//       background-color: $c2;
+//       transition: background-color 0.3s ease;
+//       .card-top-title{
+//         color: $c3;
+//       }
+//       .card-mid-title{
+//         color: $c4;
+//       }
+//     }
+//     .indicator-container{
+//       background-color: $c2;
+//       transition: background-color 0.2s ease;
+//     }
+//   }
+// }
+// @include theme(dark, $c1_dark, $c2_dark, $c4_dark,$c5_dark,white);
+// @include theme(light, $c1_light, $c2_light, $c3_light,$c4_dark,black);
 
 // MOBILE
 @media only screen and (max-width: 705px) {
@@ -516,9 +593,9 @@ export default {
   .part1 {
     height: auto !important;
   }
-  // .nav-right {
-  //   display: none;
-  // }
+  .auth-btn {
+    margin-right: 0;
+  }
   .nav-request-btn {
     display: none;
   }
@@ -534,10 +611,23 @@ export default {
   .container-top {
     padding: 32px 12px 0px;
   }
+  .footer-legal {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .footer-rights {
+    display: none;
+  }
 }
 @media screen and (max-height: 900px) {
   .part1 {
     height: auto !important;
+  }
+  .container-top {
+    padding: 32px 12px 0px;
+  }
+  .scroll-indicator-container {
+    margin-bottom: 32px;
   }
 }
 </style>
