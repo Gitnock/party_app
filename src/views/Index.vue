@@ -614,6 +614,7 @@ export default {
   }
   .footer-legal {
     width: 100%;
+    font-size: 12px;
     justify-content: space-between;
   }
   .footer-rights {

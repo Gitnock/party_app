@@ -84,8 +84,9 @@ export default {
       const roomCreatedAt = Date.now();
       this.submitTimer = workerTimers.setInterval(() => {
         const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.serverTimeOffset);
-        if (timeLeft < 0) {
+        if (timeLeft < 5) {
           this.canSub = false;
+          this.disTpRoom();
           if (this.isAccepted) {
             eventBus.$emit('search');
           }
@@ -106,7 +107,7 @@ export default {
       }, 100);
     },
     accept() {
-      if (this.timeleft > 0 && this.canSub) {
+      if (this.isOnTime && this.timeleft > 10 && this.canSub) {
         this.isAccepted = true;
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
@@ -149,6 +150,13 @@ export default {
         .doc(this.getUser.uid)
         .set({ activity }, { merge: true });
     },
+    disTpRoom() {
+      if (this.isOnTime) {
+        roomsCollection
+          .doc(this.roomId)
+          .update({ isActive: false });
+      }
+    },
   },
   mounted() {
     this.countDown();
@@ -170,6 +178,12 @@ export default {
     this.$emit('close');
   },
   computed: {
+    isOnTime() {
+      if (this.getRoomData.isConfirmed) {
+        return this.getRoomData.isActive;
+      }
+      return false;
+    },
     isGood() {
       if (this.getRoomData.isConfirmed) {
         return this.getRoomData.isConfirmed.every((i) => i[0] === '1');
