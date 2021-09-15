@@ -1,7 +1,7 @@
 <template>
   <div class="home-main">
     <div class="home-container">
-      <div class="select-game-container game-container" v-if="!curGame">
+      <div class="select-game-container game-container" v-show="!curGame">
         <div class="select-game-content">
           <button
             class="select-game-card btn-div btn-drop"
@@ -14,7 +14,7 @@
           </button>
         </div>
       </div>
-      <div class="join-game-container game-container" v-else>
+      <div class="join-game-container game-container" v-if="curGame">
         <div class="close-btn-container" v-if="!isLoading">
           <button class="back-btn btn-div btn-drop" @click="curGame = null">
             <i class="bx bx-arrow-back" style="color: #ffffff"></i>

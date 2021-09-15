@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { useSound } from '@vueuse/sound';
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
@@ -69,6 +70,7 @@ export default {
     isAccepted: false,
     submitTimer: undefined,
     serverTimeOffset: 0,
+    playFound: null,
   }),
   props: {
     roomId: {
@@ -159,16 +161,15 @@ export default {
     },
   },
   mounted() {
+    this.playFound = useSound(matchFoundFx);
     this.countDown();
     this.$on('close', () => {
       workerTimers.clearInterval(this.submitTimer);
       this.decline();
       this.statusEmpty();
-      const isPlaying = this.playFound.currentTime > 0
-      && !this.playFound.paused
-      && !this.playFound.ended;
+      const { isPlaying } = this.playFound;
       if (isPlaying) {
-        this.playFound.pause();
+        this.playFound.stop();
       }
     });
     this.playFound.volume = 0.2;
@@ -201,9 +202,6 @@ export default {
         return this.getRoomData.size - this.getRoomData.isConfirmed.length;
       }
       return 0;
-    },
-    playFound() {
-      return new Audio(matchFoundFx);
     },
     ...mapGetters(['getRoomData', 'getRoomId', 'getUser']),
   },
