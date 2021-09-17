@@ -572,9 +572,9 @@ export default {
 
 // MOBILE
 @media only screen and (max-width: 705px) {
-  .part1 {
-    height: auto !important;
-  }
+  // .part1 {
+  //   height: auto !important;
+  // }
   .title-index {
     font-size: 52px;
   }
@@ -591,9 +591,9 @@ export default {
   }
 }
 @media only screen and (max-width: 607px) {
-  .part1 {
-    height: auto !important;
-  }
+  // .part1 {
+  //   height: auto !important;
+  // }
   .auth-btn {
     margin-right: 0;
   }
@@ -621,7 +621,7 @@ export default {
     display: none;
   }
 }
-@media screen and (max-height: 1009px) {
+@media screen and (max-height: 900px) {
   .part1 {
     height: auto !important;
   }
@@ -630,6 +630,11 @@ export default {
   }
   .scroll-indicator-container {
     margin-bottom: 32px;
+  }
+}
+@media only screen and (max-width: 1028px) {
+  .part1 {
+    height: auto !important;
   }
 }
 </style>
