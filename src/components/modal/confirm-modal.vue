@@ -48,18 +48,19 @@
 </template>
 
 <script>
-import { useSound } from '@vueuse/sound';
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
 import * as workerTimers from 'worker-timers';
+import { Howl } from 'howler';
 import {
   db,
   roomsCollection,
   rtDb,
   statusCollection,
 } from '../../firebaseConfig';
-import matchFoundFx from '../../assets/sounds/matchfound.mp3';
+import matchFoundFx from '../../assets/sounds/matchfound-start.mp3';
+import FoundtickFx from '../../assets/sounds/matchfound-tick.mp3';
 
 export default {
   components: {},
@@ -68,9 +69,10 @@ export default {
     timeleft: 100,
     canSub: true,
     isAccepted: false,
-    submitTimer: undefined,
+    submitTimer: null,
     serverTimeOffset: 0,
     playFound: null,
+    playTick: null,
   }),
   props: {
     roomId: {
@@ -87,8 +89,6 @@ export default {
       this.submitTimer = workerTimers.setInterval(() => {
         const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.serverTimeOffset);
         if (timeLeft < 5) {
-          this.canSub = false;
-          this.disTpRoom();
           if (this.isAccepted) {
             eventBus.$emit('search');
           }
@@ -109,7 +109,8 @@ export default {
       }, 100);
     },
     accept() {
-      if (this.isOnTime && this.timeleft > 10 && this.canSub) {
+      console.log('its OVER: ', this.isOnTime);
+      if (this.timeleft > 10 && this.canSub) {
         this.isAccepted = true;
         this.canSub = false;
         roomsCollection.doc(this.roomId).update({
@@ -152,28 +153,37 @@ export default {
         .doc(this.getUser.uid)
         .set({ activity }, { merge: true });
     },
-    disTpRoom() {
-      if (this.isOnTime) {
-        roomsCollection
-          .doc(this.roomId)
-          .update({ isActive: false });
-      }
+    playMusic() {
+      this.playFound = new Howl({
+        src: [matchFoundFx],
+        volume: 0.7,
+      });
+      this.playTick = new Howl({
+        src: [FoundtickFx],
+        volume: 0.4,
+        loop: true,
+        rate: 1.7,
+      });
+
+      this.playFound.play();
+      this.playTick.play();
     },
   },
   mounted() {
-    this.playFound = useSound(matchFoundFx);
+    this.playMusic();
     this.countDown();
     this.$on('close', () => {
-      workerTimers.clearInterval(this.submitTimer);
+      if (this.submitTimer != null) {
+        workerTimers.clearInterval(this.submitTimer);
+        this.submitTimer = null;
+      }
       this.decline();
       this.statusEmpty();
-      const { isPlaying } = this.playFound;
-      if (isPlaying) {
-        this.playFound.stop();
+      const { playing } = this.playTick;
+      if (playing) {
+        this.playTick.stop();
       }
     });
-    this.playFound.volume = 0.2;
-    this.playFound.play();
   },
   beforeDestroy() {
     this.$emit('close');
@@ -193,7 +203,7 @@ export default {
     },
     isAllSub() {
       if (this.getRoomData.isConfirmed) {
-        return this.getRoomData.size === this.getRoomData.isConfirmed.length;
+        return this.getRoomData.size === this.getRoomData.isConfirmed.length && this.isOnTime;
       }
       return false;
     },

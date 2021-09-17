@@ -88,6 +88,7 @@ export default {
     searching: null,
     roomListener: null,
     roomId: '',
+    sound: null,
   }),
   methods: {
     ...mapActions([
@@ -236,26 +237,6 @@ export default {
         .doc(this.getUserStatus.tempRoomId)
         .update({ isActive: false });
     },
-    // host() {
-    //   this.hostGameAction({
-    //     game: this.getGame.gameId,
-    //     players: [this.getUser.uid],
-    //     size: this.players,
-    //   }).then(() => {
-    //     if (this.$route.path !== `/crew/${this.getRoom}`) {
-    //       this.$router.push(`/crew/${this.getRoom}`);
-    //     }
-    //     // roomsCollection.doc(this.getRoom).onSnapshot((snapShot) => {
-    //     //   const isfull = snapShot.data().full;
-    //     //   if (isfull) {
-    //     //     // this.$router.push(`/crew/${this.getRoom}`);
-    //     //     if (this.$route.path !== `/crew/${this.getRoom}`) {
-    //     //       this.$router.push(`/crew/${this.getRoom}`);
-    //     //     }
-    //     //   }
-    //     // });
-    //   });
-    // },
   },
   computed: {
     activity() {

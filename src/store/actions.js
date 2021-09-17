@@ -40,12 +40,14 @@ const actions = {
               response.user.updateProfile({
                 displayName: payload.username,
               });
+              const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
               userDataCollection
                 .doc(response.user.uid)
                 .set({
                   email: payload.email,
                   dob: firebase.firestore.FieldValue.serverTimestamp(),
                   sex: '',
+                  createdAt: myTimestamp,
                 })
                 .then(() => {
                   res();
@@ -105,6 +107,7 @@ const actions = {
               commit('setUser', data.user);
               res();
             } else {
+              const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
               usersRef
                 .set({
                   username: profile.displayName,
@@ -123,6 +126,7 @@ const actions = {
                       email: profile.email,
                       dob: firebase.firestore.FieldValue.serverTimestamp(),
                       sex: '',
+                      createdAt: myTimestamp,
                     })
                     .then(() => {
                       res();

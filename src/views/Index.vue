@@ -621,7 +621,7 @@ export default {
     display: none;
   }
 }
-@media screen and (max-height: 900px) {
+@media screen and (max-height: 1009px) {
   .part1 {
     height: auto !important;
   }
