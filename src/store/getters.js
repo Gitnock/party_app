@@ -52,6 +52,40 @@ const getters = {
   getRoomUsersListener(state) {
     return state.roomUsersListener;
   },
+  getFriendRequests(state) {
+    return state.notifications;
+  },
+  getSentFriendNotifications(state) {
+    return state.sendtFriendNotifications;
+  },
+  getFriends(state) {
+    return state.friends;
+  },
+  getFriendsStatus(state) {
+    const friends = [];
+    state.friendStatus.forEach((status) => {
+      const {
+        chatId,
+        createdAt,
+        uid,
+        avatar,
+        tag,
+        username,
+      } = state.friends.filter((x) => x.uid === status.uid)[0];
+      friends.push({
+        chatId,
+        createdAt,
+        uid,
+        avatar,
+        tag,
+        username,
+        last_changed: status.last_changed,
+        state: status.state,
+      });
+    });
+
+    return friends;
+  },
 };
 
 export default getters;

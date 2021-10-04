@@ -178,12 +178,14 @@ export default {
       });
       this.loadImage(this.getGames);
       setTimeout(() => {
-        if (this.getProfile.flags) {
-          this.$router.push('/crew/@me');
-        } else {
-          this.$router.push('/alpha');
-        }
+        // if (this.getProfile.flags) {
+        //   this.$router.push('/crew/@me');
+        // } else {
+        //   this.$router.push('/alpha');
+        // }
+
         loading.close();
+        this.$router.push('/crew/@me');
       }, 1000);
     },
     openNotification(title, text, color) {

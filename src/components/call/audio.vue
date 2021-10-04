@@ -1,18 +1,19 @@
 <template>
   <div class="audio-container">
-    <audio :srcObject.prop="audioStream" autoplay/>
+    <audio :srcObject.prop="audioStream" autoplay muted="true" />
     <div class="audio-muted" v-if="muted">
-      <vs-avatar
-        circle
-        color="#2B2E43"
-        @click="curGame = null"
-        class="clickable"
-      >
+      <vs-avatar circle color="#2B2E43">
         <i class="bx bx-volume-mute"></i>
       </vs-avatar>
     </div>
     <div class="audio-content" v-if="user">
-      <vs-avatar size="96" circle color="#2B2E43" class="user-avatar" >
+      <vs-avatar
+        size="96"
+        circle
+        color="#2B2E43"
+        class="user-avatar clickable"
+        @click="muted = !muted"
+      >
         <img
           v-bind:src="`${user.avatar}`"
           v-if="user.avatar"
@@ -24,7 +25,7 @@
         </template>
       </vs-avatar>
     </div>
-    <userInfo :user="user"/>
+    <userInfo :user="user" />
   </div>
 </template>
 

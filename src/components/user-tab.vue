@@ -1,5 +1,20 @@
 <template>
-  <div>
+  <div class="user-tab">
+    <div class="friend-avatar">
+      <vs-avatar
+        size="38"
+        color="#202330"
+        circle
+        badge-color="success"
+        badge-position="bottom-left"
+        class="clickable btn-drop"
+        @click="friendScreen = !friendScreen"
+      >
+        <div class="friend-img">
+          <img src="@/assets/friend.svg" alt="friend icon" />
+        </div>
+      </vs-avatar>
+    </div>
     <div class="user-avatar">
       <vs-tooltip
         bottom
@@ -92,18 +107,43 @@
         <settings></settings>
       </div>
     </vs-dialog>
+    <vs-dialog
+      square
+      full-screen
+      not-close
+      v-model="friendScreen"
+      class="full-screen-dialog"
+    >
+      <div class="settings-view">
+        <div class="setting-close-section">
+          <div class="setting-close-container">
+            <vs-avatar
+              circle
+              color="#2B2E43"
+              class="btn-drop"
+              @click="friendScreen = !friendScreen"
+            >
+              <i class="bx bx-x" style="color: #ffffff"></i>
+            </vs-avatar>
+          </div>
+        </div>
+        <friends></friends>
+      </div>
+    </vs-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import settings from '@/components/settings/settings.vue';
+import friends from '@/components/friends/friends.vue';
 
 export default {
   name: 'user_tab',
   data: () => ({
     activeProfile: false,
     settingScreen: false,
+    friendScreen: false,
     usernameChar: '',
   }),
   computed: {
@@ -111,6 +151,7 @@ export default {
   },
   components: {
     settings,
+    friends,
   },
   methods: {
     openSettings() {
@@ -132,9 +173,21 @@ $main: #7957d5;
   width: 100%;
 }
 
+.user-tab {
+  display: flex;
+}
+
+//friend avatar
+.friend-avatar {
+  margin-right: 24px;
+}
+.friend-img {
+  width: 12px;
+  height: 14px;
+}
 div.vs-avatar__badge {
-  height: 18px !important;
-  width: 18px !important;
+  // height: 18px !important;
+  // width: 18px !important;
   border: none !important;
   // background: $c1_dark !important;
   // border: 8px solid $c3_dark !important;
@@ -197,5 +250,4 @@ div.vs-tooltip {
 .avatar-main-cantainer {
   display: flex;
 }
-
 </style>

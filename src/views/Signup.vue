@@ -396,11 +396,12 @@ export default {
       });
       this.loadImage(this.getGames);
       setTimeout(() => {
-        if (this.getProfile.flags) {
-          this.$router.push('/crew/@me');
-        } else {
-          this.$router.push('/alpha');
-        }
+        // if (this.getProfile.flags) {
+        //   this.$router.push('/crew/@me');
+        // } else {
+        //   this.$router.push('/alpha');
+        // }
+        this.$router.push('/crew/@me');
         loading.close();
       }, 1000);
     },

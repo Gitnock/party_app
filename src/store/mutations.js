@@ -28,6 +28,18 @@ const mutations = {
   setRoomUsersListener(state, payload) {
     state.roomUsersListener = payload;
   },
+  setNotifications(state, payload) {
+    state.notifications = payload;
+  },
+  setSentFriendNotifications(state, payload) {
+    state.sendFriendNotifications = payload;
+  },
+  setFriends(state, payload) {
+    state.friends = payload;
+  },
+  setFriendStatus(state, payload) {
+    state.friendStatus = payload;
+  },
   ...vuexfireMutations,
 };
 

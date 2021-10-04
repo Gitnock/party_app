@@ -11,7 +11,10 @@
 </template>
 
 <script>
+import { warningMixen } from '@/mixin';
+
 export default {
+  mixins: [warningMixen],
   name: 'userInfo',
   props: {
     user: Object,
@@ -25,15 +28,6 @@ export default {
         'Username was copied',
         'success',
       );
-    },
-    openNotification(title, text, color) {
-      this.$vs.notification({
-        // flat: true,
-        title,
-        text,
-        position: 'bottom-center',
-        color,
-      });
     },
   },
 };

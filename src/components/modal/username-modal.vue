@@ -86,7 +86,6 @@ export default {
     ...mapActions(['favGameAction']),
     async save() {
       if (this.canSub) {
-        console.log('save');
         this.canSub = false;
         await usersCollection.doc(this.getUser.uid).collection('favGames').doc(this.getGame.gameId).set({
           uname: this.username,

@@ -42,7 +42,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { usersCollection } from '../../firebaseConfig';
 
 export default {
-  name: 'settings-password-page',
+  name: 'settings-games-page',
   data() {
     return {};
   },

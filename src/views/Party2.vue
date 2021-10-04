@@ -1,282 +1,103 @@
 <template>
-  <div class="party-main">
-    <div class="party-container">
-      <div class="party-content">
-        <div class="audio-layout">
-          <audioLayout
-            :muted="true"
-            :user="getProfile"
-          />
-        </div>
-        <div class="audio-layout" v-for="peer in peers" :key="peer.userId">
-          <audioLayout
-            :muted="false"
-            :audioStream="peer.peerStream"
-          />
-        </div>
+  <div class="friend-item-container">
+    <div class="friend-card">
+      <div class="friend-img-container">
+        <img class="friend-img" :src="friend.url_square" alt="friend-image" />
       </div>
-    </div>
-    <div class="party-options-container">
-      <div class="party-options-content">
-        <vs-avatar
-          size="60"
-          circle
-          color="$c2_dark"
-          @click="mute"
-          class="clickable"
-        >
-          <i class="bx bxs-microphone" v-if="muted" />
-          <i class="bx bxs-microphone-off" v-else></i>
-        </vs-avatar>
-        <button class="hangup-btn" @click="hangUp">
-          <img src="@/assets/hangup.svg" alt="" draggable="false" />
-        </button>
+      <div class="friend-card-content">
+        <div>
+          <h2 class="gname roboto-m">{{ friend.gameName }}</h2>
+          <h3 class="uname roboto-m">{{ friend.uname }}</h3>
+        </div>
+        <div class="friend-options-container">
+          <vs-avatar success>
+            <template #text> Success </template>
+          </vs-avatar>
+          <button class="friend-options" @click="deletefriend(friend.friendId)">
+            <i class="bx bxs-x-circle friend-options-txt"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import audioLayout from '@/components/call/audio.vue';
-import { joinRoom } from 'trystero/src/firebase';
-import { roomsCollection } from '../firebaseConfig';
-// import firebase from 'firebase/app';
-// import { getFireApp } from '../firebaseConfig';
-// import { roomsCollection, rtDb } from '../firebaseConfig';
-let room;
-const configuration = {
-  iceServers: [
-    {
-      urls: 'stun:stun1.l.google.com:19302',
-    },
-    {
-      urls: 'turn:18.118.49.54?transport=tcp',
-      username: 'partyapp',
-      credential: 'connect',
-    },
-  ],
-};
-const config = {
-  appId: 'partyapp-9961f-default-rtdb',
-  rtcConfig: configuration,
-  rootPath: 'calls',
-};
-
 export default {
+  name: 'friends-friend-item',
   data: () => ({
-    roomId: '',
-    peers: {},
-    idsToUid: {},
-    localStream: undefined,
-    muted: true,
+    key: '',
   }),
-  components: {
-    audioLayout,
+  props: {
+    friend: {},
   },
-  methods: {
-    ...mapActions(['setRoomUsersAction']),
-    async getUserMedia() {
-      try {
-        // get user mic permissions and mic stream
-        this.localStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        });
-      } catch (error) {
-        // console.log(error);
-        this.openNotification(
-          'Error',
-          'Permission denied. Refresh to try again.',
-          'danger',
-        );
-      }
-
-      // Show stream in HTML mic
-      // this.$refs.localAudio.srcObject = this.localStream;
-      // mute local audio
-      // this.$refs.localAudio.volume = 0;
-    },
-    roomEvents() {
-      room.onPeerJoin((id) => {
-        this.openNotification('USER JOIN', `${id} joined`, 'success');
-        room.addStream(this.localStream);
-        this.initP(id);
-      });
-      room.onPeerStream((stream, id) => {
-        // this.initPeer(id, this.idsToUid[id]);
-        this.peers[id].peerStream = stream;
-      });
-
-      room.onPeerLeave((id) => {
-        this.openNotification(
-          'USER LEFT',
-          `${this.idsToUid[id]} left`,
-          'danger',
-        );
-        this.$delete(this.peers, id);
-      });
-    },
-    mute() {
-      this.muted = !this.muted;
-      this.localStream.getAudioTracks()[0].enabled = this.muted;
-    },
-    hangUp() {
-      room.leave();
-      const tracks = this.localStream.getTracks();
-      tracks.forEach((track) => {
-        track.stop();
-      });
-      Object.keys(this.peers).forEach((user) => {
-        if (this.peers[user].peerStream) {
-          this.peers[user].peerStream
-            .getTracks()
-            .forEach((track) => track.stop());
-        }
-        if (this.peers[user].pc) this.peers[user].pc.close();
-      });
-      this.peers = {};
-      if (this.$route.path !== '/crew/@me') {
-        this.$router.push('/crew/@me');
-      }
-    },
-    leaveRoom() {
-      room.leave();
-    },
-    initPeer(id, uid) {
-      const user = this.getRoomUsers.find((x) => x.userId === uid);
-      this.$set(this.peers, id, {
-        userId: uid,
-        peerStream: undefined,
-        user,
-      });
-    },
-    initP(id) {
-      this.$set(this.peers, id, {
-        userId: id,
-        peerStream: undefined,
-      });
-    },
-    openNotification(title, text, color) {
-      this.$vs.notification({
-        // flat: true,
-        title,
-        text,
-        position: 'bottom-center',
-        color,
-      });
-    },
-    async init() {
-      this.roomId = this.$route.params.roomId;
-      roomsCollection
-        .doc(this.roomId)
-        .get()
-        .then(async (snap) => {
-          if (snap.exists) {
-            this.setRoomUsersAction({
-              roomId: this.roomId,
-              userId: this.getUser.uid,
-            });
-            await this.getUserMedia();
-            room = joinRoom(config, this.roomId);
-            this.roomEvents();
-          } else {
-            if (this.$route.path !== '/crew/@me') {
-              this.$router.push('/crew/@me');
-            }
-            this.openNotification(
-              'Error',
-              `Party doesn't Exist${this.roomId}`,
-              'danger',
-            );
-          }
-        });
-    },
-    registerListeners() {
-
-    },
-  },
-  computed: {
-    ...mapGetters(['getUser', 'getRoomUsers', 'getProfile']),
-  },
-  mounted() {
-    this.init();
-  },
-  beforeDestroy() {
-    const tracks = this.localStream.getTracks();
-    tracks.forEach((track) => {
-      track.stop();
-    });
-    Object.keys(this.peers).forEach((user) => {
-      if (this.peers[user].peerStream) {
-        this.peers[user].peerStream
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
-      if (this.peers[user].pc) this.peers[user].pc.close();
-    });
-    this.peers = {};
-    room.leave();
-  },
-  created() {},
 };
 </script>
 
 <style lang="scss" scoped>
-.party-main {
+.friend-item-container {
+  width: 100%;
+}
+.friend-card {
+  height: 102px;
+  width: 100%;
+  background-color: $c2_dark;
+  margin-bottom: 12px;
+  display: flex;
   padding: 16px;
-  height: 100%;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.friend-img-container {
+  width: 70px;
+  height: 70px;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  justify-content: center;
+  margin-right: 16px;
+  overflow: hidden;
 }
-.party-container {
+.friend-img {
+  height: 100%;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.close-btn {
+  background: #2b2e43;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  animation: fadeIn 1s 1;
+}
+.friend-card-content {
   width: 100%;
-  flex: auto;
+  display: flex;
+  justify-content: space-between;
+}
+.gname {
+  font-size: 16px;
+  color: $c5_dark;
+}
+.uname {
+  font-size: 12px;
+  color: #626891;
+}
+.friend-options-container {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
-.party-content {
-  display: flex;
-  // align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 1248px;
-}
-.audio-layout {
-  margin: 5px;
-}
-
-// OPITONS CONTAINER
-.party-options-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.party-options-content {
-  display: flex;
-}
-.hangup-btn {
-  margin-left: 28px;
-  height: 60px;
-  width: 140px;
+.friend-options {
+  padding: 0px;
   border: none;
-  border-radius: 50px;
-  background-color: #fb4060;
+  background-color: transparent;
+  height: 24px;
 }
-@media only screen and (max-width: 628px) {
-  .party-container {
-    justify-content: flex-end;
-    margin-bottom: 32px;
-    flex-direction: column;
-  }
-  .audio-layout {
-    margin: 5px 0px;
-  }
-  .party-main {
-    padding: 0px;
-  }
+.friend-options-txt {
+  font-size: 24px;
+  color: #464a65;
 }
 </style>

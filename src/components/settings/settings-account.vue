@@ -66,10 +66,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
+import { warningMixen } from '@/mixin';
 import { auth, userDataCollection } from '../../firebaseConfig';
 
 export default {
   name: 'settings-account-page',
+  mixins: [warningMixen],
   data() {
     return {
       email: '',
@@ -99,15 +101,6 @@ export default {
       } else {
         this.isActive = false;
       }
-    },
-    openNotification(title, text, color) {
-      this.$vs.notification({
-        // flat: true,
-        title,
-        text,
-        position: 'bottom-center',
-        color,
-      });
     },
     updateInfo() {
       if (!this.date) {

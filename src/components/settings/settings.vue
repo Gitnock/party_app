@@ -134,6 +134,9 @@ export default {
   border: none;
   background-color: transparent;
   text-align: left;
+  &:hover{
+    background-color: $c2_dark;
+  }
 }
 
 .selected {
@@ -149,13 +152,9 @@ export default {
   border: none;
   background-color: transparent;
   text-align: left;
-}
-
-.setting-menu-item:hover {
-  background-color: $c2_dark;
-}
-.setting-menu-item-logout:hover {
-  background-color: rgba(255, 71, 87, 0.15);
+  &:hover{
+    background-color: rgba(255, 71, 87, 0.15);
+  }
 }
 
 //setting right

@@ -109,7 +109,6 @@ export default {
       }, 100);
     },
     accept() {
-      console.log('its OVER: ', this.isOnTime);
       if (this.timeleft > 10 && this.canSub) {
         this.isAccepted = true;
         this.canSub = false;

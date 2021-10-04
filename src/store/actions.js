@@ -4,11 +4,13 @@ import 'firebase/auth';
 import { firestoreAction } from 'vuexfire';
 import {
   gamesCollection,
+  notificationsCollection,
   // playersCollection,
   roomsCollection,
   statusCollection,
   userDataCollection,
   usersCollection,
+  friendsCollection,
 } from '../firebaseConfig';
 
 const provider = new firebase.auth.GoogleAuthProvider();
@@ -40,7 +42,9 @@ const actions = {
               response.user.updateProfile({
                 displayName: payload.username,
               });
-              const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+              const myTimestamp = firebase.firestore.Timestamp.fromDate(
+                new Date(),
+              );
               userDataCollection
                 .doc(response.user.uid)
                 .set({
@@ -107,7 +111,9 @@ const actions = {
               commit('setUser', data.user);
               res();
             } else {
-              const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+              const myTimestamp = firebase.firestore.Timestamp.fromDate(
+                new Date(),
+              );
               usersRef
                 .set({
                   username: profile.displayName,
@@ -195,7 +201,11 @@ const actions = {
                     .filter((user) => user.uid === userData.userId)
                     .map((x) => x.chatId);
 
-                  usersCollection.doc(userData.userId).collection('favGames').doc(payload.gameId).get()
+                  usersCollection
+                    .doc(userData.userId)
+                    .collection('favGames')
+                    .doc(payload.gameId)
+                    .get()
                     .then((favDoc) => {
                       const { uname } = favDoc.data();
                       users.push({
@@ -233,18 +243,106 @@ const actions = {
   },
   favGameAction({ commit }, uid) {
     return new Promise((res, rej) => {
-      usersCollection.doc(uid).collection('favGames').get().then((querySnapshot) => {
-        const favGames = [];
-        querySnapshot.forEach((doc) => {
-          favGames.push(doc.data());
-        });
-        commit('setFavGames', favGames);
-        res();
-      })
+      usersCollection
+        .doc(uid)
+        .collection('favGames')
+        .get()
+        .then((querySnapshot) => {
+          const favGames = [];
+          querySnapshot.forEach((doc) => {
+            favGames.push(doc.data());
+          });
+          commit('setFavGames', favGames);
+          res();
+        })
         .catch(() => {
           rej();
         });
     });
+  },
+  notificationsAction({ commit, state }) {
+    const query = notificationsCollection
+      .where('isActive', '==', true)
+      .where('to', '==', state.user.uid);
+    query.onSnapshot((querySnapshot) => {
+      const notifications = [];
+      querySnapshot.forEach((doc) => {
+        const {
+          createdAt, from, title, message, type, id, to,
+        } = doc.data();
+        usersCollection
+          .doc(from)
+          .get()
+          .then((user) => {
+            if (user.exists) {
+              const { username, tag, avatar } = user.data();
+              notifications.push({
+                username,
+                tag,
+                createdAt,
+                avatar,
+                from,
+                to,
+                title,
+                message,
+                type,
+                id,
+              });
+            }
+          });
+      });
+      commit('setNotifications', notifications);
+    });
+  },
+  friendAction({ commit, state }) {
+    return new Promise((res) => {
+      friendsCollection
+        .doc(state.user.uid)
+        .collection('friends')
+        .get()
+        .then((snap) => {
+          const friends = [];
+          snap.forEach((friendDoc) => {
+            const { chatId, createdAt, uid } = friendDoc.data();
+            usersCollection
+              .doc(uid)
+              .get()
+              .then((userDoc) => {
+                const { avatar, tag, username } = userDoc.data();
+                friends.push({
+                  chatId,
+                  createdAt,
+                  uid,
+                  avatar,
+                  tag,
+                  username,
+                });
+              });
+          });
+          commit('setFriends', friends);
+          res();
+        });
+    });
+  },
+  friendStatusAction({ commit, state }) {
+    const friends = JSON.parse(JSON.stringify(state.friends));
+    console.log(friends);
+    statusCollection
+      .where('__name__', 'in', friends.map((x) => x.uid))
+      .onSnapshot((querySnapshot) => {
+        const states = [];
+        querySnapshot.forEach((doc) => {
+          // eslint-disable-next-line camelcase
+          const data = doc.data();
+          states.push({
+            uid: doc.id,
+            last_changed: data.last_changed,
+            state: data.state,
+          });
+        });
+
+        commit('setFriendStatus', states);
+      });
   },
   // hostGameAction({ commit }, payload) {
   //   const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
