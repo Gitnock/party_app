@@ -13,7 +13,7 @@
         color="#2B2E43"
         class="user-avatar clickable"
         @click="muted = !muted"
-        :history="(isMain)?volume>23:volume > 20"
+        :history="volume > 16"
       >
         <img
           v-bind:src="`${user.avatar}`"
