@@ -155,11 +155,11 @@ export default {
     playMusic() {
       this.playFound = new Howl({
         src: [matchFoundFx],
-        volume: 0.7,
+        volume: 0.4,
       });
       this.playTick = new Howl({
         src: [FoundtickFx],
-        volume: 0.4,
+        volume: 0.2,
         loop: true,
         rate: 1.7,
       });

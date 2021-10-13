@@ -1,21 +1,31 @@
 <template>
-  <div class="party-main">
-    <div class="party-container">
-      <div class="party-content">
+  <div class="call-main">
+    <div class="call-container">
+      <div class="call-content">
         <div class="audio-layout">
-          <audioLayout :muted="true" :user="getProfile" />
+          <audioLayout
+            :muted="false"
+            :audioStream="localStream"
+            :user="getProfile"
+            :copy="false"
+          />
         </div>
-        <div class="audio-layout fadeInAnim" v-for="peer in peers" :key="peer.userId">
+        <div
+          class="audio-layout fadeInAnim"
+          v-for="peer in peers"
+          :key="peer.userId"
+        >
           <audioLayout
             :muted="false"
             :audioStream="peer.peerStream"
             :user="peer.user"
+            :copy="false"
           />
         </div>
       </div>
     </div>
-    <div class="party-options-container">
-      <div class="party-options-content">
+    <div class="call-options-container">
+      <div class="call-options-content">
         <vs-avatar
           size="60"
           circle
@@ -38,7 +48,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import audioLayout from '@/components/call/audio.vue';
 import { joinRoom, selfId } from 'trystero/src/firebase';
-import { roomsCollection, statusCollection } from '../firebaseConfig';
+import { friendChatCollection, statusCollection } from '../firebaseConfig';
 // import firebase from 'firebase/app';
 // import { getFireApp } from '../firebaseConfig';
 // import { roomsCollection, rtDb } from '../firebaseConfig';
@@ -176,7 +186,7 @@ export default {
     },
     async init() {
       this.roomId = this.$route.params.roomId;
-      roomsCollection
+      friendChatCollection
         .doc(this.roomId)
         .get()
         .then(async (snap) => {
@@ -204,7 +214,7 @@ export default {
         });
     },
     async sendChatId() {
-      await roomsCollection
+      await friendChatCollection
         .doc(this.roomId)
         .collection('activePlayers')
         .doc(this.getUser.uid)
@@ -250,61 +260,6 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.party-main {
-  padding: 16px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-}
-.party-container {
-  width: 100%;
-  flex: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.party-content {
-  display: flex;
-  // align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 1248px;
-}
-.audio-layout {
-  margin: 5px;
-}
-
-// OPITONS CONTAINER
-.party-options-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.party-options-content {
-  display: flex;
-}
-.hangup-btn {
-  margin-left: 28px;
-  height: 60px;
-  width: 140px;
-  border: none;
-  border-radius: 50px;
-  background-color: #fb4060;
-}
-@media only screen and (max-width: 628px) {
-  .party-container {
-    justify-content: flex-end;
-    margin-bottom: 32px;
-    flex-direction: column;
-  }
-  .audio-layout {
-    margin: 5px 0px;
-  }
-  .party-main {
-    padding: 0px;
-  }
-}
+<style lang="scss" scoped>
+@import '@/assets/styles/call.scss';
 </style>

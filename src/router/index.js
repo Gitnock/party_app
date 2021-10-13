@@ -5,11 +5,13 @@ import VueRouter from 'vue-router';
 
 import Signin from '@/views/Signin.vue';
 import Signup from '@/views/Signup.vue';
-import Party from '@/views/Party.vue';
+import PartyCall from '@/views/PartyCall.vue';
+import friendCall from '@/views/friendCall.vue';
 import Index from '@/views/Index.vue';
 import Alpha from '@/views/Alpha.vue';
 import Main from '@/views/Main.vue';
 import Test from '@/views/Party2.vue';
+// import NotFound from '@/views/404.vue';
 import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
@@ -20,6 +22,8 @@ const routes = [
     name: 'index',
     component: Index,
   },
+  // { path: '/404', component: NotFound },
+  // { path: '*', redirect: '/404' },
   {
     path: '/crew',
     name: 'main',
@@ -34,12 +38,17 @@ const routes = [
       {
         path: '/crew/:roomId',
         name: 'party',
-        component: Party,
+        component: PartyCall,
       },
       {
         path: '/test',
         name: 'test',
         component: Test,
+      },
+      {
+        path: '@me/:roomId',
+        name: 'friendCall',
+        component: friendCall,
       },
     ],
 

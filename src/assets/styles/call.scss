@@ -1,0 +1,56 @@
+.call-main {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  .call-container {
+    width: 100%;
+    flex: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .call-content {
+    display: flex;
+    // align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1248px;
+  }
+  .audio-layout {
+    margin: 5px;
+  }
+  
+  // OPITONS CONTAINER
+  .call-options-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .call-options-content {
+    display: flex;
+  }
+  .hangup-btn {
+    margin-left: 28px;
+    height: 60px;
+    width: 140px;
+    border: none;
+    border-radius: 50px;
+    background-color: #fb4060;
+  }
+  @media only screen and (max-width: 628px) {
+    .call-container {
+      justify-content: flex-end;
+      margin-bottom: 32px;
+      flex-direction: column;
+    }
+    .audio-layout {
+      margin: 5px 0px;
+    }
+    .call-main {
+      padding: 0px;
+    }
+  }

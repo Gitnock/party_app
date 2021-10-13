@@ -4,7 +4,7 @@
       <div class="friend-img-container">
         <vs-avatar
           badge
-          :badge-color="(friend.state === 'online')?'success':'danger'"
+          :badge-color="friend.state === 'online' ? 'success' : 'danger'"
           circle
           :size="avatarSize"
           color="#2b2e43"
@@ -20,7 +20,14 @@
           </div>
         </div>
         <div class="friend-options-container">
-          <vs-avatar success circle color="#224168" :size="btnSize">
+          <vs-avatar
+            success
+            circle
+            color="#224168"
+            :size="btnSize"
+            class="clickable"
+            @click="callFriend(friend.chatId)"
+          >
             <i class="bx bxs-phone-call" style="color: #195bff"></i>
           </vs-avatar>
           <button class="friend-options-delete">
@@ -43,6 +50,11 @@ export default {
   }),
   props: {
     friend: {},
+  },
+  methods: {
+    callFriend(chatId) {
+      this.$router.push(`/crew/@me/${chatId}`);
+    },
   },
 };
 </script>

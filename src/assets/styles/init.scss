@@ -110,8 +110,12 @@ body,
 //   transition: opacity .5s;
 // }
 
-
-
+.avatar{
+  border-radius: 50% !important;
+}
+div.vs-avatar{
+  border: none !important;
+}
 //loading
 div.vs-loading {
   z-index: 0 !important;

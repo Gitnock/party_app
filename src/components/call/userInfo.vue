@@ -3,7 +3,7 @@
     <h2 class="username roboto-m username-nowrap" v-if="user">
       {{user.username}}
     </h2>
-    <button class="copyUsername-btn" @click="copyUsername">
+    <button class="copyUsername-btn" @click="copyUsername" v-if="copy">
       <img src="@/assets/copy.svg" alt="copy button" draggable="false">
     </button>
 
@@ -18,6 +18,7 @@ export default {
   name: 'userInfo',
   props: {
     user: Object,
+    copy: Boolean,
   },
   methods: {
     copyUsername() {
