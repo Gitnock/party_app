@@ -86,7 +86,7 @@ export default {
     async getUserMedia() {
       try {
         this.localStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
+          audio: { echoCancellation: true },
           video: false,
         });
       } catch (error) {
