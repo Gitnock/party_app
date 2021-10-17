@@ -194,7 +194,7 @@ export default {
               gameId: this.getUserStatus.gameId,
               roomType: 'friendChat',
             });
-
+            // this.callFriend(snap.data().users.filter((x) => x !== this.getUser.uid));
             await this.getUserMedia();
             this.room = joinRoom(config, this.roomId);
             this.roomEvents();
@@ -220,6 +220,9 @@ export default {
           chatId: selfId,
         });
     },
+    // callFriend(friendId) {
+    //   this.getFriends.
+    // },
   },
   computed: {
     ...mapGetters([
@@ -228,6 +231,7 @@ export default {
       'getProfile',
       'getRoomUsersListener',
       'getUserStatus',
+      'getFriends',
     ]),
   },
   mounted() {
