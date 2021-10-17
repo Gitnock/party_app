@@ -53,7 +53,7 @@
 import friendAdd from '@/components/friends/friends-add.vue';
 import friendPending from '@/components/friends/friends-pending.vue';
 import friends from '@/components/friends/friends-friends.vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -83,10 +83,23 @@ export default {
         selectedBackgroundAdd: this.settingPosition === num && this.settingPosition === 2,
       };
     },
+    getFriendsWithStatus() {
+      if (this.getFriends !== undefined && this.getFriends.length !== 0) {
+        this.friendStatusAction();
+      }
+    },
     ...mapActions(['signOutAction', 'friendStatusAction']),
   },
+  watch: {
+    getFriends() {
+      this.getFriendsWithStatus();
+    },
+  },
+  computed: {
+    ...mapGetters(['getFriends']),
+  },
   mounted() {
-    this.friendStatusAction();
+    this.getFriendsWithStatus();
   },
 };
 </script>

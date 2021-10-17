@@ -5,10 +5,11 @@
         size="38"
         color="#202330"
         circle
-        badge-color="success"
-        badge-position="bottom-left"
+        badge-color="primary"
+        badge-position="bottom-right"
         class="clickable btn-drop"
         @click="friendScreen = !friendScreen"
+        :badge="getFriendRequests.length>0"
       >
         <div class="friend-img">
           <img src="@/assets/friend.svg" alt="friend icon" />
@@ -137,6 +138,7 @@
 import { mapGetters } from 'vuex';
 import settings from '@/components/settings/settings.vue';
 import friends from '@/components/friends/friends.vue';
+import eventBus from '@/eventBus';
 
 export default {
   name: 'user_tab',
@@ -147,7 +149,7 @@ export default {
     usernameChar: '',
   }),
   computed: {
-    ...mapGetters(['getProfile']),
+    ...mapGetters(['getProfile', 'getFriendRequests']),
   },
   components: {
     settings,
@@ -158,6 +160,11 @@ export default {
       this.settingScreen = !this.settingScreen;
       this.activeProfile = !this.activeProfile;
     },
+  },
+  mounted() {
+    eventBus.$on('close', () => {
+      this.friendScreen = false;
+    });
   },
 };
 </script>

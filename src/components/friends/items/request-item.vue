@@ -2,7 +2,7 @@
   <div class="friend-item-container">
     <div class="friend-card">
       <div class="friend-img-container">
-        <vs-avatar circle :size="avatarSize" color="#2b2e43">
+        <vs-avatar circle class="user-avatar" color="#2b2e43">
           <img
             class="friend-img"
             :src="request.avatar"
@@ -19,20 +19,17 @@
         </div>
         <div class="friend-options-container">
           <vs-avatar
-            success
             circle
             color="#224168"
-            :size="btnSize"
+            class="call-avatar"
             @click="accept(request.from, request.to,request.id)"
           >
             <i class="bx bx-check" style="color: #195bff"></i>
           </vs-avatar>
           <vs-avatar
-            success
             circle
             color="#4E2424"
-            class="friend-btn-no"
-            :size="btnSize"
+            class="friend-btn-no call-avatar"
             @click="deny(request.id)"
           >
             <i class="bx bx-x" style="color: #ff5441"></i>
@@ -100,6 +97,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/styles/friends.scss";
 .friend-item-container {
   width: 100%;
 }
@@ -174,9 +172,4 @@ export default {
   margin-left: 12px;
 }
 
-@media only screen and (max-width: 700px) {
-  .friend-card {
-    height: 67px;
-  }
-}
 </style>

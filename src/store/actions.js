@@ -11,6 +11,7 @@ import {
   userDataCollection,
   usersCollection,
   friendsCollection,
+  db,
 } from '../firebaseConfig';
 
 const provider = new firebase.auth.GoogleAuthProvider();
@@ -171,7 +172,7 @@ const actions = {
   }),
   setRoomUsersAction({ commit }, payload) {
     return new Promise((res, rej) => {
-      const unsub = roomsCollection
+      const unsub = db.collection(payload.roomType)
         .doc(payload.roomId)
         .collection('activePlayers')
         .onSnapshot((querySnapshot) => {
@@ -299,8 +300,7 @@ const actions = {
       friendsCollection
         .doc(state.user.uid)
         .collection('friends')
-        .get()
-        .then((snap) => {
+        .onSnapshot((snap) => {
           const friends = [];
           snap.forEach((friendDoc) => {
             const { chatId, createdAt, uid } = friendDoc.data();
@@ -326,7 +326,6 @@ const actions = {
   },
   friendStatusAction({ commit, state }) {
     const friends = JSON.parse(JSON.stringify(state.friends));
-    console.log(friends);
     statusCollection
       .where('__name__', 'in', friends.map((x) => x.uid))
       .onSnapshot((querySnapshot) => {

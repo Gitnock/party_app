@@ -8,6 +8,7 @@
             :audioStream="localStream"
             :user="getProfile"
             :copy="false"
+            :isMain="true"
           />
         </div>
         <div
@@ -20,6 +21,7 @@
             :audioStream="peer.peerStream"
             :user="peer.user"
             :copy="false"
+            :isMain="false"
           />
         </div>
       </div>
@@ -107,7 +109,6 @@ export default {
     },
     roomEvents() {
       this.room.onPeerJoin((id) => {
-        // this.openNotification('USER JOIN', `${id} joined`, 'success');
         this.room.addStream(this.localStream);
         this.initPeer(id);
       });
@@ -118,11 +119,6 @@ export default {
       });
 
       this.room.onPeerLeave((id) => {
-        // this.openNotification(
-        //   'USER LEFT',
-        //   `${this.idsToUid[id]} left`,
-        //   'danger',
-        // );
         this.$delete(this.peers, id);
       });
     },
@@ -196,6 +192,7 @@ export default {
               roomId: this.roomId,
               userId: this.getUser.uid,
               gameId: this.getUserStatus.gameId,
+              roomType: 'friendChat',
             });
 
             await this.getUserMedia();

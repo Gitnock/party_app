@@ -182,6 +182,7 @@ export default {
               roomId: this.roomId,
               userId: this.getUser.uid,
               gameId: this.getUserStatus.gameId,
+              roomType: 'rooms',
             });
 
             await this.getUserMedia();

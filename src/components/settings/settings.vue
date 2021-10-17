@@ -72,7 +72,9 @@ import settingsName from '@/components/settings/settings-name.vue';
 import settingsAccount from '@/components/settings/settings-account.vue';
 import settingsPassword from '@/components/settings/settings-password.vue';
 import settingsGame from '@/components/settings/settings-games.vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+import firebase from 'firebase/app';
+import { rtDb } from '../../firebaseConfig';
 
 export default {
   components: {
@@ -90,11 +92,18 @@ export default {
   },
   methods: {
     signOut() {
-      this.$store.dispatch('signOutAction');
-      this.signOutAction().then(() => {
-        this.$router.push('/signin');
+      const isOfflineForDatabase = {
+        state: 'offline',
+        last_changed: firebase.database.ServerValue.TIMESTAMP,
+      };
+      const userStatusDatabaseRef = rtDb.ref(`/status/${this.getUser.uid}`);
+      userStatusDatabaseRef.set(isOfflineForDatabase).then(() => {
+        this.$store.dispatch('signOutAction');
+        this.signOutAction().then(() => {
+          this.$router.push('/signin');
+        });
+        localStorage.removeItem('gameList');
       });
-      localStorage.removeItem('gameList');
     },
     classObject(num) {
       return {
@@ -103,6 +112,9 @@ export default {
       };
     },
     ...mapActions(['signOutAction']),
+  },
+  computed: {
+    ...mapGetters(['getUser']),
   },
 };
 </script>

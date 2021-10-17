@@ -16,7 +16,7 @@
         />
       </div>
       <div class="content-container" v-if="isGood">
-        <button class="content-save roboto-m" @click="sendFriendRequest">save</button>
+        <button class="content-save roboto-m" @click="sendFriendRequest">Send Request</button>
       </div>
     </div>
   </div>

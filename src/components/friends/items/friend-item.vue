@@ -6,7 +6,8 @@
           badge
           :badge-color="friend.state === 'online' ? 'success' : 'danger'"
           circle
-          :size="avatarSize"
+          class="user-avatar"
+          size="55"
           color="#2b2e43"
         >
           <img :src="friend.avatar" alt="friend-image" />
@@ -21,11 +22,10 @@
         </div>
         <div class="friend-options-container">
           <vs-avatar
-            success
             circle
             color="#224168"
-            :size="btnSize"
-            class="clickable"
+            size="44"
+            class="clickable call-avatar"
             @click="callFriend(friend.chatId)"
           >
             <i class="bx bxs-phone-call" style="color: #195bff"></i>
@@ -41,6 +41,7 @@
 
 <script>
 import { warningMixen } from '@/mixin';
+import eventBus from '@/eventBus';
 
 export default {
   name: 'friends-friend-item',
@@ -54,12 +55,14 @@ export default {
   methods: {
     callFriend(chatId) {
       this.$router.push(`/crew/@me/${chatId}`);
+      eventBus.$emit('close');
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/styles/friends.scss";
 .friend-item-container {
   width: 100%;
 }
@@ -128,13 +131,5 @@ export default {
 .bxs-x-circle {
   font-size: 24px;
   color: #464a65;
-}
-@media only screen and (max-width: 700px) {
-  .friend-card {
-    height: 67px;
-  }
-  .bxs-phone-call {
-    font-size: 13px;
-  }
 }
 </style>
