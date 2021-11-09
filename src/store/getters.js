@@ -53,10 +53,13 @@ const getters = {
     return state.roomUsersListener;
   },
   getFriendRequests(state) {
-    return state.notifications;
+    return state.notifications.filter((item) => item.type === 1);
+  },
+  getPartyInvite(state) {
+    return state.notifications.filter((item) => item.type === 0);
   },
   getSentFriendNotifications(state) {
-    return state.sendtFriendNotifications;
+    return state.sentFriendNotifications;
   },
   getFriends(state) {
     return state.friends;

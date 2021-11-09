@@ -7,20 +7,7 @@
           :key="game.gameId"
           class="game-card"
         >
-          <div class="game-img-container">
-            <img class="game-img" :src="game.url_square" alt="game-image" />
-          </div>
-          <div class="game-card-content">
-            <div>
-              <h2 class="gname roboto-m">{{ game.gameName }}</h2>
-              <h3 class="uname roboto-m">{{ game.uname }}</h3>
-            </div>
-            <div class="game-options-container">
-              <button class="game-options" @click="deleteGame(game.gameId)">
-                <i class='bx bxs-x-circle game-options-txt'></i>
-              </button>
-            </div>
-          </div>
+          <gameItem :game="game"/>
         </div>
       </transition-group>
     </div>
@@ -40,11 +27,16 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { usersCollection } from '../../firebaseConfig';
+import gameItem from './items/game-item.vue';
 
 export default {
   name: 'settings-games-page',
+
   data() {
     return {};
+  },
+  components: {
+    gameItem,
   },
   methods: {
     ...mapActions(['favGameAction']),
@@ -58,15 +50,6 @@ export default {
           this.openNotification('Failed', `Username failed to be erased: ${e}`, 'danger');
         });
     },
-    openNotification(title, text, color) {
-      this.$vs.notification({
-        // flat: true,
-        title,
-        text,
-        position: 'bottom-center',
-        color,
-      });
-    },
   },
   computed: {
     ...mapGetters(['getFavGamesSettings', 'getGames', 'getUser']),
@@ -76,16 +59,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/assets/styles/settings.scss';
-.game-card {
-  height: 102px;
-  width: 100%;
-  background-color: $c2_dark;
-  margin-bottom: 12px;
-  display: flex;
-  padding: 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
 .game-img-container {
   width: 70px;
   height: 70px;

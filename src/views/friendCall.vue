@@ -24,6 +24,18 @@
             :isMain="false"
           />
         </div>
+        <div
+          class="audio-layout fadeInAnim"
+          v-for="friend in getCalling"
+          :key="friend.uid"
+        >
+          <audioLayout
+            :muted="false"
+            :user="friend"
+            :copy="false"
+            :isMain="false"
+          />
+        </div>
       </div>
     </div>
     <div class="call-options-container">
@@ -50,6 +62,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import audioLayout from '@/components/call/audio.vue';
 import { joinRoom, selfId } from 'trystero/src/firebase';
+import { Howl, Howler } from 'howler';
+import FoundtickFx from '@/assets/sounds/matchfound-tick.mp3';
 import { friendChatCollection, statusCollection } from '../firebaseConfig';
 // import firebase from 'firebase/app';
 // import { getFireApp } from '../firebaseConfig';
@@ -80,6 +94,9 @@ export default {
     localStream: undefined,
     muted: true,
     room: null,
+    friendIds: [],
+    ringStream: null,
+    playTick: null,
   }),
   components: {
     audioLayout,
@@ -194,7 +211,11 @@ export default {
               gameId: this.getUserStatus.gameId,
               roomType: 'friendChat',
             });
-            // this.callFriend(snap.data().users.filter((x) => x !== this.getUser.uid));
+
+            this.friendIds = snap
+              .data()
+              .users.filter((x) => x !== this.getUser.uid);
+
             await this.getUserMedia();
             this.room = joinRoom(config, this.roomId);
             this.roomEvents();
@@ -220,11 +241,24 @@ export default {
           chatId: selfId,
         });
     },
-    // callFriend(friendId) {
-    //   this.getFriends.
-    // },
+    playMusic() {
+      this.playTick = new Howl({
+        src: [FoundtickFx],
+        volume: 0.2,
+        loop: true,
+        rate: 1.7,
+      });
+      this.ringStream = Howler.ctx.createMediaStreamDestination();
+      Howler.masterGain.connect(this.ringStream); // connect masterGain to destination
+      this.playTick.play();
+    },
   },
   computed: {
+    getCalling() {
+      return Object.keys(this.peers).length > 0
+        ? []
+        : this.getFriends.filter((x) => x.uid === this.friendIds[0]);
+    },
     ...mapGetters([
       'getUser',
       'getRoomUsers',

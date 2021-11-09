@@ -32,7 +32,7 @@ const mutations = {
     state.notifications = payload;
   },
   setSentFriendNotifications(state, payload) {
-    state.sendFriendNotifications = payload;
+    state.sentFriendNotifications = payload;
   },
   setFriends(state, payload) {
     state.friends = payload;

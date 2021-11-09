@@ -50,7 +50,7 @@
                 <button
                 type="button"
                   class="modal-leave-button modal-button roboto-m btn-drop"
-                  @click="$emit('close')"
+                  @click="$emit('exit')"
                 >
                   Cancel
                 </button>

@@ -6,7 +6,7 @@
         color="#202330"
         circle
         badge-color="primary"
-        badge-position="bottom-right"
+        badge-position="top-right"
         class="clickable btn-drop"
         @click="friendScreen = !friendScreen"
         :badge="getFriendRequests.length>0"

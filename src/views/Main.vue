@@ -141,7 +141,12 @@ export default {
     });
   },
   computed: {
-    ...mapGetters(['getGames', 'getFriends']),
+    ...mapGetters(['getGames', 'getPartyInvite']),
+  },
+  watch: {
+    getPartyInvite() {
+      // TO DO: this.getPartyInvite
+    },
   },
 };
 

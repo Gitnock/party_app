@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 import firebase from 'firebase/app';
 import {
   friendChatCollection,
@@ -51,7 +51,7 @@ import {
 
 export default {
   name: 'friends-request-item',
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   data: () => ({
     key: '',
   }),
@@ -78,6 +78,7 @@ export default {
                 users: [to, from],
                 isActive: true,
                 timestamp: myTimestamp,
+                status: 'still',
               });
             })
             .then(() => {

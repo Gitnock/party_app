@@ -1,20 +1,7 @@
-/* eslint-disable import/prefer-default-export */
-const warningMixen = {
-  data: () => ({
-    // avatarSize: '55',
-    // btnSize: '44',
-  }),
+import { statusCollection } from './firebaseConfig';
+
+const warningMixin = {
   methods: {
-    // setSize() {
-    //   const x = window.matchMedia('(max-width: 700px)');
-    //   if (x.matches) {
-    //     this.avatarSize = '44';
-    //     this.btnSize = '28';
-    //   } else {
-    //     this.avatarSize = '55';
-    //     this.btnSize = '44';
-    //   }
-    // },
     openNotification(title, text, color) {
       this.$vs.notification({
         // flat: true,
@@ -24,10 +11,17 @@ const warningMixen = {
         color,
       });
     },
+
   },
-  mounted() {
-    // this.setSize();
+};
+const userStatusMixin = {
+  methods: {
+    async updateStatus(activity) {
+      await statusCollection
+        .doc(this.getUser.uid)
+        .set({ activity }, { merge: true });
+    },
   },
 };
 
-export { warningMixen };
+export { warningMixin, userStatusMixin };

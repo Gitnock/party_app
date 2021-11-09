@@ -66,12 +66,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import firebase from 'firebase/app';
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 import { auth, userDataCollection } from '../../firebaseConfig';
 
 export default {
   name: 'settings-account-page',
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   data() {
     return {
       email: '',

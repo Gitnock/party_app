@@ -40,12 +40,15 @@
 </template>
 
 <script>
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 import eventBus from '@/eventBus';
+import { mapGetters } from 'vuex';
+import firebase from 'firebase/app';
+import { friendChatCollection } from '../../../firebaseConfig';
 
 export default {
   name: 'friends-friend-item',
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   data: () => ({
     key: '',
   }),
@@ -54,9 +57,20 @@ export default {
   },
   methods: {
     callFriend(chatId) {
-      this.$router.push(`/crew/@me/${chatId}`);
-      eventBus.$emit('close');
+      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      friendChatCollection.doc(chatId).update({
+        status: `callling-${this.getUser.uid}`,
+        timestamp: myTimestamp,
+      }).then(() => {
+        this.$router.push(`/crew/@me/${chatId}`);
+        eventBus.$emit('close');
+      }).catch(() => {
+        this.openNotification('Failed', `failed to call ${this.friend.username}`, 'danger');
+      });
     },
+  },
+  computed: {
+    ...mapGetters(['getUser']),
   },
 };
 </script>

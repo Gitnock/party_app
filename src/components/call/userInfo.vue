@@ -11,10 +11,10 @@
 </template>
 
 <script>
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 
 export default {
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   name: 'userInfo',
   props: {
     user: Object,

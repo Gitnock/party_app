@@ -116,6 +116,9 @@ export default {
       this.muted = !this.muted;
       this.localStream.getAudioTracks()[0].enabled = this.muted;
     },
+    partyEmpty() {
+      // statusCollection.doc(this.getUser.uid).update({party})
+    },
     statusEmpty() {
       this.updateStatus('still');
     },

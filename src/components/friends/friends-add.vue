@@ -24,13 +24,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 import firebase from 'firebase/app';
 import { notificationsCollection, usersCollection } from '../../firebaseConfig';
 
 export default {
   name: 'friends-friends-page',
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   data: () => ({
     uname: '',
   }),

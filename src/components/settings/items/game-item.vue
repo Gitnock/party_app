@@ -22,14 +22,34 @@
 </template>
 
 <script>
+import { warningMixin } from '@/mixin';
+import { mapGetters, mapActions } from 'vuex';
+import { usersCollection } from '../../../firebaseConfig';
+
 export default {
-  name: 'friends-friend-item',
+  name: 'setting-game-item',
+  mixins: [warningMixin],
   data: () => ({
     key: '',
   }),
   props: {
-    game: {
+    game: {},
+  },
+  methods: {
+    ...mapActions(['favGameAction']),
+    deleteGame(gameId) {
+      usersCollection.doc(this.getUser.uid).collection('favGames').doc(gameId).delete()
+        .then(() => {
+          this.openNotification('Success', 'Username was erased', 'success');
+          this.favGameAction(this.getUser.uid);
+        })
+        .catch((e) => {
+          this.openNotification('Failed', `Username failed to be erased: ${e}`, 'danger');
+        });
     },
+  },
+  computed: {
+    ...mapGetters(['getUser']),
   },
 
 };

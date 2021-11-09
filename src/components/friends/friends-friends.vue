@@ -21,12 +21,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { warningMixen } from '@/mixin';
+import { warningMixin } from '@/mixin';
 import friend from './items/friend-item.vue';
 
 export default {
   name: 'friends-friends-page',
-  mixins: [warningMixen],
+  mixins: [warningMixin],
   data() {
     return {};
   },

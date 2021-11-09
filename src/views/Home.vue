@@ -10,7 +10,12 @@
             v-bind:value="game"
             @click="setGame(game)"
           >
-            <b-image :src="game.url" :alt="game.gameName" />
+            <img
+              v-show="isAllImgLoad"
+              :src="game.url"
+              :alt="game.gameName"
+              @load="onImgLoad()"
+            />
           </button>
         </div>
       </div>
@@ -55,7 +60,11 @@
     </div>
     <div>
       <template>
-        <username v-if="isUsername" @close="isUsername = false" />
+        <username
+          v-if="isUsername"
+          @close="isUsername = false"
+          @exit="setGame(null), (isUsername = false)"
+        />
       </template>
     </div>
   </div>
@@ -68,6 +77,7 @@ import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
 import eventBus from '@/eventBus';
 import {
+  // notificationsCollection,
   playersCollection,
   roomsCollection,
   statusCollection,
@@ -89,6 +99,7 @@ export default {
     roomListener: null,
     roomId: '',
     sound: null,
+    imgLCount: 0,
   }),
   methods: {
     ...mapActions([
@@ -100,6 +111,9 @@ export default {
     setGame(game) {
       this.$store.commit('setGame', game);
       this.curGame = this.getGame;
+      if (!this.hasGame) {
+        this.addUsername();
+      }
     },
     join(isSearch) {
       if (this.getUserStatus.activity !== 'looking' || isSearch) {
@@ -176,7 +190,11 @@ export default {
             this.closeLoading();
           });
       } else {
-        this.openNotification('Failed', 'another instance is already looking for a game', 'danger');
+        this.openNotification(
+          'Failed',
+          'another instance is already looking for a game',
+          'danger',
+        );
       }
     },
     openNotification(title, text, color) {
@@ -203,7 +221,9 @@ export default {
       await this.updateStatus('still');
     },
     async updateStatus(activity) {
-      await statusCollection.doc(this.getUser.uid).set({ activity }, { merge: true });
+      await statusCollection
+        .doc(this.getUser.uid)
+        .set({ activity }, { merge: true });
     },
     cancelSearch() {
       this.statusEmpty();
@@ -237,15 +257,53 @@ export default {
         .doc(this.getUserStatus.tempRoomId)
         .update({ isActive: false });
     },
+    sendPartyInvite() {
+      // const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      // this.isAddFriend = !this.isAddFriend;
+      // const docId = notificationsCollection
+      //   .doc().id;
+      // notificationsCollection
+      //   .doc(docId)
+      //   .set({
+      //     createdAt: myTimestamp,
+      //     from: this.getUser.uid,
+      //     to: docs[0].userId,
+      //     title: 'Wants to be your friend',
+      //     title2: 'Cancel friend request',
+      //     message: '',
+      //     type: 0,
+      //     id: docId,
+      //     isActive: true,
+      //   }).catch((e) => {
+      //     this.openNotification('Error', `${e}`, 'warning');
+      //   });
+    },
+    loadImage(objs) {
+      const imgs = objs.map((obj) => obj.url);
+      imgs.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    },
+    onImgLoad() {
+      this.imgLCount += 1;
+    },
   },
   computed: {
     activity() {
       return this.getUserStatus.activity;
     },
     hasGame() {
-      return this.getFavGames
-        ? this.getFavGames.some((id) => id.gameId === this.curGame.gameId)
-        : false;
+      let out = false;
+      if (typeof this.getFavGames !== 'undefined' && this.curGame) {
+        out = this.getFavGames
+          ? this.getFavGames.some((id) => id.gameId === this.curGame.gameId)
+          : false;
+      }
+      return out;
+    },
+    isAllImgLoad() {
+      return this.getGames.length === this.imgLCount;
     },
     ...mapGetters([
       'getUser',
@@ -259,8 +317,8 @@ export default {
     ]),
   },
   watch: {
-    activity(newV) {
-      if (newV === 'still') {
+    activity(oldv, newV) {
+      if (newV === 'still' && oldv !== 'still') {
         this.disTpRoom();
       }
     },
@@ -270,6 +328,7 @@ export default {
       this.join(true);
     });
     eventBus.$on('disRoom', () => {});
+    // this.loadImage(this.getGames);
   },
 };
 </script>
@@ -337,6 +396,8 @@ export default {
 }
 .join-game-img {
   flex: auto;
+  -webkit-filter: blur(8px);
+  filter: blur(8px);
 }
 .join-game-btn {
   width: 409px;

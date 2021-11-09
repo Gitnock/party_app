@@ -53,17 +53,17 @@ import firebase from 'firebase/app';
 import eventBus from '@/eventBus';
 import * as workerTimers from 'worker-timers';
 import { Howl } from 'howler';
+import { userStatusMixin } from '@/mixin';
 import {
   db,
   roomsCollection,
   rtDb,
-  statusCollection,
 } from '../../firebaseConfig';
 import matchFoundFx from '../../assets/sounds/matchfound-start.mp3';
 import FoundtickFx from '../../assets/sounds/matchfound-tick.mp3';
 
 export default {
-  components: {},
+  mixins: [userStatusMixin],
   data: () => ({
     showModal: false,
     timeleft: 100,
@@ -146,11 +146,6 @@ export default {
     },
     statusEmpty() {
       this.updateStatus('still');
-    },
-    async updateStatus(activity) {
-      await statusCollection
-        .doc(this.getUser.uid)
-        .set({ activity }, { merge: true });
     },
     playMusic() {
       this.playFound = new Howl({
