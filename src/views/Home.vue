@@ -35,7 +35,20 @@
             <i class="bx bx-x btn-icon"></i>
           </button>
         </div>
-        <div class="join-game-content" ref="target">
+
+        <div class="join-game-content" ref="target" >
+          <div class="invite-circle-container" v-show="!isLoading">
+            <div class="invite-circle-content">
+              <button
+                class="invite-circle btn-div clickable"
+                v-for="user in users"
+                :key="user.id"
+                @click="isInvite = !isInvite"
+              >
+                <i class="bx bx-plus" style="color: #0291f4"></i>
+              </button>
+            </div>
+          </div>
           <b-image
             class="join-game-img"
             :src="curGame.url"
@@ -67,6 +80,11 @@
         />
       </template>
     </div>
+    <div>
+      <template>
+        <invite v-if="isInvite" @close="isInvite = false"/>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -75,6 +93,7 @@ import firebase from 'firebase/app';
 import { mapActions, mapGetters } from 'vuex';
 import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
+import invite from '@/components/modal/invite-modal.vue';
 import eventBus from '@/eventBus';
 import {
   // notificationsCollection,
@@ -87,11 +106,13 @@ export default {
   components: {
     confirm,
     username,
+    invite,
   },
   data: () => ({
     isBtn: false,
     isConfirm: false,
     isUsername: false,
+    isInvite: false,
     curGame: null,
     isLoading: false,
     loading: null,
@@ -100,6 +121,13 @@ export default {
     roomId: '',
     sound: null,
     imgLCount: 0,
+    users: [
+      { id: 0, name: 'one' },
+      { id: 1, name: 'one' },
+      { id: 2, name: 'one' },
+      { id: 3, name: 'one' },
+      { id: 4, name: 'one' },
+    ],
   }),
   methods: {
     ...mapActions([
@@ -328,6 +356,9 @@ export default {
       this.join(true);
     });
     eventBus.$on('disRoom', () => {});
+    eventBus.$on('close-invite', () => {
+      this.isInvite = false;
+    });
     // this.loadImage(this.getGames);
   },
 };
@@ -436,6 +467,34 @@ export default {
   border-radius: 50%;
 }
 
+//invite
+.invite-circle-container {
+  padding: 62px;
+  width: 100%;
+  height: 90%;
+  position: absolute;
+  // background: #00cd69;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+}
+.invite-circle-content {
+  width: 232px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.invite-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #224168;
+  margin: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 // MOBILE
 @media only screen and (max-width: 510px) {
   .select-game-card {
@@ -486,6 +545,23 @@ export default {
   .join-game-btn {
     width: 308px;
     height: 64px;
+  }
+
+  //invite-mobile
+  .invite-circle-content {
+    width: 232px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .invite-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #224168;
+    margin: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

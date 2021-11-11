@@ -1,38 +1,30 @@
 <template>
-  <div class="friend-item-container">
+  <div class="invite-item-container">
     <div class="friend-card">
       <div class="friend-img-container">
-        <vs-avatar
-          badge
-          :badge-color="friend.state === 'online' ? 'success' : 'danger'"
-          circle
-          class="user-avatar"
-          size="55"
-          color="#2b2e43"
-        >
-          <img :src="friend.avatar" alt="friend image" />
+        <vs-avatar circle class="user-avatar" color="#2b2e43">
+          <img
+            class="friend-img"
+            :src="friend.avatar"
+            alt="friend image"
+          />
         </vs-avatar>
       </div>
       <div class="friend-card-content">
         <div class="friend-text-content">
           <div>
             <h2 class="gname roboto-m">{{ friend.username }}</h2>
-            <h3 class="uname roboto-m">{{ friend.state }}</h3>
           </div>
         </div>
         <div class="friend-options-container">
           <vs-avatar
             circle
             color="#224168"
-            size="44"
-            class="clickable call-avatar"
-            @click="callFriend(friend.chatId)"
+            class="call-avatar clickable btn-drop"
+            @click="sendInvite()"
           >
-            <i class="bx bxs-phone-call" style="color: #195bff"></i>
+            <i class="bx bx-mail-send" style="color: #195bff"></i>
           </vs-avatar>
-          <button class="friend-options-delete">
-            <i class="bx bxs-x-circle"></i>
-          </button>
         </div>
       </div>
     </div>
@@ -42,12 +34,9 @@
 <script>
 import { warningMixin } from '@/mixin';
 import eventBus from '@/eventBus';
-import { mapGetters } from 'vuex';
-import firebase from 'firebase/app';
-import { friendChatCollection } from '../../../firebaseConfig';
 
 export default {
-  name: 'friends-friend-item',
+  name: 'invite-item',
   mixins: [warningMixin],
   data: () => ({
     key: '',
@@ -56,21 +45,9 @@ export default {
     friend: {},
   },
   methods: {
-    callFriend(chatId) {
-      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-      friendChatCollection.doc(chatId).update({
-        status: `callling-${this.getUser.uid}`,
-        timestamp: myTimestamp,
-      }).then(() => {
-        this.$router.push(`/crew/@me/${chatId}`);
-        eventBus.$emit('close');
-      }).catch(() => {
-        this.openNotification('Failed', `failed to call ${this.friend.username}`, 'danger');
-      });
+    sendInvite() {
+      eventBus.$emit('close-invite');
     },
-  },
-  computed: {
-    ...mapGetters(['getUser']),
   },
 };
 </script>
@@ -93,6 +70,7 @@ export default {
 .friend-img-container {
   height: 100%;
   display: flex;
+  // flex-direction: column;
   align-items: center;
   margin-right: 12px;
 }
@@ -135,15 +113,13 @@ export default {
   display: flex;
   align-items: center;
 }
-.friend-options-delete {
-  padding: 0px;
-  border: none;
-  background-color: transparent;
-  height: 24px;
-  margin-left: 12px;
+@media only screen and (max-width: 700px) {
+    .friend-card {
+      height: 67px;
+    }
+    .bx-mail-send {
+      font-size: 13px;
+    }
 }
-.bxs-x-circle {
-  font-size: 24px;
-  color: #464a65;
-}
+
 </style>
