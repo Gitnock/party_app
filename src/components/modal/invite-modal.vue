@@ -4,7 +4,7 @@
       <div class="modal-wrapper">
         <div class="modal-container-big">
           <div class="invite-close-container">
-              <div></div>
+            <div></div>
             <button
               class="close-circle btn-div clickable btn-drop"
               @click="$emit('close')"
@@ -23,6 +23,16 @@
                   v-for="friend in getFriends"
                   :key="friend.uid"
                 />
+                <div
+                  class="content-main"
+                  v-show="getFriends.length === 0"
+                >
+                  <div class="content-google">
+                    <div class="con-google-main">
+                      <div>Your friends are no where to be found.</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="invite-bot"></div>

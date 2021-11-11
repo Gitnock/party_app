@@ -6,11 +6,11 @@
           :key="friend.uid"/>
       </transition-group>
     </div>
-    <div class="content-main" v-show="getFavGamesSettings.length === 0">
+    <div class="content-main" v-show="getFriendsStatus.length === 0">
       <div class="content-google" >
         <div class="con-google-main">
           <div>
-            You have no games with a username.
+            Your friends are no where to be found.
           </div>
         </div>
 
