@@ -78,7 +78,7 @@
             <div class="prof-bot"></div>
 
             <footer style="color: #626891" class="clickable">
-              <p>Privacy policy | v-0.7.1</p>
+              <p>Privacy policy | v-0.7.2</p>
             </footer>
           </div>
         </template>
