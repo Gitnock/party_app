@@ -34,7 +34,7 @@ export default {
   display: flex;
   justify-content: space-between;
   position: relative;
-  padding: 0 12px;
+  padding: 0 12px 24px 0;
 }
 .close-circle {
   width: 44px;

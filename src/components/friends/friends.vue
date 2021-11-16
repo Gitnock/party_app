@@ -179,7 +179,7 @@ export default {
 
 //animation
 .setting-item {
-  animation: fadeIn 0.5s;
+  animation: fadeIn 0.2s;
 }
 
 @media only screen and (max-width: 628px) {

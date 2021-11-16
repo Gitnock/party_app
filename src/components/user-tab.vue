@@ -108,12 +108,7 @@
         <settings></settings>
       </div>
     </vs-dialog> -->
-    <fullscreenModal v-show="settingScreen" @close="settingScreen = !settingScreen">
-      <template v-slot:body>
-        <settings/>
-      </template>
-    </fullscreenModal>
-    <vs-dialog
+    <!-- <vs-dialog
       square
       full-screen
       not-close
@@ -135,7 +130,18 @@
         </div>
         <friends></friends>
       </div>
-    </vs-dialog>
+    </vs-dialog> -->
+    <fullscreenModal v-show="settingScreen" @close="settingScreen = !settingScreen">
+      <template v-slot:body>
+        <settings/>
+      </template>
+    </fullscreenModal>
+    <fullscreenModal v-show="friendScreen" @close="friendScreen = !friendScreen">
+      <template v-slot:body>
+        <friends/>
+      </template>
+    </fullscreenModal>
+
   </div>
 </template>
 
@@ -144,7 +150,6 @@ import { mapGetters } from 'vuex';
 import settings from '@/components/settings/settings.vue';
 import fullscreenModal from '@/components/modal/fullscreen-modal.vue';
 import friends from '@/components/friends/friends.vue';
-import eventBus from '@/eventBus';
 
 export default {
   name: 'user_tab',
@@ -169,9 +174,9 @@ export default {
     },
   },
   mounted() {
-    eventBus.$on('close', () => {
-      this.friendScreen = false;
-    });
+    // eventBus.$on('close', () => {
+    //   this.friendScreen = false;
+    // });
   },
 };
 </script>
