@@ -85,7 +85,7 @@
       </vs-tooltip>
     </div>
 
-    <vs-dialog
+    <!-- <vs-dialog
       square
       full-screen
       not-close
@@ -107,7 +107,12 @@
         </div>
         <settings></settings>
       </div>
-    </vs-dialog>
+    </vs-dialog> -->
+    <fullscreenModal v-show="settingScreen" @close="settingScreen = !settingScreen">
+      <template v-slot:body>
+        <settings/>
+      </template>
+    </fullscreenModal>
     <vs-dialog
       square
       full-screen
@@ -137,6 +142,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import settings from '@/components/settings/settings.vue';
+import fullscreenModal from '@/components/modal/fullscreen-modal.vue';
 import friends from '@/components/friends/friends.vue';
 import eventBus from '@/eventBus';
 
@@ -154,6 +160,7 @@ export default {
   components: {
     settings,
     friends,
+    fullscreenModal,
   },
   methods: {
     openSettings() {
