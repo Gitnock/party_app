@@ -40,9 +40,14 @@
           <div class="invite-circle-container" v-show="!isLoading">
             <div class="invite-circle-content">
               <button
+                class="user-circle btn-div clickable"
+              >
+                <img  class="user-img" :src="getProfile.avatar" alt="">
+              </button>
+              <button
                 class="invite-circle btn-div clickable"
-                v-for="user in users"
-                :key="user.id"
+                v-for="(empty, i) in emptys"
+                :key="i"
                 @click="isInvite = !isInvite"
               >
                 <i class="bx bx-plus" style="color: #0291f4"></i>
@@ -121,13 +126,6 @@ export default {
     roomId: '',
     sound: null,
     imgLCount: 0,
-    users: [
-      { id: 0, name: 'one' },
-      { id: 1, name: 'one' },
-      { id: 2, name: 'one' },
-      { id: 3, name: 'one' },
-      { id: 4, name: 'one' },
-    ],
   }),
   methods: {
     ...mapActions([
@@ -333,6 +331,13 @@ export default {
     isAllImgLoad() {
       return this.getGames.length === this.imgLCount;
     },
+    emptys() {
+      let out = [];
+      if (this.curGame) {
+        out = Array(this.curGame.maxPlayers - 1).fill('invite');
+      }
+      return out;
+    },
     ...mapGetters([
       'getUser',
       'getGame',
@@ -494,7 +499,20 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
+.user-circle{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.user-img {
+  width: 100%;
+  object-fit: cover;
+}
 // MOBILE
 @media only screen and (max-width: 510px) {
   .select-game-card {
@@ -556,12 +574,10 @@ export default {
   .invite-circle {
     width: 70px;
     height: 70px;
-    border-radius: 50%;
-    background-color: #224168;
-    margin: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  }
+  .user-circle{
+    width: 70px;
+    height: 70px;
   }
 }
 </style>
