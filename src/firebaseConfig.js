@@ -46,6 +46,7 @@ const friendsCollection = db.collection('friends');
 const gamesCollection = db.collection('games');
 const playersCollection = db.collection('players');
 const roomsCollection = db.collection('rooms');
+const partysCollection = db.collection('partys');
 // const activePlayersCollection = collection('activePlayers');
 // const favGames = collection('favGames');
 const notificationsCollection = db.collection('notifications');
@@ -67,4 +68,5 @@ export {
   userDataCollection,
   getFireApp,
   statusCollection,
+  partysCollection,
 };

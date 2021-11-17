@@ -4,16 +4,9 @@
       <div class="content-container">
         <div class="content-text">
           <h1 class="content-title roboto-m">Add friend</h1>
-          <h3 class="content-subtitle roboto-m">
-            Be careful, usernames are CaSe sEnSiTiVe
-          </h3>
+          <h3 class="content-subtitle roboto-m">Be careful, usernames are CaSe sEnSiTiVe</h3>
         </div>
-        <input
-          type="text"
-          class="content-input"
-          v-model="uname"
-          placeholder="Username#0000"
-        />
+        <input type="text" class="content-input" v-model="uname" placeholder="Username#0000" />
       </div>
       <div class="content-container" v-if="isGood">
         <button class="content-save roboto-m" @click="sendFriendRequest">Send Request</button>
@@ -45,37 +38,11 @@ export default {
         && user !== this.getProfile.username
         && tag !== this.getProfile.tag
       ) {
-        const query = usersCollection
-          .where('username', '==', user)
-          .where('tag', '==', tag);
-        query.get().then((snap) => {
-          const docs = snap.docs.map((doc) => doc.data());
-          if (docs[0]) {
-            this.openNotification('Found User', docs[0].username, 'success');
-            const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-            this.isAddFriend = !this.isAddFriend;
-            const docId = notificationsCollection
-              .doc().id;
-
-            notificationsCollection
-              .doc(docId)
-              .set({
-                createdAt: myTimestamp,
-                from: this.getUser.uid,
-                to: docs[0].userId,
-                title: 'Wants to be your friend',
-                title2: 'Cancel friend request',
-                message: '',
-                type: 1,
-                id: docId,
-                isActive: true,
-              }).catch((e) => {
-                this.openNotification('Error', `${e}`, 'warning');
-              });
-          } else {
-            this.openNotification('Error', "User doesn't Exist", 'danger');
-          }
-        });
+        if (this.getFriends.map((friend) => friend.username).includes(user)) {
+          this.openNotification('warning', 'You are already friends with this user', 'danger');
+        } else {
+          this.sendNotification(user, tag);
+        }
       } else {
         this.openNotification(
           'Error',
@@ -83,6 +50,39 @@ export default {
           'danger',
         );
       }
+    },
+    sendNotification(user, tag) {
+      const query = usersCollection
+        .where('username', '==', user)
+        .where('tag', '==', tag);
+      query.get().then((snap) => {
+        const docs = snap.docs.map((doc) => doc.data());
+        if (docs[0]) {
+          this.openNotification('Found User', docs[0].username, 'success');
+          const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+          this.isAddFriend = !this.isAddFriend;
+          const docId = notificationsCollection
+            .doc().id;
+
+          notificationsCollection
+            .doc(docId)
+            .set({
+              createdAt: myTimestamp,
+              from: this.getUser.uid,
+              to: docs[0].userId,
+              title: 'Wants to be your friend',
+              gameId: '',
+              partyId: '',
+              type: 1,
+              id: docId,
+              isActive: true,
+            }).catch((e) => {
+              this.openNotification('Error', `${e}`, 'warning');
+            });
+        } else {
+          this.openNotification('Error', "User doesn't Exist", 'danger');
+        }
+      });
     },
     getUserName(str) {
       return str.split('#')[0].trim();
@@ -101,11 +101,12 @@ export default {
     ...mapGetters([
       'getProfile',
       'getUser',
+      'getFriends',
     ]),
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/settings.scss';
+@import "@/assets/styles/settings.scss";
 </style>

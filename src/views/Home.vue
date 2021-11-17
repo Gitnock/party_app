@@ -40,12 +40,12 @@
           <div class="invite-circle-container" v-show="!isLoading">
             <div class="invite-circle-content">
               <button
-                class="user-circle btn-div clickable"
+                class="user-circle btn-div clickable btn-drop"
               >
                 <img  class="user-img" :src="getProfile.avatar" alt="">
               </button>
               <button
-                class="invite-circle btn-div clickable"
+                class="invite-circle btn-div clickable btn-drop"
                 v-for="(empty, i) in emptys"
                 :key="i"
                 @click="isInvite = !isInvite"
@@ -126,6 +126,7 @@ export default {
     roomId: '',
     sound: null,
     imgLCount: 0,
+    partyId: '',
   }),
   methods: {
     ...mapActions([
@@ -282,27 +283,6 @@ export default {
       roomsCollection
         .doc(this.getUserStatus.tempRoomId)
         .update({ isActive: false });
-    },
-    sendPartyInvite() {
-      // const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-      // this.isAddFriend = !this.isAddFriend;
-      // const docId = notificationsCollection
-      //   .doc().id;
-      // notificationsCollection
-      //   .doc(docId)
-      //   .set({
-      //     createdAt: myTimestamp,
-      //     from: this.getUser.uid,
-      //     to: docs[0].userId,
-      //     title: 'Wants to be your friend',
-      //     title2: 'Cancel friend request',
-      //     message: '',
-      //     type: 0,
-      //     id: docId,
-      //     isActive: true,
-      //   }).catch((e) => {
-      //     this.openNotification('Error', `${e}`, 'warning');
-      //   });
     },
     loadImage(objs) {
       const imgs = objs.map((obj) => obj.url);

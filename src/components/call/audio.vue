@@ -1,7 +1,7 @@
 <template>
   <div class="audio-container">
-    <audio :srcObject.prop="audioStream" autoplay v-if="!isMain" />
-    <div class="audio-muted" v-if="muted">
+    <audio :srcObject.prop="audioStream" autoplay v-if="!isMain" ref="audio"/>
+    <div class="audio-muted" v-if="isMuted">
       <vs-avatar circle color="#2B2E43">
         <i class="bx bx-volume-mute"></i>
       </vs-avatar>
@@ -12,7 +12,7 @@
         circle
         color="#2B2E43"
         class="user-avatar clickable"
-        @click="muted = !muted"
+        @click="isMuted = !isMuted"
         :history="volume > 20"
       >
         <img
@@ -40,6 +40,7 @@ export default {
     usernameChar: '',
     volumeInterval: null,
     volume: 0,
+    isMuted: false,
   }),
   components: {
     userInfo,
@@ -73,10 +74,21 @@ export default {
         this.volume = (averageVolume * 100) / 127;
       }, 100);
     },
+    muteSound() {
+      this.isMute = true;
+      this.audioStream.getAudioTracks()[0].enabled = false;
+    },
   },
   watch: {
     audioStream() {
       this.handleSoundIndicator();
+    },
+    isMuted() {
+      if (this.isMuted) {
+        this.audioStream.getAudioTracks()[0].enabled = false;
+      } else {
+        this.audioStream.getAudioTracks()[0].enabled = true;
+      }
     },
   },
   beforeDestroy() {
@@ -84,6 +96,9 @@ export default {
       workerTimers.clearInterval(this.submitTimer);
       this.submitTimer = null;
     }
+  },
+  mounted() {
+    this.isMuted = this.muted;
   },
 };
 </script>

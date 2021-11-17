@@ -3,11 +3,7 @@
     <div class="friend-card">
       <div class="friend-img-container">
         <vs-avatar circle class="user-avatar" color="#2b2e43">
-          <img
-            class="friend-img"
-            :src="friend.avatar"
-            alt="friend image"
-          />
+          <img class="friend-img" :src="friend.avatar" alt="friend image" />
         </vs-avatar>
       </div>
       <div class="friend-card-content">
@@ -32,12 +28,15 @@
 </template>
 
 <script>
-import { warningMixin } from '@/mixin';
+import { warningMixin, userStatusMixin } from '@/mixin';
 import eventBus from '@/eventBus';
+import firebase from 'firebase/app';
+import { mapGetters } from 'vuex';
+import { notificationsCollection, partysCollection } from '../../../firebaseConfig';
 
 export default {
   name: 'invite-item',
-  mixins: [warningMixin],
+  mixins: [warningMixin, userStatusMixin],
   data: () => ({
     key: '',
   }),
@@ -46,8 +45,78 @@ export default {
   },
   methods: {
     sendInvite() {
+      const myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
+      const docId = notificationsCollection
+        .doc().id;
+
+      if (this.getUserStatus.partyId && this.getUserStatus.partyId !== '') {
+        // if user is in a party
+        this.openNotification('success', 'user is in a party', 'success');
+        notificationsCollection
+          .doc(docId)
+          .set({
+            createdAt: myTimestamp,
+            from: this.getUser.uid,
+            to: this.friend.uid,
+            title: 'wants you to join them',
+            gameId: this.getGame.gameId,
+            partyId: this.getUserStatus.partyId,
+            type: 0,
+            id: docId,
+            isActive: true,
+          }).then(
+            () => {
+              // eventBus.$emit('notification-sent');
+            },
+          ).catch((e) => {
+            this.openNotification('Error', `${e}`, 'danger');
+          });
+      } else {
+        // if user is not in a party
+        this.openNotification('Error', 'user is not in a party', 'warning');
+        const partyId = partysCollection.doc().id;
+        partysCollection
+          .doc(partyId)
+          .set({
+            full: false,
+            gameId: this.getGame.gameId,
+            isActive: true,
+            players: [this.getUser.uid],
+            size: this.getGame.maxPlayers,
+            createdAt: myTimestamp,
+          }).then(
+            async () => {
+              await this.updateParty(partyId);
+              notificationsCollection
+                .doc(docId)
+                .set({
+                  createdAt: myTimestamp,
+                  from: this.getUser.uid,
+                  to: this.friend.uid,
+                  title: 'has wants you to join them',
+                  gameId: this.getGame.gameId,
+                  partyId: this.getUserStatus.partyId,
+                  type: 0,
+                  id: docId,
+                  isActive: true,
+                }).then(
+                  () => {
+                    // eventBus.$emit('notification-sent');
+                  },
+                ).catch((e) => {
+                  this.openNotification('Error', `${e}`, 'danger');
+                });
+            },
+          ).catch((e) => {
+            this.openNotification('Error', `${e}`, 'danger');
+          });
+      }
+
       eventBus.$emit('close-invite');
     },
+  },
+  computed: {
+    ...mapGetters(['getGame', 'getUser', 'getUserStatus']),
   },
 };
 </script>
@@ -114,12 +183,11 @@ export default {
   align-items: center;
 }
 @media only screen and (max-width: 700px) {
-    .friend-card {
-      height: 67px;
-    }
-    .bx-mail-send {
-      font-size: 13px;
-    }
+  .friend-card {
+    height: 67px;
+  }
+  .bx-mail-send {
+    font-size: 13px;
+  }
 }
-
 </style>

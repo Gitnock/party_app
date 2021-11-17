@@ -21,6 +21,11 @@ const userStatusMixin = {
         .doc(this.getUser.uid)
         .set({ activity }, { merge: true });
     },
+    async updateParty(partyId) {
+      await statusCollection
+        .doc(this.getUser.uid)
+        .set({ partyId }, { merge: true });
+    },
   },
 };
 

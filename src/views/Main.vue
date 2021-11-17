@@ -9,7 +9,7 @@
 
 <script>
 import topNav from '@/components/nav.vue';
-
+import partyInvite from '@/components/modal/items/party-invite.vue';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { mapGetters, mapActions } from 'vuex';
@@ -114,6 +114,14 @@ export default {
         });
       });
     },
+    openNotificationInvite() {
+      const inviteNoti = this.$vs.notification({
+        duration: 'none',
+        width: 'auto',
+        content: partyInvite,
+      });
+      inviteNoti.open();
+    },
   },
   mounted() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -144,8 +152,10 @@ export default {
     ...mapGetters(['getGames', 'getPartyInvite']),
   },
   watch: {
-    getPartyInvite() {
-      // TO DO: this.getPartyInvite
+    getPartyInvite(oldVal, newVal) {
+      if (newVal.length > oldVal.length) {
+        this.openNotificationInvite();
+      }
     },
   },
 };
