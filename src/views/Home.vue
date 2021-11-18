@@ -21,7 +21,7 @@
       </div>
       <div class="join-game-container game-container" v-if="curGame">
         <div class="close-btn-container" v-if="!isLoading">
-          <button class="back-btn btn-div btn-drop" @click="curGame = null">
+          <button class="back-btn btn-div btn-drop" @click="removeCurGame()">
             <i class="bx bx-arrow-back" style="color: #ffffff"></i>
           </button>
         </div>
@@ -36,13 +36,11 @@
           </button>
         </div>
 
-        <div class="join-game-content" ref="target" >
+        <div class="join-game-content" ref="target">
           <div class="invite-circle-container" v-show="!isLoading">
             <div class="invite-circle-content">
-              <button
-                class="user-circle btn-div clickable btn-drop"
-              >
-                <img  class="user-img" :src="getProfile.avatar" alt="">
+              <button class="user-circle btn-div clickable btn-drop">
+                <img class="user-img" :src="getProfile.avatar" alt />
               </button>
               <button
                 class="invite-circle btn-div clickable btn-drop"
@@ -87,7 +85,7 @@
     </div>
     <div>
       <template>
-        <invite v-if="isInvite" @close="isInvite = false"/>
+        <invite v-if="isInvite" @close="isInvite = false" />
       </template>
     </div>
   </div>
@@ -100,7 +98,9 @@ import confirm from '@/components/modal/confirm-modal.vue';
 import username from '@/components/modal/username-modal.vue';
 import invite from '@/components/modal/invite-modal.vue';
 import eventBus from '@/eventBus';
+import { userStatusMixin } from '@/mixin';
 import {
+  partysCollection,
   // notificationsCollection,
   playersCollection,
   roomsCollection,
@@ -113,6 +113,7 @@ export default {
     username,
     invite,
   },
+  mixins: [userStatusMixin],
   data: () => ({
     isBtn: false,
     isConfirm: false,
@@ -126,7 +127,6 @@ export default {
     roomId: '',
     sound: null,
     imgLCount: 0,
-    partyId: '',
   }),
   methods: {
     ...mapActions([
@@ -238,6 +238,18 @@ export default {
         roomsCollection.doc(this.roomId).update({ isActive: false });
       }
     },
+    disParty() {
+      if (this.partyId) {
+        partysCollection
+          .doc(this.partyId)
+          .update({
+            players: firebase.firestore.FieldValue.arrayRemove(
+              this.getUser.uid,
+            ),
+          });
+      }
+      this.updateParty('');
+    },
     statusLooking() {
       this.updateStatus('looking');
     },
@@ -294,10 +306,18 @@ export default {
     onImgLoad() {
       this.imgLCount += 1;
     },
+    removeCurGame() {
+      this.curGame = null;
+      this.disParty();
+      this.statusEmpty();
+    },
   },
   computed: {
     activity() {
       return this.getUserStatus.activity;
+    },
+    partyId() {
+      return this.getUserStatus.partyId;
     },
     hasGame() {
       let out = false;
@@ -333,6 +353,11 @@ export default {
     activity(oldv, newV) {
       if (newV === 'still' && oldv !== 'still') {
         this.disTpRoom();
+      }
+    },
+    partyId(oldv, newV) {
+      if (newV === 'still' && oldv !== 'still') {
+        this.disParty();
       }
     },
   },
@@ -479,7 +504,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.user-circle{
+.user-circle {
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -555,7 +580,7 @@ export default {
     width: 70px;
     height: 70px;
   }
-  .user-circle{
+  .user-circle {
     width: 70px;
     height: 70px;
   }

@@ -51,7 +51,6 @@ export default {
 
       if (this.getUserStatus.partyId && this.getUserStatus.partyId !== '') {
         // if user is in a party
-        this.openNotification('success', 'user is in a party', 'success');
         notificationsCollection
           .doc(docId)
           .set({
@@ -73,7 +72,6 @@ export default {
           });
       } else {
         // if user is not in a party
-        this.openNotification('Error', 'user is not in a party', 'warning');
         const partyId = partysCollection.doc().id;
         partysCollection
           .doc(partyId)
@@ -87,6 +85,7 @@ export default {
           }).then(
             async () => {
               await this.updateParty(partyId);
+              await this.updateStatus('inParty');
               notificationsCollection
                 .doc(docId)
                 .set({
@@ -95,7 +94,7 @@ export default {
                   to: this.friend.uid,
                   title: 'has wants you to join them',
                   gameId: this.getGame.gameId,
-                  partyId: this.getUserStatus.partyId,
+                  partyId,
                   type: 0,
                   id: docId,
                   isActive: true,

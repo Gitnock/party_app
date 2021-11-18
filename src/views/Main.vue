@@ -115,12 +115,11 @@ export default {
       });
     },
     openNotificationInvite() {
-      const inviteNoti = this.$vs.notification({
+      this.$vs.notification({
         duration: 'none',
         width: 'auto',
         content: partyInvite,
       });
-      inviteNoti.open();
     },
   },
   mounted() {
