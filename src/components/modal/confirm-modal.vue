@@ -54,11 +54,7 @@ import eventBus from '@/eventBus';
 import * as workerTimers from 'worker-timers';
 import { Howl } from 'howler';
 import { userStatusMixin } from '@/mixin';
-import {
-  db,
-  roomsCollection,
-  rtDb,
-} from '../../firebaseConfig';
+import { db, roomsCollection, rtDb } from '../../firebaseConfig';
 import matchFoundFx from '../../assets/sounds/matchfound-start.mp3';
 import FoundtickFx from '../../assets/sounds/matchfound-tick.mp3';
 
@@ -83,11 +79,11 @@ export default {
   methods: {
     countDown() {
       rtDb.ref('.info/serverTimeOffset').on('value', (snapshot) => {
-        this.serverTimeOffset = snapshot.val();
+        this.Offset = snapshot.val();
       });
       const roomCreatedAt = Date.now();
       this.submitTimer = workerTimers.setInterval(() => {
-        const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.serverTimeOffset);
+        const timeLeft = 20 * 1000 - (Date.now() - roomCreatedAt - this.Offset);
         if (timeLeft < 5) {
           if (this.isAccepted) {
             eventBus.$emit('search');
@@ -112,11 +108,40 @@ export default {
       if (this.timeleft > 10 && this.canSub) {
         this.isAccepted = true;
         this.canSub = false;
-        roomsCollection.doc(this.roomId).update({
-          isConfirmed: firebase.firestore.FieldValue.arrayUnion(
-            `${1}-${this.getUser.uid}`,
-          ),
-        });
+        const roomRef = roomsCollection.doc(this.roomId);
+
+        db.runTransaction((transaction) => transaction.get(roomRef).then((sfDoc) => {
+          if (!sfDoc.exists) {
+            // throw 'Document does not exist!';
+          }
+
+          const { isActive, isConfirmed } = sfDoc.data();
+          if (isActive) {
+            const newItem = `${1}-${this.getUser.uid}`;
+
+            transaction.update(roomRef, {
+              isConfirmed: firebase.firestore.FieldValue.arrayUnion(
+                newItem,
+              ),
+            });
+            const newConfirmed = isConfirmed.concat(newItem);
+            return newConfirmed;
+          }
+
+          return Promise.reject(new Error('something bad happened'));
+        }))
+          .then((temp) => {
+            console.log('trans worked: ', temp);
+          })
+          .catch((err) => {
+            console.error(`trans failed: ${err}`);
+          });
+
+        // roomsCollection.doc(this.roomId).update({
+        //   isConfirmed: firebase.firestore.FieldValue.arrayUnion(
+        //     `${1}-${this.getUser.uid}`,
+        //   ),
+        // });
       }
     },
     decline() {
@@ -197,7 +222,10 @@ export default {
     },
     isAllSub() {
       if (this.getRoomData.isConfirmed) {
-        return this.getRoomData.size === this.getRoomData.isConfirmed.length && this.isOnTime;
+        return (
+          this.getRoomData.size === this.getRoomData.isConfirmed.length
+          && this.isOnTime
+        );
       }
       return false;
     },

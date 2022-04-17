@@ -100,6 +100,7 @@ import invite from '@/components/modal/invite-modal.vue';
 import eventBus from '@/eventBus';
 import { userStatusMixin } from '@/mixin';
 import {
+  db,
   partysCollection,
   // notificationsCollection,
   playersCollection,
@@ -143,6 +144,11 @@ export default {
       }
     },
     join(isSearch) {
+      this.openNotification(
+        'REPORT',
+        'LOOKING FOR GAME',
+        'success',
+      );
       if (this.getUserStatus.activity !== 'looking' || isSearch) {
         this.statusLooking();
         this.disTpRoom();
@@ -176,40 +182,43 @@ export default {
           })
           .then(() => {
             this.searching = playersCollection
-              .doc(playerId)
-              .onSnapshot((snap) => {
-                const { roomId } = snap.data();
-                if (roomId) {
-                  this.roomId = roomId;
-                  this.setTempRoom(roomId);
-                  this.roomListener = roomsCollection.doc(roomId).onSnapshot(
-                    async (snap2) => {
-                      if (snap2.exists) {
-                        const { full, isActive } = snap2.data();
-                        if (full && this.isLoading && isActive === true) {
-                          await this.setRoomIdAction(roomId);
-                          this.unbindRoomDataRef();
-                          this.bindRoomDataRef();
-                          this.isConfirm = !this.isConfirm;
-                          this.closeLoading();
-                        } else if (this.isLoading && isActive !== true) {
-                          // console.log('LEFT ROOM', isActive);
-                          await this.statusEmpty();
-                          this.closeLoading();
-                          this.join();
+              .where('__name__', '==', playerId)
+              .onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                  if (change.type === 'modified') {
+                    const { roomId } = change.doc.data();
+                    this.roomId = roomId;
+                    this.setTempRoom(roomId);
+
+                    this.roomListener = roomsCollection.doc(roomId).onSnapshot(
+                      async (snap2) => {
+                        if (snap2.exists) {
+                          const { full, isActive } = snap2.data();
+                          if (full && this.isLoading && isActive === true) {
+                            await this.setRoomIdAction(roomId);
+                            this.unbindRoomDataRef();
+                            this.bindRoomDataRef();
+                            this.isConfirm = !this.isConfirm;
+                            this.closeLoading();
+                          } else if (this.isLoading && isActive !== true) {
+                            // console.log('LEFT ROOM', isActive);
+                            await this.statusEmpty();
+                            this.closeLoading();
+                            // this.join();
+                          }
                         }
-                      }
-                    },
-                    (error) => {
-                      this.openNotification(
-                        'Join room failed',
-                        error,
-                        'danger',
-                      );
-                      this.closeLoading();
-                    },
-                  );
-                }
+                      },
+                      (error) => {
+                        this.openNotification(
+                          'Join room failed',
+                          error,
+                          'danger',
+                        );
+                        this.closeLoading();
+                      },
+                    );
+                  }
+                });
               });
           })
           .catch((error) => {
@@ -240,13 +249,9 @@ export default {
     },
     disParty() {
       if (this.partyId) {
-        partysCollection
-          .doc(this.partyId)
-          .update({
-            players: firebase.firestore.FieldValue.arrayRemove(
-              this.getUser.uid,
-            ),
-          });
+        partysCollection.doc(this.partyId).update({
+          players: firebase.firestore.FieldValue.arrayRemove(this.getUser.uid),
+        });
       }
       this.updateParty('');
     },
@@ -265,9 +270,27 @@ export default {
         .set({ activity }, { merge: true });
     },
     cancelSearch() {
-      this.statusEmpty();
-      this.disRoom();
-      this.closeLoading();
+      const roomRef = roomsCollection.doc(this.roomId);
+
+      db.runTransaction((transaction) => transaction.get(roomRef).then((sfDoc) => {
+        if (!sfDoc.exists) {
+          // throw 'Document does not exist!';
+        }
+
+        const { isActive } = sfDoc.data();
+        if (isActive) {
+          transaction.update(roomRef, {
+            isConfirmed: { isActive: false },
+          });
+        }
+      }))
+        .then(() => {
+          this.closeLoading();
+          this.statusEmpty();
+        })
+        .catch((err) => {
+          console.error(`trans failed: ${err}`);
+        });
     },
     closeLoading() {
       if (this.loading !== null) {
@@ -542,6 +565,14 @@ export default {
   .join-game-btn {
     width: 308px;
     height: 64px;
+  }
+  .user-circle {
+    width: 70px;
+    height: 70px;
+  }
+  .invite-circle {
+    width: 70px;
+    height: 70px;
   }
 }
 
